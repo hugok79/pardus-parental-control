@@ -1,7 +1,6 @@
 from PreferencesWindow import PreferencesWindow
 from ProfileChooserDialog import ProfileChooserDialog
 import Profiles
-# import DBusController
 
 import os
 import gi
@@ -46,8 +45,6 @@ class MainWindow(Adw.ApplicationWindow):
         pass
 
     def setup_dbus(self):
-        # DBusController.listen_applications_changed(
-        #     self.on_dbus_applications_changed)
         pass
 
     def setup_variables(self):
@@ -189,6 +186,3 @@ class MainWindow(Adw.ApplicationWindow):
 
         self.dialog_preferences.fill_lists_from_profile(
             Profiles.get_current_profile())
-
-    def on_dbus_applications_changed(self, apps):
-        print(apps)
