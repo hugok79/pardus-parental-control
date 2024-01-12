@@ -117,7 +117,7 @@ class ProfileChooserDialog(Adw.PreferencesWindow):
 
         else:
             # New profile created
-            Profiles.create_new_profile(new_profile_name)
+            Profiles.add_new_profile(new_profile_name)
 
             # Update profiles Gtk.StringList
             self.list_profiles.append(new_profile_name)
@@ -178,7 +178,7 @@ class ProfileChooserDialog(Adw.PreferencesWindow):
         old_name = entry_row.get_title()
 
         # Update profiles.json
-        Profiles.change_profile_name(old_name, new_profile_name)
+        Profiles.update_profile_name(old_name, new_profile_name)
 
         # Update Gtk.StringList
         for i in range(self.list_profiles.get_n_items()):

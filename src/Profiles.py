@@ -11,6 +11,7 @@ _DEFAULT_PROFILES = {
         "Profile-1": {
             "application_list": [],
             "website_list": [],
+            "user_list": [],
             "is_application_list_allowed": True,
             "is_website_list_allowed": True
         },
@@ -19,7 +20,7 @@ _DEFAULT_PROFILES = {
 }
 
 
-def _save_profiles_file(content):
+def _save_all_profiles_file(content):
     # Create the profiles.json if not exists
     try:
         # First create the directories
@@ -48,25 +49,21 @@ def _read_profiles_file():
         return _DEFAULT_PROFILES
     except json.JSONDecodeError:
         print(f"{PROFILES_PATH} is corrupted. Using default profiles.")
-        _save_profiles_file(_DEFAULT_PROFILES)
+        _save_all_profiles_file(_DEFAULT_PROFILES)
         return _DEFAULT_PROFILES
 
 
 # Create profiles file if not exists:
 if not os.path.isfile(PROFILES_PATH):
-    _save_profiles_file(_DEFAULT_PROFILES)
+    _save_all_profiles_file(_DEFAULT_PROFILES)
 
 # Read profiles.json file
 PROFILES = _read_profiles_file()
-# print(json.dumps(PROFILES, indent=4, sort_keys=True))
-
-# User functions
 
 
-def save_profiles():
-    _save_profiles_file(PROFILES)
+# === public user functions ===
 
-
+# GETTERs
 def get_all_profiles():
     return PROFILES["profiles"]
 
@@ -75,43 +72,8 @@ def get_current_profile_name():
     return PROFILES["current_profile"]
 
 
-def has_profile_name(profile_name):
-    return profile_name in PROFILES["profiles"]
-
-
-def set_current_profile_name(profile_name):
-    PROFILES["current_profile"] = profile_name
-    print("Changed current profile:", profile_name)
-
-    save_profiles()
-
-
 def get_current_profile():
     return PROFILES["profiles"][PROFILES["current_profile"]]
-
-
-def create_new_profile(profile_name):
-    if has_profile_name(profile_name):
-        return False
-
-    PROFILES["profiles"][profile_name] = copy.deepcopy(
-        _DEFAULT_PROFILES["profiles"]["Profile-1"])
-
-    save_profiles()
-
-
-def change_profile_name(old_name, new_name):
-    PROFILES["profiles"][new_name] = PROFILES["profiles"][old_name]
-    del PROFILES["profiles"][old_name]
-
-    save_profiles()
-
-
-def change_current_profile_property(property_name, value):
-    profile = get_current_profile()
-    profile[property_name] = value
-
-    save_profiles()
 
 
 def get_current_profile_property(property_name):
@@ -119,12 +81,57 @@ def get_current_profile_property(property_name):
     return profile[property_name]
 
 
+def has_profile_name(profile_name):
+    return profile_name in PROFILES["profiles"]
+
+
+# SETTERs
+def save_all_profiles():
+    _save_all_profiles_file(PROFILES)
+
+
+def set_current_profile_name(profile_name):
+    PROFILES["current_profile"] = profile_name
+    save_all_profiles()
+
+# INSERTs
+
+
+def add_new_profile(profile_name):
+    if has_profile_name(profile_name):
+        return False
+
+    PROFILES["profiles"][profile_name] = copy.deepcopy(
+        _DEFAULT_PROFILES["profiles"]["Profile-1"])
+
+    save_all_profiles()
+
+# UPDATEs
+
+
+def update_profile_name(old_name, new_name):
+    PROFILES["profiles"][new_name] = PROFILES["profiles"][old_name]
+    del PROFILES["profiles"][old_name]
+
+    save_all_profiles()
+
+
+def update_current_profile_property(property_name, value):
+    profile = get_current_profile()
+    profile[property_name] = value
+
+    save_all_profiles()
+
+# DELETEs
+
+
 def delete_profile(profile_name):
     del PROFILES["profiles"][profile_name]
 
-    save_profiles()
+    save_all_profiles()
 
-# Application adding
+
+# Application Settings
 
 
 def add_application_to_current_profile(app_id):
@@ -135,22 +142,22 @@ def add_application_to_current_profile(app_id):
 
     profile["application_list"].append(app_id)
 
-    save_profiles()
+    save_all_profiles()
     return True
 
 
-def remove_application_to_current_profile(app_id):
+def delete_application_from_current_profile(app_id):
     profile = get_current_profile()
 
     if app_id in profile["application_list"]:
         profile["application_list"].remove(app_id)
 
-        save_profiles()
+        save_all_profiles()
         return True
 
     return False
 
-# Website adding
+# Website Settings
 
 
 def add_website_to_current_profile(domain):
@@ -161,17 +168,43 @@ def add_website_to_current_profile(domain):
 
     profile["website_list"].append(domain)
 
-    save_profiles()
+    save_all_profiles()
     return True
 
 
-def remove_website_to_current_profile(domain):
+def delete_website_from_current_profile(domain):
     profile = get_current_profile()
 
     if domain in profile["website_list"]:
         profile["website_list"].remove(domain)
 
-        save_profiles()
+        save_all_profiles()
+        return True
+
+    return False
+
+# User Settings
+
+
+def add_user_to_current_profile(user_id):
+    profile = get_current_profile()
+
+    if user_id in profile["user_list"]:
+        return False
+
+    profile["user_list"].append(user_id)
+
+    save_all_profiles()
+    return True
+
+
+def delete_user_from_current_profile(user_id):
+    profile = get_current_profile()
+
+    if user_id in profile["user_list"]:
+        profile["user_list"].remove(user_id)
+
+        save_all_profiles()
         return True
 
     return False

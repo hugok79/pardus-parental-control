@@ -1,6 +1,7 @@
 from PreferencesWindow import PreferencesWindow
 from ProfileChooserDialog import ProfileChooserDialog
 import Profiles
+import LinuxUserManager
 
 import os
 import gi
@@ -77,7 +78,7 @@ class MainWindow(Adw.ApplicationWindow):
 
     def setup_main_page(self):
         # Main Page
-        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, vexpand=True,
                       spacing=7, margin_top=7, margin_start=7, margin_end=7)
 
         # Profile and Preferences buttons
@@ -89,7 +90,7 @@ class MainWindow(Adw.ApplicationWindow):
             hexpand=False,
             valign="center",
             vexpand=True,
-            css_classes=["success"]
+            css_classes=["success", "flat"]
         )
         btn_profiles_box = Gtk.Box(spacing=7)
         btn_profiles_box.append(Gtk.Image(icon_name="system-users-symbolic"))
@@ -111,6 +112,7 @@ class MainWindow(Adw.ApplicationWindow):
         btn_show_preferences.connect(
             "clicked", self.on_btn_show_preferences_clicked)
         box_top.set_end_widget(btn_show_preferences)
+        box_top.set_start_widget(btn_profiles)
 
         box.append(box_top)
 
@@ -137,13 +139,10 @@ class MainWindow(Adw.ApplicationWindow):
 
         # Switch Status
         self.lbl_status = Gtk.Label(
-            label="Parental Protection Disabled",
+            label="Parental Protection is Disabled",
             css_classes=["title-5"]
         )
         box.append(self.lbl_status)
-
-        # Profiles
-        box.append(btn_profiles)
 
         self.content.append(box)
 

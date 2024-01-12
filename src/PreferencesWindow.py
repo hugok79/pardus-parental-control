@@ -1,5 +1,6 @@
 import PActionRow
 import Profiles
+import LinuxUserManager
 from InputDialog import InputDialog
 from ApplicationChooserDialog import ApplicationChooserDialog
 import gi
@@ -19,7 +20,6 @@ class PreferencesWindow(Adw.PreferencesWindow):
         self.setup_dialogs()
 
     # Setups
-
     def setup_window(self):
         self.set_default_size(800, 600)
         self.set_title("Preferences")
@@ -29,8 +29,7 @@ class PreferencesWindow(Adw.PreferencesWindow):
         self.dialog_app_chooser = ApplicationChooserDialog(
             self, self.on_application_selected_in_dialog)
 
-    def setup_ui(self):
-        # Applications
+    def setup_applications_page(self):
         self.page_applications = Adw.PreferencesPage(
             title="Applications",
             icon_name="application-x-executable-symbolic"
@@ -70,7 +69,7 @@ class PreferencesWindow(Adw.PreferencesWindow):
         btn_application_deny_toggle.connect(
             "toggled", self.on_toggle_application_deny)
 
-        # Websites
+    def setup_websites_page(self):
         self.page_websites = Adw.PreferencesPage(
             title="Websites",
             icon_name="web-browser-symbolic"
@@ -111,9 +110,29 @@ class PreferencesWindow(Adw.PreferencesWindow):
         btn_website_deny_toggle.connect(
             "toggled", self.on_toggle_website_deny)
 
+    def setup_users_page(self):
+        self.page_users = Adw.PreferencesPage(
+            title="Users",
+            icon_name="system-users-symbolic"
+        )
+
+        self.group_users = None
+        self.setup_users_group()
+
+    def setup_ui(self):
+        # Applications
+        self.setup_applications_page()
+
+        # Websites
+        self.setup_websites_page()
+
+        # Users
+        self.setup_users_page()
+
         # Add Pages
         self.add(self.page_applications)
         self.add(self.page_websites)
+        self.add(self.page_users)
 
         # Fill groups
         self.fill_lists_from_profile(Profiles.get_current_profile())
@@ -163,7 +182,20 @@ class PreferencesWindow(Adw.PreferencesWindow):
 
         self.page_websites.add(self.group_websites)
 
+    def setup_users_group(self):
+        if self.group_users:
+            self.page_users.remove(self.group_users)
+            self.group_users = None
+
+        self.group_users = Adw.PreferencesGroup(
+            title="Users",
+            description="Select users will be restricted.",
+        )
+
+        self.page_users.add(self.group_users)
+
     # Functions
+
     def fill_lists_from_profile(self, profile):
         # Clear the application list:
         self.setup_applications_group()
@@ -174,12 +206,21 @@ class PreferencesWindow(Adw.PreferencesWindow):
 
             self.insert_application_row_to_group(app_info)
 
-        # Clear the application list:
+        # Clear the website list:
         self.setup_websites_group()
 
         # Websites
         for domain in profile["website_list"]:
             self.insert_website_row_to_group(domain)
+
+        # Clear the user list:
+        self.setup_users_group()
+
+        # Add Users
+        for user in LinuxUserManager.get_standard_users():
+            print(user)
+            is_checked = user.get_uid() in profile["user_list"]
+            self.insert_user_row_to_group(user, is_checked)
 
     def insert_application_row_to_group(self, app):
         app_name = GLib.markup_escape_text(app.get_name(), len(app.get_name()))
@@ -201,7 +242,32 @@ class PreferencesWindow(Adw.PreferencesWindow):
 
         self.group_websites.add(action_row)
 
+    def insert_user_row_to_group(self, user, is_checked):
+        avatar = Adw.Avatar(
+            size=32,
+            text=user.get_user_name(),
+            show_initials=True,
+        )
+
+        btn_check = Gtk.CheckButton(
+            active=is_checked, css_classes=["selection-mode"])
+        btn_check.connect(
+            "toggled", self.on_btn_user_select_clicked, user.get_uid())
+
+        action_row = Adw.ActionRow(title=user.get_user_name())
+        action_row.add_prefix(avatar)
+        action_row.add_suffix(btn_check)
+        action_row.set_activatable_widget(btn_check)
+
+        self.group_users.add(action_row)
+
     # == CALLBACKS ==
+    def on_btn_user_select_clicked(self, btn, user_id):
+        if btn.get_active():
+            Profiles.add_user_to_current_profile(user_id)
+        else:
+            Profiles.delete_user_from_current_profile(user_id)
+
     def on_btn_add_application_clicked(self, btn):
         self.dialog_app_chooser.present()
 
@@ -214,11 +280,11 @@ class PreferencesWindow(Adw.PreferencesWindow):
             # Applications
             app = action_row._app
 
-            if Profiles.remove_application_to_current_profile(app.get_id()):
+            if Profiles.delete_application_from_current_profile(app.get_id()):
                 self.group_applications.remove(action_row)
         except AttributeError:
             # Website domains
-            if Profiles.remove_website_to_current_profile(action_row.get_title()):
+            if Profiles.delete_website_from_current_profile(action_row.get_title()):
                 self.group_websites.remove(action_row)
 
         print(Profiles.get_current_profile())
@@ -240,20 +306,20 @@ class PreferencesWindow(Adw.PreferencesWindow):
 
     def on_toggle_application_allow(self, btn):
         if btn.get_active():
-            Profiles.change_current_profile_property(
+            Profiles.update_current_profile_property(
                 "is_application_list_allowed", True)
 
     def on_toggle_application_deny(self, btn):
         if btn.get_active():
-            Profiles.change_current_profile_property(
+            Profiles.update_current_profile_property(
                 "is_application_list_allowed", False)
 
     def on_toggle_website_allow(self, btn):
         if btn.get_active():
-            Profiles.change_current_profile_property(
+            Profiles.update_current_profile_property(
                 "is_website_list_allowed", True)
 
     def on_toggle_website_deny(self, btn):
         if btn.get_active():
-            Profiles.change_current_profile_property(
+            Profiles.update_current_profile_property(
                 "is_website_list_allowed", False)
