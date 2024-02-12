@@ -13,10 +13,12 @@ _DEFAULT_PROFILES = {
             "website_list": [],
             "user_list": [],
             "is_application_list_allowed": True,
-            "is_website_list_allowed": True
+            "is_website_list_allowed": True,
+            "session_time_start": 0,
+            "session_time_end": 24 * 60 * 60,
         },
     },
-    "current_profile": "Profile-1"
+    "current_profile": "Profile-1",
 }
 
 
@@ -30,9 +32,8 @@ def _save_all_profiles_file(content):
         # print("Saving content:")
         # print(json.dumps(content, indent=4, sort_keys=True))
 
-        with open(PROFILES_PATH, 'w', encoding='utf-8') as f:
-            json.dump(content, f, ensure_ascii=False,
-                      indent=4, sort_keys=True)
+        with open(PROFILES_PATH, "w", encoding="utf-8") as f:
+            json.dump(content, f, ensure_ascii=False, indent=4, sort_keys=True)
     except PermissionError:
         print("Not enough permissions to create the file")
 
@@ -40,7 +41,7 @@ def _save_all_profiles_file(content):
 def _read_profiles_file():
     # Read the profiles.json
     try:
-        with open(PROFILES_PATH, 'r', encoding='utf-8') as f:
+        with open(PROFILES_PATH, "r", encoding="utf-8") as f:
             obj = json.load(f)
 
             return obj
@@ -62,6 +63,7 @@ PROFILES = _read_profiles_file()
 
 
 # === public user functions ===
+
 
 # GETTERs
 def get_all_profiles():
@@ -94,6 +96,7 @@ def set_current_profile_name(profile_name):
     PROFILES["current_profile"] = profile_name
     save_all_profiles()
 
+
 # INSERTs
 
 
@@ -102,9 +105,11 @@ def add_new_profile(profile_name):
         return False
 
     PROFILES["profiles"][profile_name] = copy.deepcopy(
-        _DEFAULT_PROFILES["profiles"]["Profile-1"])
+        _DEFAULT_PROFILES["profiles"]["Profile-1"]
+    )
 
     save_all_profiles()
+
 
 # UPDATEs
 
@@ -121,6 +126,7 @@ def update_current_profile_property(property_name, value):
     profile[property_name] = value
 
     save_all_profiles()
+
 
 # DELETEs
 
@@ -157,6 +163,7 @@ def delete_application_from_current_profile(app_id):
 
     return False
 
+
 # Website Settings
 
 
@@ -182,6 +189,7 @@ def delete_website_from_current_profile(domain):
         return True
 
     return False
+
 
 # User Settings
 
