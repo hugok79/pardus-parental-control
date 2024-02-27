@@ -1,13 +1,16 @@
-import PActionRow
+import ui.PActionRow as PActionRow
 import gi
-gi.require_version('Gtk', '4.0')
-gi.require_version('Adw', '1')
+
+gi.require_version("Gtk", "4.0")
+gi.require_version("Adw", "1")
 from gi.repository import Gtk, Adw, Gio, GLib  # noqa
 
 
 class ApplicationChooserDialog(Adw.PreferencesWindow):
     def __init__(self, parent_window, application_selected_callback):
-        super().__init__(application=parent_window.get_application(), transient_for=parent_window)
+        super().__init__(
+            application=parent_window.get_application(), transient_for=parent_window
+        )
 
         self.setup_window()
 
@@ -23,9 +26,7 @@ class ApplicationChooserDialog(Adw.PreferencesWindow):
         self.set_hide_on_close(True)
 
     def setup_ui(self):
-        group = Adw.PreferencesGroup(
-            description="Loading..."
-        )
+        group = Adw.PreferencesGroup(description="Loading...")
 
         page = Adw.PreferencesPage()
         page.add(group)
@@ -45,15 +46,12 @@ class ApplicationChooserDialog(Adw.PreferencesWindow):
 
     def add_all_applications_to_group(self, group):
         for app in self.get_all_applications():
-            title = GLib.markup_escape_text(
-                app.get_name(), len(app.get_name()))
-
             action_row = PActionRow.new(
-                title=title,
+                title=app.get_name(),
                 subtitle=app.get_id(),
                 gicon=app.get_icon(),
                 on_activated=self.on_action_application_selected,
-                user_data=app
+                user_data=app,
             )
 
             group.add(action_row)

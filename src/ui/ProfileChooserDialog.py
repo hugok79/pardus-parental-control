@@ -1,21 +1,30 @@
-import PActionRow
-import Profiles
-from InputDialog import InputDialog
+import ui.PActionRow as PActionRow
+from managers.ProfileManager import ProfileManager
 import gi
-gi.require_version('Gtk', '4.0')
-gi.require_version('Adw', '1')
+
+gi.require_version("Gtk", "4.0")
+gi.require_version("Adw", "1")
 from gi.repository import Gtk, Adw, Gio, GLib  # noqa
 
 
 class ProfileChooserDialog(Adw.PreferencesWindow):
-    def __init__(self, parent_window, profile_selected_callback):
-        super().__init__(application=parent_window.get_application(), transient_for=parent_window)
+    def __init__(
+        self,
+        profile_manager: ProfileManager,
+        parent_window,
+        profile_selected_callback,
+    ):
+        super().__init__(
+            application=parent_window.get_application(), transient_for=parent_window
+        )
+
+        self.profile_manager = profile_manager
 
         self.setup_window()
 
         self.setup_ui()
 
-        self.selected_profile = Profiles.get_current_profile_name()
+        self.selected_profile = self.profile_manager.get_current_profile_name()
 
         self.on_profile_selected_callback = profile_selected_callback
 
@@ -28,45 +37,46 @@ class ProfileChooserDialog(Adw.PreferencesWindow):
 
     def setup_ui(self):
         self.group_profiles = Adw.PreferencesGroup(
-            title="Profiles",
-            description="Select a profile to load its settings."
+            title="Profiles", description="Select a profile to load its settings."
         )
 
         # Fill the List of Profiles
         self.list_profiles = Gtk.StringList()
         current_profile_index = 0
         i = 0
-        for profile_name in Profiles.get_all_profiles():
+        for profile_name in self.profile_manager.get_profile_list():
             self.list_profiles.append(profile_name)
 
-            if profile_name == Profiles.get_current_profile_name():
+            if profile_name == self.profile_manager.get_current_profile_name():
                 current_profile_index = i
 
             i += 1
 
         # Current Profile ComboRow
         self.comborow_current_profile = Adw.ComboRow(
-            title="Current Profile", model=self.list_profiles)
+            title="Current Profile", model=self.list_profiles
+        )
         self.comborow_current_profile.set_selected(current_profile_index)
         self.comborow_current_profile.connect(
-            "notify::selected", self.on_current_profile_changed)
+            "notify::selected", self.on_current_profile_changed
+        )
         current_profile_group = Adw.PreferencesGroup()
         current_profile_group.add(self.comborow_current_profile)
 
         # New Profile button
         btn_add = Gtk.Button(
-            icon_name="list-add-symbolic", valign="center", css_classes=["accent"])
-        btn_add.connect(
-            "clicked", self.on_btn_add_clicked)
+            icon_name="list-add-symbolic", valign="center", css_classes=["accent"]
+        )
+        btn_add.connect("clicked", self.on_btn_add_clicked)
         self.group_profiles.set_header_suffix(btn_add)
 
         # New Profile Hidden EntryRow
         self.row_new_profile = Adw.EntryRow(
-            title="New Profile Name", activates_default=True, show_apply_button=True)
+            title="New Profile Name", activates_default=True, show_apply_button=True
+        )
         self.row_new_profile.set_input_purpose(Gtk.InputPurpose.ALPHA)
         self.row_new_profile.set_visible(False)
-        self.row_new_profile.connect(
-            "entry_activated", self.on_new_profile_entered)
+        self.row_new_profile.connect("entry_activated", self.on_new_profile_entered)
         self.row_new_profile.connect("apply", self.on_new_profile_entered)
         self.group_profiles.add(self.row_new_profile)
 
@@ -90,16 +100,11 @@ class ProfileChooserDialog(Adw.PreferencesWindow):
         self.group_profiles.add(action_row)
 
     def fill_profiles_group(self):
-        for key, value in Profiles.get_all_profiles().items():
+        for key, value in self.profile_manager.get_profile_list().items():
             self.add_profile_entry_row(key)
 
     def show_toast(self, msg):
-        self.add_toast(
-            Adw.Toast(
-                title=msg,
-                timeout=1
-            )
-        )
+        self.add_toast(Adw.Toast(title=msg, timeout=1))
 
     # == CALLBACKS ==
     def on_btn_add_clicked(self, btn):
@@ -109,15 +114,14 @@ class ProfileChooserDialog(Adw.PreferencesWindow):
     def on_new_profile_entered(self, entry_row):
         new_profile_name = entry_row.get_text()
 
-        if Profiles.has_profile_name(new_profile_name):
-            self.row_new_profile.set_css_classes(
-                ["entry", "activatable", "error"])
+        if self.profile_manager.has_profile_name(new_profile_name):
+            self.row_new_profile.set_css_classes(["entry", "activatable", "error"])
 
             self.show_toast(f"Error: '{new_profile_name}' exists!")
 
         else:
             # New profile created
-            Profiles.add_new_profile(new_profile_name)
+            self.profile_manager.insert_default_profile(new_profile_name)
 
             # Update profiles Gtk.StringList
             self.list_profiles.append(new_profile_name)
@@ -133,12 +137,12 @@ class ProfileChooserDialog(Adw.PreferencesWindow):
             self.row_new_profile.set_text("")
 
     def on_btn_delete_row_clicked(self, btn, action_row, user_data):
-        if len(Profiles.get_all_profiles()) == 1:
+        if len(self.profile_manager.get_profile_list()) == 1:
             self.show_toast("At least one profile required.")
             return False
 
         profile_name = action_row.get_title()
-        current_profile = Profiles.get_current_profile_name()
+        current_profile = self.profile_manager.get_current_profile_name()
 
         if profile_name == current_profile:
             self.show_toast("You can't remove the current profile.")
@@ -156,19 +160,19 @@ class ProfileChooserDialog(Adw.PreferencesWindow):
         self.comborow_current_profile.set_model(self.list_profiles)
 
         # Remove from profiles.json
-        Profiles.delete_profile(profile_name)
+        self.profile_manager.remove_profile(profile_name)
 
     def on_current_profile_changed(self, comborow, selected_index):
         self.selected_profile = comborow.get_selected_item().get_string()
 
-        Profiles.set_current_profile_name(self.selected_profile)
+        self.profile_manager.set_current_profile(self.selected_profile)
 
         self.on_profile_selected_callback(self.selected_profile)
 
     def on_profile_name_changed(self, entry_row):
         new_profile_name = entry_row.get_text()
 
-        if Profiles.has_profile_name(new_profile_name):
+        if self.profile_manager.has_profile_name(new_profile_name):
             self.show_toast(f"Error: '{new_profile_name}' exists!")
 
             entry_row.set_css_classes(["entry", "activatable", "error"])
@@ -178,7 +182,7 @@ class ProfileChooserDialog(Adw.PreferencesWindow):
         old_name = entry_row.get_title()
 
         # Update profiles.json
-        Profiles.update_profile_name(old_name, new_profile_name)
+        self.profile_manager.update_profile_name(old_name, new_profile_name)
 
         # Update Gtk.StringList
         for i in range(self.list_profiles.get_n_items()):
@@ -186,12 +190,15 @@ class ProfileChooserDialog(Adw.PreferencesWindow):
                 self.list_profiles.remove(i)
                 self.list_profiles.append(new_profile_name)
 
-                previous_current_profile = self.comborow_current_profile.get_selected_item().get_string()
+                previous_current_profile = (
+                    self.comborow_current_profile.get_selected_item().get_string()
+                )
                 self.comborow_current_profile.set_model(self.list_profiles)
 
                 if previous_current_profile == old_name:
                     self.comborow_current_profile.set_selected(
-                        self.list_profiles.get_n_items())
+                        self.list_profiles.get_n_items()
+                    )
                 break
 
         self.show_toast(f"Profile name changed: '{new_profile_name}'")

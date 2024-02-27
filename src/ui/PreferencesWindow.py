@@ -1,9 +1,8 @@
-import PActionRow
-import Profiles
-import LinuxUserManager
-from TimeChooser import PTimeChooser
-from InputDialog import InputDialog
-from ApplicationChooserDialog import ApplicationChooserDialog
+import ui.PActionRow as PActionRow
+from managers.ProfileManager import ProfileManager, Profile
+import managers.LinuxUserManager as LinuxUserManager
+from ui.PTimePeriodChooser import PTimePeriodChooser
+from ui.ApplicationChooserDialog import ApplicationChooserDialog
 import gi
 
 gi.require_version("Gtk", "4.0")
@@ -12,8 +11,10 @@ from gi.repository import Gtk, Adw, Gio, GLib  # noqa
 
 
 class PreferencesWindow(Adw.PreferencesWindow):
-    def __init__(self, parent_window):
+    def __init__(self, profile_manager: ProfileManager, parent_window):
         super().__init__(transient_for=parent_window)
+
+        self.profile_manager = profile_manager
 
         self.setup_window()
 
@@ -40,8 +41,9 @@ class PreferencesWindow(Adw.PreferencesWindow):
         self.setup_applications_group()
 
         # Allow / Deny toggle button
-        is_application_list_allowed = Profiles.get_current_profile_property(
-            "is_application_list_allowed"
+        current_profile = self.profile_manager.get_current_profile()
+        is_application_list_allowlist = (
+            current_profile.get_is_application_list_allowlist()
         )
 
         group_allow_deny_application = Adw.PreferencesGroup(
@@ -50,10 +52,11 @@ class PreferencesWindow(Adw.PreferencesWindow):
         )
 
         btn_application_allow_toggle = Gtk.CheckButton(
-            active=is_application_list_allowed
+            active=is_application_list_allowlist
         )
         btn_application_deny_toggle = Gtk.CheckButton(
-            active=(not is_application_list_allowed), group=btn_application_allow_toggle
+            active=(not is_application_list_allowlist),
+            group=btn_application_allow_toggle,
         )
 
         row_allow_application = PActionRow.new(
@@ -85,18 +88,17 @@ class PreferencesWindow(Adw.PreferencesWindow):
         self.setup_websites_group()
 
         # Allow / Deny toggle button
-        is_website_list_allowed = Profiles.get_current_profile_property(
-            "is_website_list_allowed"
-        )
+        current_profile = self.profile_manager.get_current_profile()
+        is_website_list_allowlist = current_profile.get_is_website_list_allowlist()
 
         group_allow_deny_website = Adw.PreferencesGroup(
             title="Filter Choice",
             description='Change the choice of "Allowing" or "Denying" access to websites',
         )
 
-        btn_website_allow_toggle = Gtk.CheckButton(active=is_website_list_allowed)
+        btn_website_allow_toggle = Gtk.CheckButton(active=is_website_list_allowlist)
         btn_website_deny_toggle = Gtk.CheckButton(
-            active=(not is_website_list_allowed), group=btn_website_allow_toggle
+            active=(not is_website_list_allowlist), group=btn_website_allow_toggle
         )
 
         row_allow_website = PActionRow.new(
@@ -153,7 +155,7 @@ class PreferencesWindow(Adw.PreferencesWindow):
         self.add(self.page_session_time)
 
         # Fill groups
-        self.fill_lists_from_profile(Profiles.get_current_profile())
+        self.fill_lists_from_profile(self.profile_manager.get_current_profile())
 
     def setup_applications_group(self):
         if self.group_applications:
@@ -220,11 +222,13 @@ class PreferencesWindow(Adw.PreferencesWindow):
 
         self.group_session_time = Adw.PreferencesGroup(
             title="Session Time",
-            description="Select the time the user will be restricted.",
+            description="Select the time period user can use the computer.",
         )
 
         # Time selection Row
-        self.session_time_chooser = PTimeChooser()
+        self.session_time_chooser = PTimePeriodChooser(
+            self.on_session_time_period_changed
+        )
         row_time_selection = Adw.ActionRow(title="Select Time")
         row_time_selection.add_suffix(self.session_time_chooser)
 
@@ -234,12 +238,12 @@ class PreferencesWindow(Adw.PreferencesWindow):
 
     # Functions
 
-    def fill_lists_from_profile(self, profile):
+    def fill_lists_from_profile(self, profile: Profile):
         # Clear the application list:
         self.setup_applications_group()
 
         # Applications
-        for app_id in profile["application_list"]:
+        for app_id in profile.get_application_list():
             app_info = Gio.DesktopAppInfo.new(app_id)
 
             self.insert_application_row_to_group(app_info)
@@ -248,7 +252,7 @@ class PreferencesWindow(Adw.PreferencesWindow):
         self.setup_websites_group()
 
         # Websites
-        for domain in profile["website_list"]:
+        for domain in profile.get_website_list():
             self.insert_website_row_to_group(domain)
 
         # Clear the user list:
@@ -256,8 +260,7 @@ class PreferencesWindow(Adw.PreferencesWindow):
 
         # Add Users
         for user in LinuxUserManager.get_standard_users():
-            print(user)
-            is_checked = user.get_uid() in profile["user_list"]
+            is_checked = user.get_uid() in profile.get_user_list()
             self.insert_user_row_to_group(user, is_checked)
 
     def insert_application_row_to_group(self, app):
@@ -299,10 +302,14 @@ class PreferencesWindow(Adw.PreferencesWindow):
 
     # == CALLBACKS ==
     def on_btn_user_select_clicked(self, btn, user_id):
+        current_profile = self.profile_manager.get_current_profile()
+
         if btn.get_active():
-            Profiles.add_user_to_current_profile(user_id)
+            current_profile.insert_user(user_id)
         else:
-            Profiles.delete_user_from_current_profile(user_id)
+            current_profile.remove_user(user_id)
+
+        self.profile_manager.save_as_json_file()
 
     def on_btn_add_application_clicked(self, btn):
         self.dialog_app_chooser.present()
@@ -311,51 +318,74 @@ class PreferencesWindow(Adw.PreferencesWindow):
         self.row_new_website.set_visible(True)
         self.row_new_website.grab_focus()
 
-    def on_btn_delete_row_clicked(self, btn, action_row):
-        try:
-            # Applications
-            app = action_row._app
+    def on_btn_delete_row_clicked(self, btn, action_row, user_data):
+        current_profile = self.profile_manager.get_current_profile()
 
-            if Profiles.delete_application_from_current_profile(app.get_id()):
+        if isinstance(user_data, Gio.DesktopAppInfo):
+            app_id = user_data.get_id()
+
+            if current_profile.remove_application(app_id):
                 self.group_applications.remove(action_row)
-        except AttributeError:
+        else:
             # Website domains
-            if Profiles.delete_website_from_current_profile(action_row.get_title()):
+            domain = action_row.get_title()
+
+            if current_profile.remove_website(domain):
                 self.group_websites.remove(action_row)
 
-        print(Profiles.get_current_profile())
+        self.profile_manager.save_as_json_file()
 
     def on_application_selected_in_dialog(self, app):
-        if Profiles.add_application_to_current_profile(app.get_id()):
+        current_profile = self.profile_manager.get_current_profile()
+
+        if current_profile.insert_application(app.get_id()):
             self.insert_application_row_to_group(app)
 
-        print(Profiles.get_current_profile())
+        self.profile_manager.save_as_json_file()
 
     def on_new_website_entered(self, entry_row):
-        if Profiles.add_website_to_current_profile(entry_row.get_text()):
+        current_profile = self.profile_manager.get_current_profile()
+
+        if current_profile.insert_website(entry_row.get_text()):
             self.insert_website_row_to_group(entry_row.get_text())
 
         self.row_new_website.set_visible(False)
         self.row_new_website.set_text("")
 
-        print(Profiles.get_current_profile())
+        self.profile_manager.save_as_json_file()
 
     def on_toggle_application_allow(self, btn):
+        current_profile = self.profile_manager.get_current_profile()
+
         if btn.get_active():
-            Profiles.update_current_profile_property(
-                "is_application_list_allowed", True
-            )
+            current_profile.set_is_application_list_allowlist(True)
+            self.profile_manager.save_as_json_file()
 
     def on_toggle_application_deny(self, btn):
+        current_profile = self.profile_manager.get_current_profile()
+
         if btn.get_active():
-            Profiles.update_current_profile_property(
-                "is_application_list_allowed", False
-            )
+            current_profile.set_is_application_list_allowlist(False)
+            self.profile_manager.save_as_json_file()
 
     def on_toggle_website_allow(self, btn):
+        current_profile = self.profile_manager.get_current_profile()
+
         if btn.get_active():
-            Profiles.update_current_profile_property("is_website_list_allowed", True)
+            current_profile.set_is_website_list_allowlist(True)
+            self.profile_manager.save_as_json_file()
 
     def on_toggle_website_deny(self, btn):
+        current_profile = self.profile_manager.get_current_profile()
+
         if btn.get_active():
-            Profiles.update_current_profile_property("is_website_list_allowed", False)
+            current_profile.set_is_website_list_allowlist(False)
+            self.profile_manager.save_as_json_file()
+
+    def on_session_time_period_changed(self, start_seconds, end_seconds):
+        current_profile = self.profile_manager.get_current_profile()
+
+        current_profile.set_session_time_start(start_seconds)
+        current_profile.set_session_time_end(end_seconds)
+
+        self.profile_manager.save_as_json_file()

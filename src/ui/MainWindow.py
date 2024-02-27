@@ -1,8 +1,9 @@
-from PreferencesWindow import PreferencesWindow
-from ProfileChooserDialog import ProfileChooserDialog
-import Profiles
+from ui.PreferencesWindow import PreferencesWindow
+from ui.ProfileChooserDialog import ProfileChooserDialog
+import managers.ProfileManager as ProfileManager
 
 import os
+import subprocess
 import gi
 
 gi.require_version("Gtk", "4.0")
@@ -10,21 +11,21 @@ gi.require_version("Adw", "1")
 from gi.repository import Gtk, Gdk, Adw  # noqa
 
 CWD = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = f"{CWD}/../data"
+DATA_DIR = f"{CWD}/../../data"
 
 
 class MainWindow(Adw.ApplicationWindow):
     def __init__(self, app):
         super().__init__(application=app)
 
+        # Setup Variables
+        self.setup_variables()
+
         # Setup Actions
         self.setup_actions()
 
         # Setup DBus
         self.setup_dbus()
-
-        # Setup Variables
-        self.setup_variables()
 
         # Setup Window
         self.setup_window()
@@ -50,6 +51,7 @@ class MainWindow(Adw.ApplicationWindow):
 
     def setup_variables(self):
         self.current_profile = ""
+        self.profile_manager = ProfileManager.get_default()
 
     def setup_css(self):
         css_provider = Gtk.CssProvider()
@@ -97,7 +99,9 @@ class MainWindow(Adw.ApplicationWindow):
         btn_profiles_box = Gtk.Box(spacing=7)
         btn_profiles_box.append(Gtk.Image(icon_name="system-users-symbolic"))
         btn_profiles_box.append(Gtk.Separator(orientation="vertical"))
-        self.lbl_profile_btn = Gtk.Label(label=Profiles.get_current_profile_name())
+        self.lbl_profile_btn = Gtk.Label(
+            label=self.profile_manager.get_current_profile_name()
+        )
         btn_profiles_box.append(self.lbl_profile_btn)
         btn_profiles.set_child(btn_profiles_box)
         btn_profiles.connect("clicked", self.on_btn_profiles_clicked)
@@ -120,18 +124,24 @@ class MainWindow(Adw.ApplicationWindow):
         box.append(
             Gtk.Image(
                 file=f"{DATA_DIR}/img/pardus-parental-control.svg",
-                pixel_size=192,
+                pixel_size=256,
                 css_classes=["floating"],
             )
         )
         box.append(Gtk.Label(label="Pardus Parental Control", css_classes=["title-2"]))
 
         # Switch
-        switch = Gtk.Switch(
-            halign="center", margin_top=14, margin_bottom=14, css_classes=["bigswitch"]
+        # switch = Gtk.Switch(
+        #     halign="center", margin_top=14, margin_bottom=14, css_classes=["bigswitch"]
+        # )
+        # switch.connect("state-set", self.on_switch_activation_state_changed)
+        btn_switch = Gtk.ToggleButton(
+            icon_name="system-shutdown-symbolic",
+            halign="center",
+            css_classes=["bigswitch"],
         )
-        switch.connect("state-set", self.on_switch_activation_state_changed)
-        box.append(switch)
+        btn_switch.connect("toggled", self.on_btn_switch_toggled)
+        box.append(btn_switch)
 
         # Switch Status
         self.lbl_status = Gtk.Label(
@@ -142,8 +152,10 @@ class MainWindow(Adw.ApplicationWindow):
         self.content.append(box)
 
     def setup_dialogs(self):
-        self.dialog_preferences = PreferencesWindow(self)
-        self.dialog_profiles = ProfileChooserDialog(self, self.on_profile_selected)
+        self.dialog_preferences = PreferencesWindow(self.profile_manager, self)
+        self.dialog_profiles = ProfileChooserDialog(
+            self.profile_manager, self, self.on_profile_selected
+        )
 
     def setup_ui(self):
         self.setup_main_page()
@@ -166,12 +178,22 @@ class MainWindow(Adw.ApplicationWindow):
     def on_destroy(self, b):
         self.window.get_application().quit()
 
-    def on_switch_activation_state_changed(self, switch, state):
+    def on_btn_switch_toggled(self, button):
+        state = button.get_active()
+
         self.lbl_status.set_label(
             "Parental Protection Active" if state else "Parental Protection Disabled"
         )
         self.lbl_status.set_css_classes(
             ["title-5", "success"] if state else ["title-5"]
+        )
+
+        subprocess.run(
+            [
+                "pkexec",
+                os.path.dirname(os.path.abspath(__file__)) + "/../Activator.py",
+                "1" if state else "0",
+            ]
         )
 
     def on_btn_show_preferences_clicked(self, btn):
@@ -181,4 +203,6 @@ class MainWindow(Adw.ApplicationWindow):
         self.current_profile = profile_name
         self.lbl_profile_btn.set_label(profile_name)
 
-        self.dialog_preferences.fill_lists_from_profile(Profiles.get_current_profile())
+        self.dialog_preferences.fill_lists_from_profile(
+            self.profile_manager.get_current_profile()
+        )
