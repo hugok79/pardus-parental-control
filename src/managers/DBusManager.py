@@ -1,7 +1,11 @@
 from gi.repository import Gio, GLib  # noqa
 
+# UNUSED RIGHT NOW
 
-def _on_running_applications_changed_signal(connection, sender, object, interface, signal, parameters, on_applications_changed):
+
+def _on_running_applications_changed_signal(
+    connection, sender, object, interface, signal, parameters, on_applications_changed
+):
     print("RunningApplicationsChanges signal is emitted")
     on_applications_changed()
 
@@ -43,7 +47,7 @@ def listen_application_changes(on_applications_changed):
             arg0=None,
             flags=Gio.DBusSignalFlags.NONE,
             callback=_on_running_applications_changed_signal,
-            user_data=on_applications_changed
+            user_data=on_applications_changed,
         )
 
     except GLib.Error as e:
