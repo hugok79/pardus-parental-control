@@ -37,5 +37,5 @@ sudo apt install devscripts git-buildpackage
 Install dependencies & create .deb package from source code:
 ```
 sudo mk-build-deps -ir
-gbp buildpackage --git-export-dir=/tmp/build/pardus-software -us -uc
+gbp buildpackage --git-export-dir=/tmp/build/pardus-parental-control -us -uc
 ```

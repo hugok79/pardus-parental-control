@@ -1,0 +1,14 @@
+[Desktop Entry]
+Name=Pardus Parental Control
+Name[tr]=Pardus Ebeveyn Denetimi
+GenericName=Parental Control
+GenericName[tr]=Ebeveyn Denetimi
+Comment=Parental Control and Restriction application for Pardus
+Comment[tr]=Pardus için Ebeveyn Kontrol ve Kısıtlama uygulaması
+Exec=pardus-parental-control
+Icon=pardus-parental-control
+Terminal=false
+Type=Application
+Categories=System;X-Pardus-Apps;
+StartupNotify=true
+Keywords=pardus;parental;control;restriction;

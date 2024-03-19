@@ -1,0 +1,22 @@
+pardus-parental-control (0.1.0) UNRELEASED; urgency=medium
+
+  * 
+  * Initial commit
+  * init: initialize the project
+  * feat: added NetworkManager.py to manage smartdns
+  * feat: added MalcontentManager.py to use libmalcontent
+  * feat: added LinuxUserManager.py to handle users on the system
+  * refactor: DBusController -> DBusManager
+  * feat: user list to preferences
+  * chore: main -> Main
+  * format: MainWindow.py
+  * feat: added session times in Preferences
+  * feat: update managers
+  * feat: update ui elements
+  * feat: update Main.py
+  * feat: added Activator.py
+  * doc: readme update
+  * feat!: gtk3 + gtk4 separate ui
+  * feat: DoH3 and DoQ support for smartdns
+
+ -- Emin Fedar <emin.fedar@pardus.org.tr>  Tue, 19 Mar 2024 16:01:36 +0300
