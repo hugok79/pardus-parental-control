@@ -16,6 +16,12 @@ cache-size 32768
 server 1.1.1.3
 server-tls 1.1.1.3
 
+# Configure DoH3
+server-h3 1.1.1.1
+
+# Configure DoQ
+server-quic unfiltered.adguard-dns.com
+
 """
 
 SMARTDNS_CONF_DENY_DOMAIN_TEMPLATE = """
@@ -24,6 +30,7 @@ address /*.{}/#
 """
 SMARTDNS_CONF_ALLOW_DOMAIN_TEMPLATE = """
 address /{}/-
+address /*.{}/-
 """
 
 SMARTDNS_CONF_ALLOW_DOMAIN_TEMPLATE_END = """
