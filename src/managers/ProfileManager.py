@@ -14,8 +14,6 @@ _DEFAULT_PROFILES = {
             "user_list": [],
             "is_application_list_allowlist": False,
             "is_website_list_allowlist": False,
-            "session_time_start": 0,
-            "session_time_end": (24 * 60 * 60) - 1,
         },
     },
     "current_profile": "Profile-1",
@@ -42,12 +40,6 @@ class Profile(object):
     def get_is_website_list_allowlist(self):
         return self.is_website_list_allowlist
 
-    def get_session_time_start(self):
-        return self.session_time_start
-
-    def get_session_time_end(self):
-        return self.session_time_end
-
     # Setters
     def set_application_list(self, value):
         if isinstance(value, list):
@@ -68,14 +60,6 @@ class Profile(object):
     def set_is_website_list_allowlist(self, value):
         if isinstance(value, bool):
             self.is_website_list_allowlist = value
-
-    def set_session_time_start(self, value):
-        if isinstance(value, int):
-            self.session_time_start = value
-
-    def set_session_time_end(self, value):
-        if isinstance(value, int):
-            self.session_time_end = value
 
     # JSON
     def as_json(self):
