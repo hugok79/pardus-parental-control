@@ -70,6 +70,7 @@ data_files = [
     ),
     ("/usr/bin/", [f"{APP_NAME}"]),
     ("/usr/share/icons/hicolor/scalable/apps/", [f"{APP_NAME}.svg"]),
+    ("/var/lib/pardus/pardus-parental-control/", ["data/profiles.json"]),
 ]  # + compile_translations()
 
 setup(
