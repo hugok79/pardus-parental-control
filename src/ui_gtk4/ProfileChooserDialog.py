@@ -1,4 +1,4 @@
-import ui.PActionRow as PActionRow
+import ui_gtk4.PActionRow as PActionRow
 from managers.ProfileManager import ProfileManager
 import gi
 
@@ -125,7 +125,6 @@ class ProfileChooserDialog(Adw.PreferencesWindow):
 
             # Update profiles Gtk.StringList
             self.list_profiles.append(new_profile_name)
-            self.comborow_current_profile.set_model(self.list_profiles)
 
             # Add Row
             self.add_profile_entry_row(new_profile_name)
@@ -157,8 +156,6 @@ class ProfileChooserDialog(Adw.PreferencesWindow):
                 self.list_profiles.remove(i)
                 break
 
-        self.comborow_current_profile.set_model(self.list_profiles)
-
         # Remove from profiles.json
         self.profile_manager.remove_profile(profile_name)
 
@@ -170,10 +167,10 @@ class ProfileChooserDialog(Adw.PreferencesWindow):
         self.on_profile_selected_callback(self.selected_profile)
 
     def on_profile_name_changed(self, entry_row):
-        new_profile_name = entry_row.get_text()
+        new_name = entry_row.get_text()
 
-        if self.profile_manager.has_profile_name(new_profile_name):
-            self.show_toast(f"Error: '{new_profile_name}' exists!")
+        if self.profile_manager.has_profile_name(new_name):
+            self.show_toast(f"Error: '{new_name}' exists!")
 
             entry_row.set_css_classes(["entry", "activatable", "error"])
 
@@ -182,26 +179,20 @@ class ProfileChooserDialog(Adw.PreferencesWindow):
         old_name = entry_row.get_title()
 
         # Update profiles.json
-        self.profile_manager.update_profile_name(old_name, new_profile_name)
+        self.profile_manager.update_profile_name(old_name, new_name)
 
         # Update Gtk.StringList
         for i in range(self.list_profiles.get_n_items()):
             if self.list_profiles.get_item(i).get_string() == old_name:
                 self.list_profiles.remove(i)
-                self.list_profiles.append(new_profile_name)
+                self.list_profiles.append(new_name)
 
-                previous_current_profile = (
-                    self.comborow_current_profile.get_selected_item().get_string()
+                self.comborow_current_profile.set_selected(
+                    self.list_profiles.get_n_items() - 1
                 )
-                self.comborow_current_profile.set_model(self.list_profiles)
-
-                if previous_current_profile == old_name:
-                    self.comborow_current_profile.set_selected(
-                        self.list_profiles.get_n_items()
-                    )
                 break
 
-        self.show_toast(f"Profile name changed: '{new_profile_name}'")
+        self.show_toast(f"Profile name changed: '{new_name}'")
         entry_row.set_css_classes(["entry", "activatable"])
 
-        entry_row.set_title(new_profile_name)
+        entry_row.set_title(new_name)

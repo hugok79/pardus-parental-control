@@ -2,10 +2,16 @@
 import gi
 import sys
 
+GTK_VERSION = "4.0"
 
-gi.require_version("Gtk", "4.0")
+if GTK_VERSION == "3.0":
+    gi.require_version("Gtk", "3.0")
+    from ui_gtk3.MainWindow import MainWindow
+else:
+    gi.require_version("Gtk", "4.0")
+    from ui_gtk4.MainWindow import MainWindow
+
 from gi.repository import Gtk, Gio  # noqa
-from ui.MainWindow import MainWindow  # noqa
 
 
 class Main(Gtk.Application):
@@ -21,7 +27,7 @@ class Main(Gtk.Application):
         if self.window is None:
             self.window = MainWindow(self)
 
-        self.window.present()
+        self.window.show_ui()
 
 
 app = Main()

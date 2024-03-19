@@ -1,5 +1,5 @@
-from ui.PreferencesWindow import PreferencesWindow
-from ui.ProfileChooserDialog import ProfileChooserDialog
+from ui_gtk4.PreferencesWindow import PreferencesWindow
+from ui_gtk4.ProfileChooserDialog import ProfileChooserDialog
 import managers.ProfileManager as ProfileManager
 
 import os
@@ -42,6 +42,9 @@ class MainWindow(Adw.ApplicationWindow):
         # Setup Dialogs
         self.setup_dialogs()
 
+    def show_ui(self):
+        self.present()
+
     # === Setups ===
     def setup_actions(self):
         pass
@@ -52,10 +55,11 @@ class MainWindow(Adw.ApplicationWindow):
     def setup_variables(self):
         self.current_profile = ""
         self.profile_manager = ProfileManager.get_default()
+        self.service_activated = False
 
     def setup_css(self):
         css_provider = Gtk.CssProvider()
-        css_provider.load_from_path(f"{DATA_DIR}/style.css")
+        css_provider.load_from_path(f"{DATA_DIR}/style_gtk4.css")
 
         style = self.get_style_context()
         style.add_provider_for_display(
@@ -94,7 +98,7 @@ class MainWindow(Adw.ApplicationWindow):
             hexpand=False,
             valign="center",
             vexpand=True,
-            css_classes=["success", "flat"],
+            css_classes=["success"],
         )
         btn_profiles_box = Gtk.Box(spacing=7)
         btn_profiles_box.append(Gtk.Image(icon_name="system-users-symbolic"))
@@ -111,7 +115,6 @@ class MainWindow(Adw.ApplicationWindow):
             icon_name="open-menu-symbolic",
             halign="end",
             valign="start",
-            css_classes=["flat"],
         )
 
         btn_show_preferences.connect("clicked", self.on_btn_show_preferences_clicked)
@@ -121,32 +124,34 @@ class MainWindow(Adw.ApplicationWindow):
         box.append(box_top)
 
         # Logo
-        box.append(
-            Gtk.Image(
-                file=f"{DATA_DIR}/img/pardus-parental-control.svg",
-                pixel_size=256,
-                css_classes=["floating"],
-            )
+        self.img_logo = Gtk.Image(
+            file=f"{DATA_DIR}/img/pardus-parental-control.svg",
+            pixel_size=256,
         )
+        box.append(self.img_logo)
         box.append(Gtk.Label(label="Pardus Parental Control", css_classes=["title-2"]))
 
-        # Switch
-        # switch = Gtk.Switch(
-        #     halign="center", margin_top=14, margin_bottom=14, css_classes=["bigswitch"]
-        # )
-        # switch.connect("state-set", self.on_switch_activation_state_changed)
-        btn_switch = Gtk.ToggleButton(
-            icon_name="system-shutdown-symbolic",
-            halign="center",
-            css_classes=["bigswitch"],
+        # Service Activate Button
+        self.btn_service_activate = Gtk.Button(
+            halign="center", css_classes=["circular"], margin_top=7, margin_bottom=7
         )
-        btn_switch.connect("toggled", self.on_btn_switch_toggled)
-        box.append(btn_switch)
+        self.btn_service_activate.set_child(
+            Gtk.Image(
+                icon_name="system-shutdown-symbolic",
+                pixel_size=32,
+                margin_top=14,
+                margin_bottom=14,
+                margin_start=14,
+                margin_end=14,
+            )
+        )
+        self.btn_service_activate.connect(
+            "clicked", self.on_btn_service_activate_clicked
+        )
+        box.append(self.btn_service_activate)
 
         # Switch Status
-        self.lbl_status = Gtk.Label(
-            label="Parental Protection is Disabled", css_classes=["title-5"]
-        )
+        self.lbl_status = Gtk.Label(label="Status: Inactive", css_classes=["title-5"])
         box.append(self.lbl_status)
 
         self.content.append(box)
@@ -170,6 +175,51 @@ class MainWindow(Adw.ApplicationWindow):
             )
         )
 
+    # === FUNCTIONS ===
+    def start_service(self):
+        if self.service_activated:
+            return
+
+        process = subprocess.run(
+            [
+                "pkexec",
+                os.path.dirname(os.path.abspath(__file__)) + "/../Activator.py",
+                "1",
+            ]
+        )
+
+        if process.returncode == 0:
+            self.service_activated = True
+            self.lbl_status.set_label("Status: Active")
+
+        self.set_widget_styles()
+
+    def stop_service(self):
+        if not self.service_activated:
+            return
+
+        process = subprocess.run(
+            [
+                "pkexec",
+                os.path.dirname(os.path.abspath(__file__)) + "/../Activator.py",
+                "0",
+            ]
+        )
+
+        if process.returncode == 0:
+            self.service_activated = False
+            self.lbl_status.set_label("Status: Inactive")
+
+        self.set_widget_styles()
+
+    def set_widget_styles(self):
+        self.btn_service_activate.set_css_classes(
+            ["circular", "success"] if self.service_activated else ["circular"]
+        )
+        self.lbl_status.set_css_classes(
+            ["title-5", "success"] if self.service_activated else ["title-5"]
+        )
+
     # === CALLBACKS ===
     # == Main Window
     def on_btn_profiles_clicked(self, btn):
@@ -178,23 +228,11 @@ class MainWindow(Adw.ApplicationWindow):
     def on_destroy(self, b):
         self.window.get_application().quit()
 
-    def on_btn_switch_toggled(self, button):
-        state = button.get_active()
-
-        self.lbl_status.set_label(
-            "Parental Protection Active" if state else "Parental Protection Disabled"
-        )
-        self.lbl_status.set_css_classes(
-            ["title-5", "success"] if state else ["title-5"]
-        )
-
-        subprocess.run(
-            [
-                "pkexec",
-                os.path.dirname(os.path.abspath(__file__)) + "/../Activator.py",
-                "1" if state else "0",
-            ]
-        )
+    def on_btn_service_activate_clicked(self, button):
+        if self.service_activated:
+            self.stop_service()
+        else:
+            self.start_service()
 
     def on_btn_show_preferences_clicked(self, btn):
         self.dialog_preferences.present()

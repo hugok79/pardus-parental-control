@@ -1,12 +1,11 @@
-import ui.PActionRow as PActionRow
+import ui_gtk3.PActionRow as PActionRow
 import gi
 
-gi.require_version("Gtk", "4.0")
-gi.require_version("Adw", "1")
-from gi.repository import Gtk, Adw, Gio, GLib  # noqa
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, Gio, GLib  # noqa
 
 
-class ApplicationChooserDialog(Adw.PreferencesWindow):
+class ApplicationChooserDialog(Gtk.PreferencesWindow):
     def __init__(self, parent_window, application_selected_callback):
         super().__init__(
             application=parent_window.get_application(), transient_for=parent_window
@@ -23,7 +22,7 @@ class ApplicationChooserDialog(Adw.PreferencesWindow):
         self.set_default_size(450, 600)
         self.set_search_enabled(True)
         self.set_title("Select Application...")
-        self.set_hide_on_close(True)
+        self.connect("delete-event", self.on_window_delete)
 
     def setup_ui(self):
         group = Adw.PreferencesGroup(description="Loading...")
@@ -59,6 +58,11 @@ class ApplicationChooserDialog(Adw.PreferencesWindow):
         group.set_description("")
 
     # == CALLBACKS ==
+    def on_window_delete(self, win, event):
+        # Don't delete window on close, just hide.
+        self.hide()
+        return True
+
     def on_action_application_selected(self, action, app):
         self.on_application_selected_callback(app)
 

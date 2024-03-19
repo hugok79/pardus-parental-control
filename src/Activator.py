@@ -21,9 +21,9 @@ class Activator:
     def run(self):
         self.read_profile()
 
-        self.set_malcontent_filter()
+        # self.set_malcontent_filter()
 
-        self.set_network_filter()
+        # self.set_network_filter()
 
     def read_profile(self):
         self.profile = ProfileManager.get_default().get_current_profile()

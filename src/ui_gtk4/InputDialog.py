@@ -1,6 +1,7 @@
 import gi
-gi.require_version('Gtk', '4.0')
-gi.require_version('Adw', '1')
+
+gi.require_version("Gtk", "4.0")
+gi.require_version("Adw", "1")
 from gi.repository import Gtk, Adw  # noqa
 
 
@@ -26,7 +27,7 @@ class InputDialog(Adw.Window):
             margin_top=11,
             margin_bottom=11,
             margin_start=11,
-            margin_end=11
+            margin_end=11,
         )
 
         lbl_title = Gtk.Label(label=title, css_classes=["title-3"])
@@ -36,8 +37,7 @@ class InputDialog(Adw.Window):
             lbl_subtitle = Gtk.Label(label=subtitle)
             box.append(lbl_subtitle)
 
-        entry_input = Gtk.Entry(
-            placeholder_text="example.com", activates_default=True)
+        entry_input = Gtk.Entry(placeholder_text="example.com", activates_default=True)
         entry_input.connect("activate", self.on_entry_input_activated)
 
         box.append(entry_input)

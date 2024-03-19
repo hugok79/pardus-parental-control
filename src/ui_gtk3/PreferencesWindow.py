@@ -5,12 +5,11 @@ from ui.PTimePeriodChooser import PTimePeriodChooser
 from ui.ApplicationChooserDialog import ApplicationChooserDialog
 import gi
 
-gi.require_version("Gtk", "4.0")
-gi.require_version("Adw", "1")
-from gi.repository import Gtk, Adw, Gio, GLib  # noqa
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, Gio, GLib  # noqa
 
 
-class PreferencesWindow(Adw.PreferencesWindow):
+class PreferencesWindow(Gtk.Window):
     def __init__(self, profile_manager: ProfileManager, parent_window):
         super().__init__(transient_for=parent_window)
 
@@ -26,7 +25,7 @@ class PreferencesWindow(Adw.PreferencesWindow):
     def setup_window(self):
         self.set_default_size(800, 600)
         self.set_title("Preferences")
-        self.set_hide_on_close(True)
+        self.connect("delete-event", self.on_window_delete)
 
     def setup_dialogs(self):
         self.dialog_app_chooser = ApplicationChooserDialog(
@@ -301,6 +300,11 @@ class PreferencesWindow(Adw.PreferencesWindow):
         self.group_users.add(action_row)
 
     # == CALLBACKS ==
+    def on_window_delete(self, win, event):
+        # Don't delete window on close, just hide.
+        self.hide()
+        return True
+
     def on_btn_user_select_clicked(self, btn, user_id):
         current_profile = self.profile_manager.get_current_profile()
 
