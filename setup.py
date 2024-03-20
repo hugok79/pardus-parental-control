@@ -70,8 +70,12 @@ data_files = [
     ),
     ("/usr/bin/", [f"{APP_NAME}"]),
     ("/usr/share/icons/hicolor/scalable/apps/", [f"{APP_NAME}.svg"]),
-    ("/var/lib/pardus/pardus-parental-control/", ["data/profiles.json"]),
-]  # + compile_translations()
+    # Data
+    (f"/var/lib/pardus/{APP_NAME}/", ["data/profiles.json"]),
+    # Service
+    ("/usr/bin/", ["ppc-service"]),
+    (f"/usr/share/pardus/{APP_NAME}/src/", ["src/PPCService.py"]),
+] + compile_translations()
 
 setup(
     name=f"{APP_NAME}",
