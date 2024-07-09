@@ -3,8 +3,9 @@ import json
 from pathlib import Path
 import copy
 
-PROFILES_DIR = Path("/var/lib/pardus/pardus-parental-control/")
-PROFILES_PATH = os.path.join(PROFILES_DIR, "profiles.json")
+CONFIG_DIR = Path("/var/lib/pardus/pardus-parental-control/")
+PROFILES_PATH = os.path.join(CONFIG_DIR, "profiles.json")
+APPLIED_PROFILE_PATH = os.path.join(CONFIG_DIR, "applied_profile.lock.json")
 
 _DEFAULT_PROFILES = {
     "profile_list": {
@@ -17,6 +18,7 @@ _DEFAULT_PROFILES = {
         },
     },
     "current_profile": "Profile-1",
+    "base_dns_server": "1.1.1.3"
 }
 
 
@@ -130,7 +132,7 @@ class ProfileManager:
     def get_profile_list(self):
         return self.profile_list
 
-    def get_profile(self, name):
+    def get_profile(self, name) -> Profile:
         return self.profile_list[name]
 
     def get_current_profile(self) -> Profile:
@@ -141,6 +143,9 @@ class ProfileManager:
 
     def has_profile_name(self, profile_name):
         return profile_name in self.profile_list
+
+    def get_base_dns_server(self):
+        return self.base_dns_server
 
     # Setters
     def set_profile_dict(self, value):
@@ -157,11 +162,16 @@ class ProfileManager:
 
     # Insert
     def insert_default_profile(self, profile_name):
-        self.profile_list[profile_name] = copy.deepcopy(
-            _DEFAULT_PROFILES["profile_list"]["Profile-1"]
+        self.profile_list[profile_name] = Profile(
+            copy.deepcopy(_DEFAULT_PROFILES["profile_list"]["Profile-1"])
         )
 
-        print(self.profile_list)
+        self.save_as_json_file()
+
+    def duplicate_profile(self, main_profile_name, new_duplicated_profile_name):
+        self.profile_list[new_duplicated_profile_name] = Profile(
+            copy.deepcopy(self.get_profile(main_profile_name).__dict__)
+        )
 
         self.save_as_json_file()
 
@@ -183,6 +193,9 @@ class ProfileManager:
 
         del self.profile_list[old_name]
 
+        if old_name == self.current_profile:
+            self.current_profile = new_name
+
         self.save_as_json_file()
 
     # JSON
@@ -195,16 +208,19 @@ class ProfileManager:
             sort_keys=True,
         )
 
-    def save_as_json_file(self, filepath=PROFILES_PATH):
+    def save_as_json_file(self, filepath=PROFILES_PATH, json_object=None):
+        if json_object is None:
+            json_object = self.__dict__
+
         # Create the profiles.json if not exists
         try:
             # First create the directories
-            PROFILES_DIR.mkdir(mode=0o600, parents=True, exist_ok=True)
+            CONFIG_DIR.mkdir(mode=0o600, parents=True, exist_ok=True)
 
             # Then create the file
             with open(filepath, "w", encoding="utf-8") as f:
                 json.dump(
-                    self.__dict__,
+                    json_object,
                     f,
                     default=lambda o: o.__dict__,
                     ensure_ascii=False,
@@ -216,7 +232,7 @@ class ProfileManager:
             return
 
     def load_json_from_file(self, filepath=PROFILES_PATH):
-        print(f"Loading profiles from {filepath}")
+        print("Loading profiles from {}".format(filepath))
         # Read the profiles.json
         try:
             with open(filepath, "r", encoding="utf-8") as f:
@@ -227,18 +243,23 @@ class ProfileManager:
             return copy.deepcopy(_DEFAULT_PROFILES)
         except json.JSONDecodeError:
             print(
-                f"{filepath} is corrupted. Moving file to backup: profiles.json.backup. Using default profiles.json"
+                "{} is not valid json file. Moving file to backup: profiles.json.backup. Using default profiles.json".format(
+                    filepath
+                )
             )
             # Backup current one
-            os.rename(filepath, f"{filepath}.backup")
+            os.rename(filepath, "{}.backup".format(filepath))
 
             return copy.deepcopy(_DEFAULT_PROFILES)
 
 
-profile_manager = ProfileManager()
+profile_manager = None
 
 
 def get_default() -> ProfileManager:
     global profile_manager
+
+    if profile_manager is None:
+        profile_manager = ProfileManager()
 
     return profile_manager

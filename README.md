@@ -10,8 +10,10 @@ Parental Control application for Pardus.
 - 🔗 Domain Filtering
   - **Allow Only** List
   - **Deny Only** List
+- ⏰ Session Time Limit
+  - Limit Session Times
 - 🧑‍🧒 Profile Management
-  - You can define different restrictions for different situations and use them. ()
+  - You can define different restrictions for different situations and use them. 
 ## Installation
 Download the .deb file and install it with Pardus Package Installer.
 
@@ -26,8 +28,9 @@ sudo apt install ./pardus-parental-control_0.1.0_amd64.deb
 3. Start/Stop Parental Control Service with On/Off Button
 
 ## How does it work?
-- Applications filtered by their DBus IDs or program names. (TODO)
+- [Application Filtering](doc/ApplicationFiltering.md)
 - [Website Filtering](doc/WebsiteFiltering.md)
+- [Session Time Limit](doc/SessionTimeLimit.md)
 
 ## How to create a .deb package from source?
 Install required development packages:

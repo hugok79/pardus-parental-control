@@ -2,5 +2,5 @@
 
 import sys
 
-sys.path.insert(0, "./src/")
+sys.path.insert(0, "/usr/share/pardus/pardus-parental-control/src/")
 import Main

@@ -167,11 +167,11 @@ class PreferencesWindow(Adw.PreferencesWindow):
             description="Select applications the restricted user can or can't open.",
         )
 
-        btn_add_application = Gtk.Button(
+        btn_new_application = Gtk.Button(
             icon_name="list-add-symbolic", valign="center", css_classes=["accent"]
         )
-        btn_add_application.connect("clicked", self.on_btn_add_application_clicked)
-        self.group_applications.set_header_suffix(btn_add_application)
+        btn_new_application.connect("clicked", self.on_btn_new_application_clicked)
+        self.group_applications.set_header_suffix(btn_new_application)
 
         self.page_applications.add(self.group_applications)
 
@@ -315,7 +315,7 @@ class PreferencesWindow(Adw.PreferencesWindow):
 
         self.profile_manager.save_as_json_file()
 
-    def on_btn_add_application_clicked(self, btn):
+    def on_btn_new_application_clicked(self, btn):
         self.dialog_app_chooser.present()
 
     def on_btn_add_website_clicked(self, btn):

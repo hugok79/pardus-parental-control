@@ -1,60 +1,89 @@
-## Yöntem:
+# How does Website Filtering work?
 
-Kısıtlanabilir kullanıcıların network ayarlarını değiştirebilme yetkisi olmamalı. (ilk defa kullanıcı açılırken, grouplar ile)
+1. Browser policies are set in major browsers(google chrome, chromium, firefox, brave)
+2. Content of the `/etc/resolv.conf` changed to: `nameserver 127.0.0.1`
+3. For prevention changing `/etc/resolv.conf` by another instance, `chattr +i` applied.
+4. Smartdns-rs service configured and service enabled to work as a local dns server. (/etc/smartdns/smartdns.conf)
 
-### Kullanım
-1. pardus-parental-control servisi kullanıcı login olduğunda açılır
-2. Servis kullanıcı adına uygun profili devreye sokar.
-3. /etc/resolv.conf içeriği yerel adrese değiştirilir: `nameserver 127.0.0.1`
-4. /etc/resolv.conf'un sadece root tarafından değiştirilmesi garantisi için: `sudo chmod o+t /etc/resolv.conf` veya `sudo chattr +i /etc/resolv.conf`, tekrar değiştirilebilir yapmak için `-i`
-5.  smartdns servisi whitelist/blacklist'e göre pardus-parental-control tarafından config edilir(/etc/smartdns/smartdns.conf) ve servis çalıştırılır.
 
 ### smartdns-rs:
-Allow List örnek içeriği, sadece google.com ve yandex.com'a izin ver.
+Example allowlist:
 ```
 # "Allow Only" with subdomains
 address /*/# 
 address /allowed.com/-
 address /*.allowed.com/-
 ```
-Deny List örnek içeriği, google.com ve yandex.com'u yasakla.
+Example denylist:
 ```
 # "Deny Only" with subdomains
 address /denied.com/#
 address /*.denied.com/#
 ```
-smartdns.conf dosyasının tam içeriği (*allow veya deny sadece biri olmalı*):
+
+Example full smartdns.conf:
 
 ```
 # Listen on local port 53
 bind [::]:53
-bind-tcp [::]:53  
+bind-tcp [::]:53
 
-tcp-idle-time 5
+# Certificated Listening
+#bind-tls [::]:853 # DoT
+#bind-https [::]:853 # DoH
 
-# Cache
-cache-size 32768
+tcp-idle-time 4
 
-# DNS servers, 1.1.1.3 is basically: "1.1.1.1 + No Malware + No Adult Content"
+# Base DNS Server
 server 1.1.1.3
-server-tls 1.1.1.3
+server-tcp 1.1.1.3
 
-# Configure DoH3
-server-h3 1.1.1.1
+# DNS over TLS (DoT)
+#server-https https://cloudflare-dns.com/dns-query 
+#server-tls {BASE_DNS_SERVER}
 
-# Configure DoQ
-server-quic unfiltered.adguard-dns.com
+# Dns over Quic (DoQ)
+# server-quic family.adguard-dns.com
 
+# If Denylist Selected:
+address /google.com/#
+address /*.google.com/#
 
-# == DOMAIN FILTERING ==
-
-# "Deny Only" with subdomains
-address /denied.com/#
-address /*.denied.com/#
-
-# "Allow Only" with subdomains
-address /*/# 
-address /allowed.com/-
-address /*.allowed.com/-
+# IF Allowlist Selected:
+address /google.com/-
+address /*.google.com/-
+address /./#
 
 ```
+
+### Browser Policy
+Chrome based:
+- Chrome: `/etc/opt/chrome/policies/managed/policies.json`
+- Brave: `/etc/brave/policies/managed/policies.json`
+- Chromium `/etc/chromium/managed/policies.json`
+policies.json:
+```
+{
+	"URLBlocklist": ["*"],
+	"URLAllowlist": ["youtube.com","pardus.org.tr"], # block everything, just permit youtube and pardus
+	"DnsOverHttpsMode": "off"
+}
+
+```
+Firefox `/etc/firefox/policies/policies.json`:
+```
+{
+  "policies": {
+    "WebsiteFilter": {
+      "Block": ["<all_urls>"],
+      "Exceptions": ["*://*.youtube.com/*", "*://*.pardus.org.tr/*"]
+    },
+    "DNSOverHTTPS": {
+    	"Enabled": false,
+    	"Locked": true
+    }
+  }
+}
+```
+
+All these settings applied by Pardus Parental Control regarding the list in `/var/lib/pardus/pardus-parental-control/profiles.json`.

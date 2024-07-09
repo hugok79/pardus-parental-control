@@ -28,12 +28,12 @@ def compile_translations():
 
 
 data_files = [
-    ("/usr/share/applications/", [f"{APP_ID}.desktop"]),
-    (f"/usr/share/pardus/{APP_NAME}/", [f"{APP_NAME}.svg"]),
+    # Source Code
     (
         f"/usr/share/pardus/{APP_NAME}/src",
         [
             "src/Main.py",
+            "PPCActivator.py"
         ],
     ),
     (
@@ -42,18 +42,6 @@ data_files = [
             "src/managers/LinuxUserManager.py",
             "src/managers/NetworkFilterManager.py",
             "src/managers/ProfileManager.py",
-        ],
-    ),
-    (
-        f"/usr/share/pardus/{APP_NAME}/src/ui_gtk3",
-        [
-            "src/ui_gtk3/ApplicationChooserDialog.py",
-            "src/ui_gtk3/InputDialog.py",
-            "src/ui_gtk3/MainWindow.py",
-            "src/ui_gtk3/PActionRow.py",
-            "src/ui_gtk3/PreferencesWindow.py",
-            "src/ui_gtk3/ProfileChooserDialog.py",
-            "src/ui_gtk3/PTimePeriodChooser.py",
         ],
     ),
     (
@@ -68,24 +56,26 @@ data_files = [
             "src/ui_gtk4/PTimePeriodChooser.py",
         ],
     ),
+    # Binary
     ("/usr/bin/", [f"{APP_NAME}"]),
-    ("/usr/share/icons/hicolor/scalable/apps/", [f"{APP_NAME}.svg"]),
     # Data
     (f"/var/lib/pardus/{APP_NAME}/", ["data/profiles.json"]),
-    # Service
-    ("/usr/bin/", ["ppc-service"]),
-    (f"/usr/share/pardus/{APP_NAME}/src/", ["src/PPCService.py"]),
+    (f"/usr/share/pardus/{APP_NAME}/data", [f"data/style_gtk4.css"]),
+    ("/usr/share/icons/hicolor/scalable/apps/", [f"data/img/{APP_NAME}.svg"]),
+    # Desktop file
+    ("/usr/share/applications/", [f"{APP_ID}.desktop"]),
+
 ] + compile_translations()
 
 setup(
     name=f"{APP_NAME}",
-    version="0.1.0",
+    version="0.3.0",
     packages=find_packages(),
     scripts=[f"{APP_NAME}"],
     install_requires=["PyGObject"],
     data_files=data_files,
-    author="Emin Fedar",
-    author_email="emin.fedar@pardus.org.tr",
+    author="Pardus Developers",
+    author_email="gelistirici@pardus.org.tr",
     description="Parental Control and Restriction application for Pardus",
     license="GPLv3",
     keywords="",

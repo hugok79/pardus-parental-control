@@ -67,7 +67,7 @@ class MainWindow(Adw.ApplicationWindow):
         )
 
     def setup_window(self):
-        self.set_default_size(500, 580)
+        self.set_default_size(400, 600)
         self.set_content(Gtk.Box(orientation=Gtk.Orientation.VERTICAL))
         self.content = self.get_content()
 
