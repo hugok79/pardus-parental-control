@@ -31,10 +31,7 @@ data_files = [
     # Source Code
     (
         f"/usr/share/pardus/{APP_NAME}/src",
-        [
-            "src/Main.py",
-            "PPCActivator.py"
-        ],
+        ["src/Main.py", "PPCActivator.py"],
     ),
     (
         f"/usr/share/pardus/{APP_NAME}/src/managers",
@@ -59,12 +56,25 @@ data_files = [
     # Binary
     ("/usr/bin/", [f"{APP_NAME}"]),
     # Data
-    (f"/var/lib/pardus/{APP_NAME}/", ["data/profiles.json"]),
-    (f"/usr/share/pardus/{APP_NAME}/data", [f"data/style_gtk4.css"]),
+    (
+        f"/var/lib/pardus/{APP_NAME}/",
+        ["data/profiles.json", f"data/img/{APP_NAME}.svg"],
+    ),
+    (
+        f"/usr/share/pardus/{APP_NAME}/data",
+        [
+            "data/style_gtk4.css",
+            "data/tr.tr.org.pardus.parental-control.user-check.desktop",
+        ],
+    ),
     ("/usr/share/icons/hicolor/scalable/apps/", [f"data/img/{APP_NAME}.svg"]),
     # Desktop file
     ("/usr/share/applications/", [f"{APP_ID}.desktop"]),
-
+    # Polkit
+    (
+        "/usr/share/polkit-1/actions",
+        ["polkit/tr.org.pardus.pkexec.parental-control.policy"],
+    ),
 ] + compile_translations()
 
 setup(
