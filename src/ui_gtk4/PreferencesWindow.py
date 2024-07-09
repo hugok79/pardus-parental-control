@@ -60,13 +60,13 @@ class PreferencesWindow(Adw.PreferencesWindow):
         )
 
         row_allow_application = PActionRow.new(
-            title="Allow Only",
+            title="Allow List",
             subtitle="Allow only the selected applications to run. Deny others.",
             activatable_widget=btn_application_allow_toggle,
         )
 
         row_deny_application = PActionRow.new(
-            title="Deny Only",
+            title="Deny List",
             subtitle="Deny only the selected applications to run. Allow others.",
             activatable_widget=btn_application_deny_toggle,
         )
@@ -102,13 +102,13 @@ class PreferencesWindow(Adw.PreferencesWindow):
         )
 
         row_allow_website = PActionRow.new(
-            title="Allow Only",
+            title="Allow List",
             subtitle="Allow only the selected websites to access. Deny others.",
             activatable_widget=btn_website_allow_toggle,
         )
 
         row_deny_website = PActionRow.new(
-            title="Deny Only",
+            title="Deny List",
             subtitle="Deny only the selected websites to access. Allow others.",
             activatable_widget=btn_website_deny_toggle,
         )
@@ -146,13 +146,13 @@ class PreferencesWindow(Adw.PreferencesWindow):
         self.setup_users_page()
 
         # Users
-        # self.setup_session_time_page()
+        self.setup_session_time_page()
 
         # Add Pages
         self.add(self.page_applications)
         self.add(self.page_websites)
         self.add(self.page_users)
-        # self.add(self.page_session_time)
+        self.add(self.page_session_time)
 
         # Fill groups
         self.fill_lists_from_profile(self.profile_manager.get_current_profile())
@@ -268,9 +268,8 @@ class PreferencesWindow(Adw.PreferencesWindow):
             self.insert_user_row_to_group(user, is_checked)
 
     def insert_application_row_to_group(self, app):
-        app_name = GLib.markup_escape_text(app.get_name(), len(app.get_name()))
         action_row = PActionRow.new(
-            title=app_name,
+            title=app.get_name(),
             subtitle=app.get_id(),
             gicon=app.get_icon(),
             on_deleted=self.on_btn_delete_row_clicked,

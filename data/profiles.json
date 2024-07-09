@@ -6,7 +6,9 @@
             "is_application_list_allowlist": false,
             "is_website_list_allowlist": false,
             "user_list": [],
-            "website_list": []
+            "website_list": [],
+            "session_time_start": 0,
+            "session_time_end": 0
         }
     }
 }
