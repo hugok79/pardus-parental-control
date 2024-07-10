@@ -56,11 +56,11 @@ CHROME_POLICY_JSON = {
 }
 FIREFOX_POLICY_JSON = {
     "policies": {
-        # "WebsiteFilter": {
-        # https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Match_patterns
-        #    "Block": [],  # eg "<all_urls>"
-        #    "Exceptions": [],  # eg "*://*.youtube.com/*", "*://*.pardus.org.tr/*"
-        # },
+        "WebsiteFilter": {
+            # https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Match_patterns
+            "Block": [],  # eg "<all_urls>"
+            "Exceptions": [],  # eg "*://*.youtube.com/*", "*://*.pardus.org.tr/*"
+        },
         "DNSOverHTTPS": {"Enabled": False, "Locked": True},
     }
 }
@@ -183,20 +183,20 @@ def _set_browser_policy_domain_list(domainlist, is_allowlist):
         chromium_policy_object["URLAllowlist"] = domainlist
 
         # Block everything except allowlist
-        # firefox_policy_object["policies"]["WebsiteFilter"]["Block"] = ["<all_urls>"]
+        firefox_policy_object["policies"]["WebsiteFilter"]["Block"] = ["<all_urls>"]
         # convert e.g. "google.com" -> "*://*.google.com/*"
-        # firefox_policy_object["policies"]["WebsiteFilter"]["Exceptions"] = list(
-        #    map(lambda x: "*://{}/*".format(x), domainlist)
-        # )
+        firefox_policy_object["policies"]["WebsiteFilter"]["Exceptions"] = list(
+            map(lambda x: "*://{}/*".format(x), domainlist)
+        )
     else:
         chromium_policy_object["URLAllowlist"] = []
         chromium_policy_object["URLBlocklist"] = domainlist
 
         # convert e.g. "google.com" -> "*://*.google.com/*"
-        # firefox_policy_object["policies"]["WebsiteFilter"]["Block"] = list(
-        #    map(lambda x: "*://{}/*".format(x), domainlist)
-        # )
-        # firefox_policy_object["policies"]["WebsiteFilter"]["Exceptions"] = []
+        firefox_policy_object["policies"]["WebsiteFilter"]["Block"] = list(
+            map(lambda x: "*://{}/*".format(x), domainlist)
+        )
+        firefox_policy_object["policies"]["WebsiteFilter"]["Exceptions"] = []
 
     # Save for all browsers
     _save_browser_policy(CHROME_POLICY_PATH, chromium_policy_object)
@@ -217,8 +217,6 @@ def _save_browser_policy(browser_config_path: Path, policy_json_object):
         browser_config_path.parent.mkdir(parents=True, exist_ok=True)
         browser_config_path.touch()
 
-        # FileRestrictionManager.restrict_conf_file(browser_config_path.parent)
-
     with open(browser_config_path, "w") as file1:
         json_text = json.dumps(
             policy_json_object,
@@ -230,7 +228,6 @@ def _save_browser_policy(browser_config_path: Path, policy_json_object):
         json_text += "\n"
         file1.write(json_text)
 
-    # FileRestrictionManager.restrict_conf_file(browser_config_path)
     print("BROWSER POLICY:{}".format(browser_config_path))
 
 
