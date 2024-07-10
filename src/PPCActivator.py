@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import sys
+import subprocess
 import os
 import time
 import managers.FileRestrictionManager as FileRestrictionManager
@@ -10,11 +11,24 @@ import managers.ProfileManager as ProfileManager
 import managers.NetworkFilterManager as NetworkFilterManager
 import managers.ApplicationManager as ApplicationManager
 
+CWD = os.path.dirname(os.path.abspath(__file__))
+
+
+def run_activator(activate):
+    process = subprocess.run(
+        [
+            "pkexec",
+            CWD + "/PPCActivator.py",
+            "1" if activate else "0",
+        ]
+    )
+
+    return process
+
 
 class PPCActivator:
     def __init__(self, is_activated):
         self.is_activated = is_activated
-        print("active:", is_activated)
 
         # Privileged run check
         if not FileRestrictionManager.check_user_privileged():
@@ -23,8 +37,6 @@ class PPCActivator:
 
     def run(self, is_activated=None):
         print("== PPCActivator STARTED ==")
-        print("uid:", os.getuid())
-        print("gid:", os.getgid())
 
         if is_activated is not None:
             self.is_activated = is_activated
@@ -69,86 +81,91 @@ class PPCActivator:
     def set_application_filter(self):
         if self.is_activated:
             profile = self.profile
-            restriction_type = profile.get_application_restriction_type()
 
-            if restriction_type == "allowlist":
+            is_allowlist = profile.get_is_application_list_allowlist()
+            list_length = len(profile.get_application_list())
+
+            if list_length == 0:
+                return
+
+            if is_allowlist:
                 all_applications = ApplicationManager.get_all_applications()
 
                 for app in all_applications:
-                    if app.get_id() not in profile.get_application_allowlist():
+                    if app.get_id() not in profile.get_application_list():
                         ApplicationManager.restrict_application(app.get_id())
-            elif restriction_type == "denylist":
-                for app_id in profile.get_application_denylist():
-                    ApplicationManager.restrict_application(app_id)
+
             else:
-                # restriction_type = "none"
-                pass
+                for app_id in profile.get_application_list():
+                    ApplicationManager.restrict_application(app_id)
 
         else:
             profile = self.applied_profile
-            restriction_type = profile.get_application_restriction_type()
 
-            if restriction_type == "allowlist":
+            is_allowlist = profile.get_is_application_list_allowlist()
+            list_length = len(profile.get_application_list())
+
+            if list_length == 0:
+                return
+
+            if is_allowlist:
                 all_applications = ApplicationManager.get_all_applications()
                 for app in all_applications:
                     # Remove All app restrictions
                     ApplicationManager.unrestrict_application(app.get_id())
-            elif restriction_type == "denylist":
-                for app_id in profile.get_application_denylist():
-                    ApplicationManager.unrestrict_application(app_id)
             else:
-                # restriction_type = "none"
-                pass
+                for app_id in profile.get_application_list():
+                    ApplicationManager.unrestrict_application(app_id)
 
     def set_network_filter(self):
         profile_manager = ProfileManager.get_default()
 
         if self.is_activated:
             profile = self.profile
-            restriction_type = profile.get_website_restriction_type()
+            is_allowlist = profile.get_is_website_list_allowlist()
+            list_length = len(profile.get_website_list())
 
-            if restriction_type == "none":
+            if list_length == 0:
                 return
 
-            # browser + domain configs
-            if restriction_type == "allowlist":
-                website_list = profile.get_website_allowlist()
+            website_list = profile.get_website_list()
 
+            # browser + domain configs
+            if is_allowlist:
                 NetworkFilterManager.set_domain_filter_list(
                     website_list, True, profile_manager.get_base_dns_server()
                 )
-            elif restriction_type == "denylist":
-                website_list = profile.get_website_denylist()
-                if len(website_list) == 0:
-                    return
-
+            else:
                 NetworkFilterManager.set_domain_filter_list(
                     website_list, False, profile_manager.get_base_dns_server()
                 )
 
-            # resolvconf
-            NetworkFilterManager.set_resolvconf_to_localhost()
-
             # smartdns-rs
-            NetworkFilterManager.enable_smartdns_service()
-            time.sleep(1)
-            NetworkFilterManager.restart_smartdns_service()
+            is_run_smartdns = profile.get_run_smartdns()
+            if is_run_smartdns:
+                # resolvconf
+                NetworkFilterManager.set_resolvconf_to_localhost()
+                NetworkFilterManager.enable_smartdns_service()
+                NetworkFilterManager.restart_smartdns_service()
         else:
             profile = self.applied_profile
-            restriction_type = profile.get_website_restriction_type()
 
-            if restriction_type == "none":
+            is_allowlist = profile.get_is_website_list_allowlist()
+            list_length = len(profile.get_website_list())
+
+            if list_length == 0:
                 return
 
             # browser + domain configs
             NetworkFilterManager.reset_domain_filter_list()
 
-            # resolvconf
-            NetworkFilterManager.reset_resolvconf_to_default()
-
             # smartdns-rs
-            NetworkFilterManager.stop_smartdns_service()
-            NetworkFilterManager.disable_smartdns_service()
+            is_run_smartdns = profile.get_run_smartdns()
+            if is_run_smartdns:
+                NetworkFilterManager.reset_resolvconf_to_default()
+
+                NetworkFilterManager.stop_smartdns_service()
+                NetworkFilterManager.disable_smartdns_service()
 
 
 if __name__ == "__main__":

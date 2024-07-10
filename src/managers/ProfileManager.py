@@ -17,6 +17,7 @@ _DEFAULT_PROFILES = {
             "is_website_list_allowlist": False,
             "session_time_start": 0,
             "session_time_end": 0,
+            "run_smartdns": False,
         },
     },
     "current_profile": "Profile-1",
@@ -50,6 +51,9 @@ class Profile(object):
     def get_session_time_end(self):
         return self.session_time_start
 
+    def get_run_smartdns(self):
+        return self.run_smartdns
+
     # Setters
     def set_application_list(self, value):
         if isinstance(value, list):
@@ -78,6 +82,10 @@ class Profile(object):
     def set_session_time_end(self, value):
         if isinstance(value, int):
             self.session_time_end = value
+
+    def set_run_smartdns(self, value):
+        if isinstance(value, bool):
+            self.run_smartdns = value
 
     # JSON
     def as_json(self):

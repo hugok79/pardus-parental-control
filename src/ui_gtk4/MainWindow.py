@@ -1,9 +1,9 @@
 from ui_gtk4.PreferencesWindow import PreferencesWindow
 from ui_gtk4.ProfileChooserDialog import ProfileChooserDialog
 import managers.ProfileManager as ProfileManager
+import PPCActivator
 
 import os
-import subprocess
 import gi
 
 gi.require_version("Gtk", "4.0")
@@ -210,13 +210,7 @@ class MainWindow(Adw.ApplicationWindow):
         if self.service_activated:
             return
 
-        process = subprocess.run(
-            [
-                "pkexec",
-                CWD + "/../PPCActivator.py",
-                "1",
-            ]
-        )
+        process = PPCActivator.run_activator(True)
 
         if process.returncode == 0:
             self.service_activated = True
@@ -228,13 +222,7 @@ class MainWindow(Adw.ApplicationWindow):
         if not self.service_activated:
             return
 
-        process = subprocess.run(
-            [
-                "pkexec",
-                CWD + "/../PPCActivator.py",
-                "0",
-            ]
-        )
+        process = PPCActivator.run_activator(False)
 
         if process.returncode == 0:
             self.service_activated = False

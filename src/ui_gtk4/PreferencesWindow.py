@@ -100,7 +100,10 @@ class PreferencesWindow(Adw.PreferencesWindow):
         btn_website_deny_toggle = Gtk.CheckButton(
             active=(not is_website_list_allowlist), group=btn_website_allow_toggle
         )
+        btn_website_allow_toggle.connect("toggled", self.on_toggle_website_allow)
+        btn_website_deny_toggle.connect("toggled", self.on_toggle_website_deny)
 
+        # Filter Type
         row_allow_website = PActionRow.new(
             title="Allow List",
             subtitle="Allow only the selected websites to access. Deny others.",
@@ -114,10 +117,17 @@ class PreferencesWindow(Adw.PreferencesWindow):
         )
         group_allow_deny_website.add(row_allow_website)
         group_allow_deny_website.add(row_deny_website)
-        self.page_websites.add(group_allow_deny_website)
 
-        btn_website_allow_toggle.connect("toggled", self.on_toggle_website_allow)
-        btn_website_deny_toggle.connect("toggled", self.on_toggle_website_deny)
+        # Smartdns option:
+        btn_run_smartdns_toggle = Gtk.CheckButton()
+        btn_run_smartdns_toggle.connect("toggled", self.on_toggle_run_smartdns)
+        row_run_smartdns = PActionRow.new(
+            title="Start local dns server in addition to browser policies.",
+            subtitle="Enable this to create a local smartdns-rs server.\n\nThis prevents accessing websites even in terminal screen and also system wide. But uses more resources.",
+            activatable_widget=btn_run_smartdns_toggle,
+        )
+        group_allow_deny_website.add(row_run_smartdns)
+        self.page_websites.add(group_allow_deny_website)
 
     def setup_users_page(self):
         self.page_users = Adw.PreferencesPage(
@@ -210,7 +220,7 @@ class PreferencesWindow(Adw.PreferencesWindow):
 
         self.group_users = Adw.PreferencesGroup(
             title="Users",
-            description="Select users will be restricted.",
+            description="List of standard users not in 'sudo' group will be restricted.",
         )
 
         self.page_users.add(self.group_users)
@@ -391,4 +401,10 @@ class PreferencesWindow(Adw.PreferencesWindow):
         current_profile.set_session_time_start(start_seconds)
         current_profile.set_session_time_end(end_seconds)
 
+        self.profile_manager.save_as_json_file()
+
+    def on_toggle_run_smartdns(self, btn):
+        current_profile = self.profile_manager.get_current_profile()
+
+        current_profile.set_run_smartdns(btn.get_active())
         self.profile_manager.save_as_json_file()
