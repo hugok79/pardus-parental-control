@@ -119,7 +119,9 @@ class PreferencesWindow(Adw.PreferencesWindow):
         group_allow_deny_website.add(row_deny_website)
 
         # Smartdns option:
-        btn_run_smartdns_toggle = Gtk.CheckButton()
+        btn_run_smartdns_toggle = Gtk.CheckButton(
+            active=current_profile.get_run_smartdns()
+        )
         btn_run_smartdns_toggle.connect("toggled", self.on_toggle_run_smartdns)
         row_run_smartdns = PActionRow.new(
             title="Start local dns server in addition to browser policies.",
