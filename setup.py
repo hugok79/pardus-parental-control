@@ -60,17 +60,20 @@ data_files = [
     # Data
     (
         f"/var/lib/pardus/{APP_NAME}/",
-        [f"data/img/{APP_NAME}.svg"],
+        ["data/profiles.json"],
     ),
     (
         f"/usr/share/pardus/{APP_NAME}/data",
         [
-            "data/profiles.json",
             "data/style_gtk4.css",
             "data/tr.org.pardus.parental-control.user-check.desktop",
         ],
     ),
     ("/usr/share/icons/hicolor/scalable/apps/", [f"data/img/{APP_NAME}.svg"]),
+    (
+        f"/usr/share/pardus/{APP_NAME}/data/img",
+        [f"data/img/{APP_NAME}.svg"],
+    ),
     # Desktop file
     ("/usr/share/applications/", [f"{APP_ID}.desktop"]),
     # Polkit
