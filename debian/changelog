@@ -35,5 +35,8 @@ pardus-parental-control (0.1.0) UNRELEASED; urgency=medium
   * translation: added turkish
   * fix: updated setup.py
   * fix: control file
+  * feat!: added user filtering support
+  * feat: ui improvements for active service
+  * fix: setup.py
 
- -- Pardus <emin.fedar@pardus.org.tr>  Thu, 11 Jul 2024 12:46:17 +0300
+ -- Pardus <emin.fedar@pardus.org.tr>  Thu, 11 Jul 2024 14:00:19 +0300

@@ -1,0 +1,24 @@
+#!/bin/sh
+
+set -e
+
+# Use "floppy" group for provide access only to privileged users
+PRIVILEGED_GROUP="floppy"
+PROFILES_CONFIG_DIR="/var/lib/pardus/pardus-parental-control"
+
+# Create Profiles Path
+mkdir -p $PROFILES_CONFIG_DIR
+
+# Change owner of the "eta-kisit" folder
+chown -R :$PRIVILEGED_GROUP $PROFILES_CONFIG_DIR
+
+# Allow access from "GROUP" users.
+chmod -R g+rwx $PROFILES_CONFIG_DIR
+
+# Restrict access from "OTHER"(non group) users.
+chmod -R o-rwx $PROFILES_CONFIG_DIR
+
+# Smartdns install as service
+smartdns service install && smartdns service stop
+
+#DEBHELPER#

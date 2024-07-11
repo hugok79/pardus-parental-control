@@ -1,0 +1,18 @@
+#!/bin/sh
+
+set -e
+
+PROFILES_CONFIG_DIR="/var/lib/pardus/pardus-parental-control"
+APP_DIR="/usr/share/pardus/pardus-parental-control"
+
+# Create Profiles Path
+rm -rf $PROFILES_CONFIG_DIR
+
+# Check if smartdns service exists
+if systemctl list-units --type=service --all | grep -q "smartdns-rs.service"; then
+  smartdns service uninstall || true
+fi
+
+rm -rf $APP_DIR && echo "Removed $APP_DIR directory successfully."
+
+#DEBHELPER#
