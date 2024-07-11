@@ -20,7 +20,7 @@ def compile_translations():
 
             mo_file = f"{TRANSLATIONS_FOLDER}/{language}/LC_MESSAGES/{APP_NAME}.mo"
 
-            msgfmt_cmd = f'msgfmt "{TRANSLATIONS_FOLDER}/{po}" -o "{TRANSLATIONS_FOLDER}/{mo_file}"'
+            msgfmt_cmd = f'msgfmt "{TRANSLATIONS_FOLDER}/{po}" -o "{mo_file}"'
             subprocess.call(msgfmt_cmd, shell=True)
 
             mo.append((f"/usr/share/locale/{language}/LC_MESSAGES", [mo_file]))
@@ -31,11 +31,13 @@ data_files = [
     # Source Code
     (
         f"/usr/share/pardus/{APP_NAME}/src",
-        ["src/Main.py", "PPCActivator.py"],
+        ["src/Main.py", "src/PPCActivator.py"],
     ),
     (
         f"/usr/share/pardus/{APP_NAME}/src/managers",
         [
+            "src/managers/ApplicationManager.py",
+            "src/managers/FileRestrictionManager.py",
             "src/managers/LinuxUserManager.py",
             "src/managers/NetworkFilterManager.py",
             "src/managers/ProfileManager.py",
@@ -58,13 +60,14 @@ data_files = [
     # Data
     (
         f"/var/lib/pardus/{APP_NAME}/",
-        ["data/profiles.json", f"data/img/{APP_NAME}.svg"],
+        [f"data/img/{APP_NAME}.svg"],
     ),
     (
         f"/usr/share/pardus/{APP_NAME}/data",
         [
+            "data/profiles.json",
             "data/style_gtk4.css",
-            "data/tr.tr.org.pardus.parental-control.user-check.desktop",
+            "data/tr.org.pardus.parental-control.user-check.desktop",
         ],
     ),
     ("/usr/share/icons/hicolor/scalable/apps/", [f"data/img/{APP_NAME}.svg"]),
