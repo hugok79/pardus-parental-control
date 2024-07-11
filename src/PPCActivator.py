@@ -172,12 +172,17 @@ class PPCActivator:
         if self.is_activated:
             profile = self.profile
             for user in standard_users:
-                if user not in profile.get_user_list():
-                    LinuxUserManager.add_user_to_privileged_group(user)
+                username = user.get_user_name()
+
+                if username not in profile.get_user_list():
+                    LinuxUserManager.add_user_to_privileged_group(username)
         else:
             profile = self.applied_profile
-            for user in profile.get_user_list():
-                LinuxUserManager.remove_user_from_privileged_group(user)
+            for user in standard_users:
+                username = user.get_user_name()
+
+                if username not in profile.get_user_list():
+                    LinuxUserManager.remove_user_from_privileged_group(username)
 
 
 if __name__ == "__main__":
