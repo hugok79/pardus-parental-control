@@ -3,10 +3,8 @@
 import sys
 import subprocess
 import os
-import time
 import managers.FileRestrictionManager as FileRestrictionManager
-
-
+import managers.LinuxUserManager as LinuxUserManager
 import managers.ProfileManager as ProfileManager
 import managers.NetworkFilterManager as NetworkFilterManager
 import managers.ApplicationManager as ApplicationManager
@@ -48,6 +46,7 @@ class PPCActivator:
 
         self.set_application_filter()
         self.set_network_filter()
+        self.set_user_groups()
 
         if self.is_activated:
             self.save_applied_profile()
@@ -166,6 +165,19 @@ class PPCActivator:
 
                 NetworkFilterManager.stop_smartdns_service()
                 NetworkFilterManager.disable_smartdns_service()
+
+    def set_user_groups(self):
+        standard_users = LinuxUserManager.get_standard_users()
+
+        if self.is_activated:
+            profile = self.profile
+            for user in standard_users:
+                if user not in profile.get_user_list():
+                    LinuxUserManager.add_user_to_privileged_group(user)
+        else:
+            profile = self.applied_profile
+            for user in profile.get_user_list():
+                LinuxUserManager.remove_user_from_privileged_group(user)
 
 
 if __name__ == "__main__":

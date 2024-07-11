@@ -112,11 +112,11 @@ class Profile(object):
         self.website_list.append(website_domain)
         return True
 
-    def insert_user(self, user_id):
-        if user_id in self.user_list:
+    def insert_user(self, user_name):
+        if user_name in self.user_list:
             return False
 
-        self.user_list.append(user_id)
+        self.user_list.append(user_name)
         return True
 
     # Delete
@@ -134,11 +134,11 @@ class Profile(object):
         self.website_list.remove(website_domain)
         return True
 
-    def remove_user(self, user_id):
-        if user_id not in self.user_list:
+    def remove_user(self, user_name):
+        if user_name not in self.user_list:
             return False
 
-        self.user_list.remove(user_id)
+        self.user_list.remove(user_name)
         return True
 
 

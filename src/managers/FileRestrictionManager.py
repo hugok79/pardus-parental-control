@@ -1,12 +1,13 @@
 import os
 import subprocess
 
-PRIVILEGED_GROUP = "sudo"
+PRIVILEGED_GROUP = "floppy"
 PRIVILEGED_GROUP_ID = int(
     subprocess.check_output(["getent", "group", PRIVILEGED_GROUP])
     .decode()
     .split(":")[2]
 )
+
 
 def check_user_privileged():
     user_groups = os.getgroups()

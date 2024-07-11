@@ -279,7 +279,7 @@ class PreferencesWindow(Adw.PreferencesWindow):
 
         # Add Users
         for user in LinuxUserManager.get_standard_users():
-            is_checked = user.get_uid() in profile.get_user_list()
+            is_checked = user.get_user_name() in profile.get_user_list()
             self.insert_user_row_to_group(user, is_checked)
 
     def insert_application_row_to_group(self, app):
@@ -309,7 +309,9 @@ class PreferencesWindow(Adw.PreferencesWindow):
         )
 
         btn_check = Gtk.CheckButton(active=is_checked, css_classes=["selection-mode"])
-        btn_check.connect("toggled", self.on_btn_user_select_clicked, user.get_uid())
+        btn_check.connect(
+            "toggled", self.on_btn_user_select_clicked, user.get_user_name()
+        )
 
         action_row = Adw.ActionRow(title=user.get_user_name())
         action_row.add_prefix(avatar)
@@ -319,13 +321,13 @@ class PreferencesWindow(Adw.PreferencesWindow):
         self.group_users.add(action_row)
 
     # == CALLBACKS ==
-    def on_btn_user_select_clicked(self, btn, user_id):
+    def on_btn_user_select_clicked(self, btn, user_name):
         profile = self.profile_manager.get_current_profile()
 
         if btn.get_active():
-            profile.insert_user(user_id)
+            profile.insert_user(user_name)
         else:
-            profile.remove_user(user_id)
+            profile.remove_user(user_name)
 
         self.profile_manager.save_as_json_file()
 

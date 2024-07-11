@@ -1,4 +1,6 @@
 import gi
+import subprocess
+import managers.FileRestrictionManager as FileRestrictionManager
 
 gi.require_version("AccountsService", "1.0")
 from gi.repository import AccountsService  # noqa
@@ -16,3 +18,19 @@ def get_standard_users():
     )
 
     return users
+
+
+def _add_user_to_group(user_name, group_name):
+    subprocess.run(["usermod", "-a", "-G", group_name, user_name])
+
+
+def _remove_user_from_group(user_name, group_name):
+    subprocess.run(["gpasswd", "-d", group_name, user_name])
+
+
+def add_user_to_privileged_group(user_name):
+    _add_user_to_group(user_name, FileRestrictionManager.PRIVILEGED_GROUP)
+
+
+def remove_user_from_privileged_group(user_name):
+    _remove_user_from_group(user_name, FileRestrictionManager.PRIVILEGED_GROUP)
