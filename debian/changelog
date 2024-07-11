@@ -1,5 +1,6 @@
 pardus-parental-control (0.1.0) UNRELEASED; urgency=medium
 
+  [ Emin Fedar ]
   * 
   * Initial commit
   * init: initialize the project
@@ -18,5 +19,21 @@ pardus-parental-control (0.1.0) UNRELEASED; urgency=medium
   * doc: readme update
   * feat!: gtk3 + gtk4 separate ui
   * feat: DoH3 and DoQ support for smartdns
+  * chore: Update README.md
+  * feat!: remove session times from profiles
+  * feat: added empty profiles.json
+  * feat: PPCService added
+  * feat: added resolv.conf settings in NetworkFilterManager
+  * feat!: structural rework, removed gtk3
+  * feat: polkit passwordless activation
+  * feat: session time added
+  * feat: about window
+  * feat: added firefox policies to network manager
+  * feat: added run_smartdns option to profile
+  * fix: session time bug
+  * fix: smartdns checkbutton bug
+  * translation: added turkish
+  * fix: updated setup.py
+  * fix: control file
 
- -- Emin Fedar <emin.fedar@pardus.org.tr>  Tue, 19 Mar 2024 16:01:36 +0300
+ -- Pardus <emin.fedar@pardus.org.tr>  Thu, 11 Jul 2024 12:46:17 +0300
