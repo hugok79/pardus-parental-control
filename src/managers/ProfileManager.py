@@ -49,7 +49,7 @@ class Profile(object):
         return self.session_time_start
 
     def get_session_time_end(self):
-        return self.session_time_start
+        return self.session_time_end
 
     def get_run_smartdns(self):
         return self.run_smartdns
