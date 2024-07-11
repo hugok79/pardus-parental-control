@@ -6,6 +6,9 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Gtk, Adw, Gio, GLib  # noqa
 
+import locale  # noqa
+from locale import gettext as _  # noqa
+
 
 class ProfileChooserDialog(Adw.PreferencesWindow):
     def __init__(
@@ -32,12 +35,12 @@ class ProfileChooserDialog(Adw.PreferencesWindow):
     def setup_window(self):
         self.set_default_size(300, 400)
         self.set_search_enabled(True)
-        self.set_title("Select Profile...")
+        self.set_title(_("Select Profile..."))
         self.set_hide_on_close(True)
 
     def setup_ui(self):
         self.group_profiles = Adw.PreferencesGroup(
-            title="Profiles", description="Select a profile to load its settings."
+            title=_("Profiles"), description=_("Select a profile to load its settings.")
         )
 
         # Fill the List of Profiles
@@ -54,7 +57,7 @@ class ProfileChooserDialog(Adw.PreferencesWindow):
 
         # Current Profile ComboRow
         self.comborow_current_profile = Adw.ComboRow(
-            title="Current Profile", model=self.list_profiles
+            title=_("Current Profile"), model=self.list_profiles
         )
         self.comborow_current_profile.set_selected(current_profile_index)
         self.comborow_current_profile.connect(
@@ -72,7 +75,7 @@ class ProfileChooserDialog(Adw.PreferencesWindow):
 
         # New Profile Hidden EntryRow
         self.row_new_profile = Adw.EntryRow(
-            title="New Profile Name", activates_default=True, show_apply_button=True
+            title=_("New Profile Name"), activates_default=True, show_apply_button=True
         )
         self.row_new_profile.set_input_purpose(Gtk.InputPurpose.ALPHA)
         self.row_new_profile.set_visible(False)
@@ -117,7 +120,7 @@ class ProfileChooserDialog(Adw.PreferencesWindow):
         if self.profile_manager.has_profile_name(new_profile_name):
             self.row_new_profile.set_css_classes(["entry", "activatable", "error"])
 
-            self.show_toast(f"Error: '{new_profile_name}' exists!")
+            self.show_toast(_("Error: '{}' exists!").format(new_profile_name))
 
         else:
             # New profile created
@@ -129,7 +132,7 @@ class ProfileChooserDialog(Adw.PreferencesWindow):
             # Add Row
             self.add_profile_entry_row(new_profile_name)
 
-            self.show_toast(f"New profile created: '{new_profile_name}'")
+            self.show_toast(_("New profile created: '{}'").format(new_profile_name))
 
             self.row_new_profile.set_css_classes(["entry", "activatable"])
             self.row_new_profile.set_visible(False)
@@ -137,14 +140,14 @@ class ProfileChooserDialog(Adw.PreferencesWindow):
 
     def on_btn_delete_row_clicked(self, btn, action_row, user_data):
         if len(self.profile_manager.get_profile_list()) == 1:
-            self.show_toast("At least one profile required.")
+            self.show_toast(_("At least one profile required."))
             return False
 
         profile_name = action_row.get_title()
         current_profile = self.profile_manager.get_current_profile_name()
 
         if profile_name == current_profile:
-            self.show_toast("You can't remove the current profile.")
+            self.show_toast(_("Current profile cannot be removed."))
             return False
 
         # Remove from group
@@ -170,7 +173,7 @@ class ProfileChooserDialog(Adw.PreferencesWindow):
         new_name = entry_row.get_text()
 
         if self.profile_manager.has_profile_name(new_name):
-            self.show_toast(f"Error: '{new_name}' exists!")
+            self.show_toast("Error: '{}' exists!".format(new_name))
 
             entry_row.set_css_classes(["entry", "activatable", "error"])
 
@@ -192,7 +195,7 @@ class ProfileChooserDialog(Adw.PreferencesWindow):
                 )
                 break
 
-        self.show_toast(f"Profile name changed: '{new_name}'")
+        self.show_toast(_("Profile name changed: '{}'").format(new_name))
         entry_row.set_css_classes(["entry", "activatable"])
 
         entry_row.set_title(new_name)

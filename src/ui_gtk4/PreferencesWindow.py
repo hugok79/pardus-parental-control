@@ -9,6 +9,9 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Gtk, Adw, Gio, GLib  # noqa
 
+import locale  # noqa
+from locale import gettext as _  # noqa
+
 
 class PreferencesWindow(Adw.PreferencesWindow):
     def __init__(self, profile_manager: ProfileManager, parent_window):
@@ -25,7 +28,7 @@ class PreferencesWindow(Adw.PreferencesWindow):
     # Setups
     def setup_window(self):
         self.set_default_size(800, 600)
-        self.set_title("Preferences")
+        self.set_title(_("Preferences"))
         self.set_hide_on_close(True)
 
     def setup_dialogs(self):
@@ -35,20 +38,18 @@ class PreferencesWindow(Adw.PreferencesWindow):
 
     def setup_applications_page(self):
         self.page_applications = Adw.PreferencesPage(
-            title="Applications", icon_name="application-x-executable-symbolic"
+            title=_("Applications"), icon_name="application-x-executable-symbolic"
         )
         self.group_applications = None
         self.setup_applications_group()
 
         # Allow / Deny toggle button
-        current_profile = self.profile_manager.get_current_profile()
-        is_application_list_allowlist = (
-            current_profile.get_is_application_list_allowlist()
-        )
+        profile = self.profile_manager.get_current_profile()
+        is_application_list_allowlist = profile.get_is_application_list_allowlist()
 
         group_allow_deny_application = Adw.PreferencesGroup(
-            title="Filter Type",
-            description="Change the type of filtering for applications",
+            title=_("Filter Type"),
+            description=_("Change the type of filtering for applications"),
         )
 
         btn_application_allow_toggle = Gtk.CheckButton(
@@ -60,14 +61,14 @@ class PreferencesWindow(Adw.PreferencesWindow):
         )
 
         row_allow_application = PActionRow.new(
-            title="Allow List",
-            subtitle="Allow only the selected applications to run. Deny others.",
+            title=_("Allow List"),
+            subtitle=_("Allow only the selected applications to run. Deny others."),
             activatable_widget=btn_application_allow_toggle,
         )
 
         row_deny_application = PActionRow.new(
-            title="Deny List",
-            subtitle="Deny only the selected applications to run. Allow others.",
+            title=_("Deny List"),
+            subtitle=_("Deny only the selected applications to run. Allow others."),
             activatable_widget=btn_application_deny_toggle,
         )
         group_allow_deny_application.add(row_allow_application)
@@ -81,19 +82,19 @@ class PreferencesWindow(Adw.PreferencesWindow):
 
     def setup_websites_page(self):
         self.page_websites = Adw.PreferencesPage(
-            title="Websites", icon_name="web-browser-symbolic"
+            title=_("Websites"), icon_name="web-browser-symbolic"
         )
 
         self.group_websites = None
         self.setup_websites_group()
 
         # Allow / Deny toggle button
-        current_profile = self.profile_manager.get_current_profile()
-        is_website_list_allowlist = current_profile.get_is_website_list_allowlist()
+        profile = self.profile_manager.get_current_profile()
+        is_website_list_allowlist = profile.get_is_website_list_allowlist()
 
         group_allow_deny_website = Adw.PreferencesGroup(
-            title="Filter Type",
-            description="Change the type of filtering for applications",
+            title=_("Filter Type"),
+            description=_("Change the type of filtering for applications"),
         )
 
         btn_website_allow_toggle = Gtk.CheckButton(active=is_website_list_allowlist)
@@ -105,27 +106,27 @@ class PreferencesWindow(Adw.PreferencesWindow):
 
         # Filter Type
         row_allow_website = PActionRow.new(
-            title="Allow List",
-            subtitle="Allow only the selected websites to access. Deny others.",
+            title=_("Allow List"),
+            subtitle=_("Allow only the selected websites to access. Deny others."),
             activatable_widget=btn_website_allow_toggle,
         )
 
         row_deny_website = PActionRow.new(
-            title="Deny List",
-            subtitle="Deny only the selected websites to access. Allow others.",
+            title=_("Deny List"),
+            subtitle=_("Deny only the selected websites to access. Allow others."),
             activatable_widget=btn_website_deny_toggle,
         )
         group_allow_deny_website.add(row_allow_website)
         group_allow_deny_website.add(row_deny_website)
 
         # Smartdns option:
-        btn_run_smartdns_toggle = Gtk.CheckButton(
-            active=current_profile.get_run_smartdns()
-        )
+        btn_run_smartdns_toggle = Gtk.CheckButton(active=profile.get_run_smartdns())
         btn_run_smartdns_toggle.connect("toggled", self.on_toggle_run_smartdns)
         row_run_smartdns = PActionRow.new(
-            title="Start local dns server in addition to browser policies.",
-            subtitle="Enable this to create a local smartdns-rs server.\n\nThis prevents accessing websites even in terminal screen and also system wide. But uses more resources.",
+            title=_("Start Local DNS Server."),
+            subtitle=_(
+                "Enabling this creates a local smartdns-rs server.\n\nThis prevents accessing websites system-wide, even in terminal screen, but uses more resources."
+            ),
             activatable_widget=btn_run_smartdns_toggle,
         )
         group_allow_deny_website.add(row_run_smartdns)
@@ -133,7 +134,7 @@ class PreferencesWindow(Adw.PreferencesWindow):
 
     def setup_users_page(self):
         self.page_users = Adw.PreferencesPage(
-            title="Users", icon_name="system-users-symbolic"
+            title=_("Users"), icon_name="system-users-symbolic"
         )
 
         self.group_users = None
@@ -141,7 +142,7 @@ class PreferencesWindow(Adw.PreferencesWindow):
 
     def setup_session_time_page(self):
         self.page_session_time = Adw.PreferencesPage(
-            title="Session Time", icon_name="document-open-recent-symbolic"
+            title=_("Session Time"), icon_name="document-open-recent-symbolic"
         )
 
         self.group_session_time = None
@@ -175,8 +176,8 @@ class PreferencesWindow(Adw.PreferencesWindow):
             self.group_applications = None
 
         self.group_applications = Adw.PreferencesGroup(
-            title="Applications",
-            description="Select applications the restricted user can or can't open.",
+            title=_("Applications"),
+            description=_("Select applications the restricted user can or can't open."),
         )
 
         btn_new_application = Gtk.Button(
@@ -193,13 +194,13 @@ class PreferencesWindow(Adw.PreferencesWindow):
             self.group_websites = None
 
         self.group_websites = Adw.PreferencesGroup(
-            title="Websites",
-            description="Select websites the restricted user can or can't open.",
+            title=_("Websites"),
+            description=_("Enter websites the restricted user can or can't open."),
         )
 
         # "New website" row
         self.row_new_website = Adw.EntryRow(
-            title="example.com", activates_default=True, show_apply_button=True
+            title=_("example.com"), activates_default=True, show_apply_button=True
         )
         self.row_new_website.set_input_purpose(Gtk.InputPurpose.ALPHA)
         self.row_new_website.set_visible(False)
@@ -221,8 +222,10 @@ class PreferencesWindow(Adw.PreferencesWindow):
             self.group_users = None
 
         self.group_users = Adw.PreferencesGroup(
-            title="Users",
-            description="List of standard users not in 'sudo' group will be restricted.",
+            title=_("Users"),
+            description=_(
+                "List of standard users(non 'sudo' group) will be restricted."
+            ),
         )
 
         self.page_users.add(self.group_users)
@@ -233,19 +236,19 @@ class PreferencesWindow(Adw.PreferencesWindow):
             self.group_session_time = None
 
         self.group_session_time = Adw.PreferencesGroup(
-            title="Session Time",
-            description="Select the time period user can use the computer.",
+            title=_("Session Time"),
+            description=_("Select the time period user can use the computer."),
         )
 
-        current_profile = self.profile_manager.get_current_profile()
+        profile = self.profile_manager.get_current_profile()
 
         # Time selection Row
         self.session_time_chooser = PTimePeriodChooser(
             self.on_session_time_period_changed,
-            current_profile.get_session_time_start(),
-            current_profile.get_session_time_end(),
+            profile.get_session_time_start(),
+            profile.get_session_time_end(),
         )
-        row_time_selection = Adw.ActionRow(title="Select Time")
+        row_time_selection = Adw.ActionRow(title=_("Select Time"))
         row_time_selection.add_suffix(self.session_time_chooser)
 
         self.group_session_time.add(row_time_selection)
@@ -317,12 +320,12 @@ class PreferencesWindow(Adw.PreferencesWindow):
 
     # == CALLBACKS ==
     def on_btn_user_select_clicked(self, btn, user_id):
-        current_profile = self.profile_manager.get_current_profile()
+        profile = self.profile_manager.get_current_profile()
 
         if btn.get_active():
-            current_profile.insert_user(user_id)
+            profile.insert_user(user_id)
         else:
-            current_profile.remove_user(user_id)
+            profile.remove_user(user_id)
 
         self.profile_manager.save_as_json_file()
 
@@ -334,34 +337,34 @@ class PreferencesWindow(Adw.PreferencesWindow):
         self.row_new_website.grab_focus()
 
     def on_btn_delete_row_clicked(self, btn, action_row, user_data):
-        current_profile = self.profile_manager.get_current_profile()
+        profile = self.profile_manager.get_current_profile()
 
         if isinstance(user_data, Gio.DesktopAppInfo):
             app_id = user_data.get_id()
 
-            if current_profile.remove_application(app_id):
+            if profile.remove_application(app_id):
                 self.group_applications.remove(action_row)
         else:
             # Website domains
             domain = action_row.get_title()
 
-            if current_profile.remove_website(domain):
+            if profile.remove_website(domain):
                 self.group_websites.remove(action_row)
 
         self.profile_manager.save_as_json_file()
 
     def on_application_selected_in_dialog(self, app):
-        current_profile = self.profile_manager.get_current_profile()
+        profile = self.profile_manager.get_current_profile()
 
-        if current_profile.insert_application(app.get_id()):
+        if profile.insert_application(app.get_id()):
             self.insert_application_row_to_group(app)
 
         self.profile_manager.save_as_json_file()
 
     def on_new_website_entered(self, entry_row):
-        current_profile = self.profile_manager.get_current_profile()
+        profile = self.profile_manager.get_current_profile()
 
-        if current_profile.insert_website(entry_row.get_text()):
+        if profile.insert_website(entry_row.get_text()):
             self.insert_website_row_to_group(entry_row.get_text())
 
         self.row_new_website.set_visible(False)
@@ -370,43 +373,43 @@ class PreferencesWindow(Adw.PreferencesWindow):
         self.profile_manager.save_as_json_file()
 
     def on_toggle_application_allow(self, btn):
-        current_profile = self.profile_manager.get_current_profile()
+        profile = self.profile_manager.get_current_profile()
 
         if btn.get_active():
-            current_profile.set_is_application_list_allowlist(True)
+            profile.set_is_application_list_allowlist(True)
             self.profile_manager.save_as_json_file()
 
     def on_toggle_application_deny(self, btn):
-        current_profile = self.profile_manager.get_current_profile()
+        profile = self.profile_manager.get_current_profile()
 
         if btn.get_active():
-            current_profile.set_is_application_list_allowlist(False)
+            profile.set_is_application_list_allowlist(False)
             self.profile_manager.save_as_json_file()
 
     def on_toggle_website_allow(self, btn):
-        current_profile = self.profile_manager.get_current_profile()
+        profile = self.profile_manager.get_current_profile()
 
         if btn.get_active():
-            current_profile.set_is_website_list_allowlist(True)
+            profile.set_is_website_list_allowlist(True)
             self.profile_manager.save_as_json_file()
 
     def on_toggle_website_deny(self, btn):
-        current_profile = self.profile_manager.get_current_profile()
+        profile = self.profile_manager.get_current_profile()
 
         if btn.get_active():
-            current_profile.set_is_website_list_allowlist(False)
+            profile.set_is_website_list_allowlist(False)
             self.profile_manager.save_as_json_file()
 
     def on_session_time_period_changed(self, start_seconds, end_seconds):
-        current_profile = self.profile_manager.get_current_profile()
+        profile = self.profile_manager.get_current_profile()
 
-        current_profile.set_session_time_start(start_seconds)
-        current_profile.set_session_time_end(end_seconds)
+        profile.set_session_time_start(start_seconds)
+        profile.set_session_time_end(end_seconds)
 
         self.profile_manager.save_as_json_file()
 
     def on_toggle_run_smartdns(self, btn):
-        current_profile = self.profile_manager.get_current_profile()
+        profile = self.profile_manager.get_current_profile()
 
-        current_profile.set_run_smartdns(btn.get_active())
+        profile.set_run_smartdns(btn.get_active())
         self.profile_manager.save_as_json_file()

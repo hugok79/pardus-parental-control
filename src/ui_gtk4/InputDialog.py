@@ -37,7 +37,9 @@ class InputDialog(Adw.Window):
             lbl_subtitle = Gtk.Label(label=subtitle)
             box.append(lbl_subtitle)
 
-        entry_input = Gtk.Entry(placeholder_text="example.com", activates_default=True)
+        entry_input = Gtk.Entry(
+            placeholder_text=_("example.com"), activates_default=True
+        )
         entry_input.connect("activate", self.on_entry_input_activated)
 
         box.append(entry_input)

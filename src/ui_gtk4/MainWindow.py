@@ -64,7 +64,7 @@ class MainWindow(Adw.ApplicationWindow):
                 "Restrict user access to internet and applications. Manage session times."
             ),
             application_icon="pardus-parental-control",
-            developer_name="Pardus Developers <gelistirici@pardus.org.tr>",
+            developer_name="Pardus Developers",
             license_type=Gtk.License.GPL_3_0,
             translator_credits=_("translator_credits"),
             hide_on_close=True,
@@ -73,7 +73,6 @@ class MainWindow(Adw.ApplicationWindow):
         )
 
     def setup_variables(self):
-        self.current_profile = ""
         self.profile_manager = ProfileManager.get_default()
         self.service_activated = False
 
@@ -256,7 +255,6 @@ class MainWindow(Adw.ApplicationWindow):
         self.dialog_preferences.present()
 
     def on_profile_selected(self, profile_name):
-        self.current_profile = profile_name
         self.lbl_profile_btn.set_label(profile_name)
 
         self.dialog_preferences.fill_lists_from_profile(

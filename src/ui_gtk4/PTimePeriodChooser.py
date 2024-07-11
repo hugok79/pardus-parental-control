@@ -4,6 +4,9 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Gtk, Adw  # noqa
 
+import locale  # noqa
+from locale import gettext as _  # noqa
+
 
 class PTimePeriodChooser(Gtk.Box):
     def __init__(self, on_time_changed_callback, start_seconds=0, end_seconds=86399):
@@ -11,7 +14,7 @@ class PTimePeriodChooser(Gtk.Box):
         self.on_time_changed_callback = on_time_changed_callback
 
         # From:
-        self.append(Gtk.Label(label="From: "))
+        self.append(Gtk.Label(label=_("From: ")))
 
         # Time Selection
         self.btn_from_hour = Gtk.SpinButton.new_with_range(0, 23, 1)
@@ -27,7 +30,7 @@ class PTimePeriodChooser(Gtk.Box):
         self.append(self.btn_from_minute)
 
         # To:
-        self.append(Gtk.Label(label="To: "))
+        self.append(Gtk.Label(label=_("To: ")))
 
         # Time Selection
         self.btn_to_hour = Gtk.SpinButton.new_with_range(0, 23, 1)

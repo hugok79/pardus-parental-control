@@ -5,6 +5,9 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Gtk, Adw, Gio, GLib  # noqa
 
+import locale  # noqa
+from locale import gettext as _  # noqa
+
 
 class ApplicationChooserDialog(Adw.PreferencesWindow):
     def __init__(self, parent_window, application_selected_callback):
@@ -22,11 +25,11 @@ class ApplicationChooserDialog(Adw.PreferencesWindow):
     def setup_window(self):
         self.set_default_size(450, 600)
         self.set_search_enabled(True)
-        self.set_title("Select Application...")
+        self.set_title(_("Select Application..."))
         self.set_hide_on_close(True)
 
     def setup_ui(self):
-        group = Adw.PreferencesGroup(description="Loading...")
+        group = Adw.PreferencesGroup(description=_("Loading..."))
 
         page = Adw.PreferencesPage()
         page.add(group)

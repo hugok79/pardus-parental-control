@@ -1,0 +1,189 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-07-11 12:27+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/ui_gtk4/MainWindow.py:59 src/ui_gtk4/MainWindow.py:97
+#: src/ui_gtk4/MainWindow.py:158
+msgid "Pardus Parental Control"
+msgstr "Pardus Ebeveyn Denetimi"
+
+#: src/ui_gtk4/MainWindow.py:64
+msgid ""
+"Restrict user access to internet and applications. Manage session times."
+msgstr ""
+"Kullanıcıların internet ve uygulamalara erişimini sınırlayın. Oturum sürelerini yönetin."
+
+#: src/ui_gtk4/MainWindow.py:69
+msgid "translator_credits"
+msgstr "Emin Fedar"
+
+#: src/ui_gtk4/MainWindow.py:182 src/ui_gtk4/MainWindow.py:228
+msgid "Status: Inactive"
+msgstr "Durum: Devre Dışı"
+
+#: src/ui_gtk4/MainWindow.py:216
+msgid "Status: Active"
+msgstr "Durum: Etkin"
+
+#: src/ui_gtk4/PreferencesWindow.py:31
+msgid "Preferences"
+msgstr "Tercihler"
+
+#: src/ui_gtk4/PreferencesWindow.py:41 src/ui_gtk4/PreferencesWindow.py:179
+msgid "Applications"
+msgstr "Uygulamalar"
+
+#: src/ui_gtk4/PreferencesWindow.py:51 src/ui_gtk4/PreferencesWindow.py:96
+msgid "Filter Type"
+msgstr "Filtre Tipi"
+
+#: src/ui_gtk4/PreferencesWindow.py:52 src/ui_gtk4/PreferencesWindow.py:97
+msgid "Change the type of filtering for applications"
+msgstr "Uygulama filtresinin tipini değiştirin"
+
+#: src/ui_gtk4/PreferencesWindow.py:64 src/ui_gtk4/PreferencesWindow.py:109
+msgid "Allow List"
+msgstr "İzinliler Listesi"
+
+#: src/ui_gtk4/PreferencesWindow.py:65
+msgid "Allow only the selected applications to run. Deny others."
+msgstr "Yalnızda seçili uygulamalara izin ver. Diğerlerini engelle."
+
+#: src/ui_gtk4/PreferencesWindow.py:70 src/ui_gtk4/PreferencesWindow.py:115
+msgid "Deny List"
+msgstr "Engelliler Listesi"
+
+#: src/ui_gtk4/PreferencesWindow.py:71
+msgid "Deny only the selected applications to run. Allow others."
+msgstr "Seçili uygulamaları engelle. Diğerlerine izin ver."
+
+#: src/ui_gtk4/PreferencesWindow.py:85 src/ui_gtk4/PreferencesWindow.py:197
+msgid "Websites"
+msgstr "İnternet Siteleri"
+
+#: src/ui_gtk4/PreferencesWindow.py:110
+msgid "Allow only the selected websites to access. Deny others."
+msgstr "Yalnızca seçili internet sitelerine izin ver. Diğerlerini engelle."
+
+#: src/ui_gtk4/PreferencesWindow.py:116
+msgid "Deny only the selected websites to access. Allow others."
+msgstr "Seçili internet sitelerini engelle. Diğerlerine izin ver."
+
+#: src/ui_gtk4/PreferencesWindow.py:126
+msgid "Start Local DNS Server."
+msgstr "Yerel DNS Sunucusu Başlat"
+
+#: src/ui_gtk4/PreferencesWindow.py:128
+msgid ""
+"Enabling this creates a local smartdns-rs server.\n"
+"\n"
+"This prevents accessing websites system-wide, even in terminal screen, but "
+"uses more resources."
+msgstr ""
+"Bunu etkinleştirmek yerel bir smartdns-rs sunucusu başlatır.\n"
+"\n"
+"Bu özellik internet erişimini bütün sistemde kısıtlar, terminal ekranında bile, fakat "
+"daha fazla kaynak tüketir."
+
+#: src/ui_gtk4/PreferencesWindow.py:137 src/ui_gtk4/PreferencesWindow.py:225
+msgid "Users"
+msgstr "Kullanıcılar"
+
+#: src/ui_gtk4/PreferencesWindow.py:145 src/ui_gtk4/PreferencesWindow.py:239
+msgid "Session Time"
+msgstr "Oturum Süresi"
+
+#: src/ui_gtk4/PreferencesWindow.py:180
+msgid "Select applications the restricted user can or can't open."
+msgstr "Sınırlanmış kullanıcının açıp/açamayacağı uygulamaları seçin."
+
+#: src/ui_gtk4/PreferencesWindow.py:198
+msgid "Enter websites the restricted user can or can't open."
+msgstr "Sınırlanmış kullanıcının açıp/açamayacağı internet sitelerini girin"
+
+#: src/ui_gtk4/PreferencesWindow.py:203 src/ui_gtk4/InputDialog.py:41
+msgid "example.com"
+msgstr "ornek.com"
+
+#: src/ui_gtk4/PreferencesWindow.py:227
+msgid "List of standard users(non 'sudo' group) will be restricted."
+msgstr "Standart kullanıcıların('sudo' grubuna dahil olmayan) listesi."
+
+#: src/ui_gtk4/PreferencesWindow.py:240
+msgid "Select the time period user can use the computer."
+msgstr "Kullanıcının bilgisayarı kullanabileceği zaman aralığını seçin."
+
+#: src/ui_gtk4/PreferencesWindow.py:251
+msgid "Select Time"
+msgstr "Zaman Seç"
+
+#: src/ui_gtk4/ProfileChooserDialog.py:38
+msgid "Select Profile..."
+msgstr "Profil Seç..."
+
+#: src/ui_gtk4/ProfileChooserDialog.py:43
+msgid "Profiles"
+msgstr "Profiller"
+
+#: src/ui_gtk4/ProfileChooserDialog.py:43
+msgid "Select a profile to load its settings."
+msgstr "Ayarlarını yüklemek için bir profil seçin."
+
+#: src/ui_gtk4/ProfileChooserDialog.py:60
+msgid "Current Profile"
+msgstr "Seçili Profi"
+
+#: src/ui_gtk4/ProfileChooserDialog.py:78
+msgid "New Profile Name"
+msgstr "Yeni Profil İsmi"
+
+#: src/ui_gtk4/ProfileChooserDialog.py:123
+msgid "Error: '{}' exists!"
+msgstr "Hata '{}' zaten mevcut!"
+
+#: src/ui_gtk4/ProfileChooserDialog.py:135
+msgid "New profile created: '{}'"
+msgstr "Yeni profil oluşturuldu: '{}'"
+
+#: src/ui_gtk4/ProfileChooserDialog.py:143
+msgid "At least one profile required."
+msgstr "En az bir profil olmalıdır."
+
+#: src/ui_gtk4/ProfileChooserDialog.py:150
+msgid "Current profile cannot be removed."
+msgstr "Seçili profil silinemez."
+
+#: src/ui_gtk4/ProfileChooserDialog.py:198
+msgid "Profile name changed: '{}'"
+msgstr "Profil ismi değiştirildi: '{}'"
+
+#: src/ui_gtk4/PTimePeriodChooser.py:17
+msgid "From: "
+msgstr "Başlangıç: "
+
+#: src/ui_gtk4/PTimePeriodChooser.py:33
+msgid "To: "
+msgstr "Bitiş: "
+
+#: src/ui_gtk4/ApplicationChooserDialog.py:28
+msgid "Select Application..."
+msgstr "Uygulama Seçin..."
+
+#: src/ui_gtk4/ApplicationChooserDialog.py:32
+msgid "Loading..."
+msgstr "Yükleniyor..."
