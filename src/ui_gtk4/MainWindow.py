@@ -74,7 +74,6 @@ class MainWindow(Adw.ApplicationWindow):
 
     def setup_variables(self):
         self.profile_manager = ProfileManager.get_default()
-        self.service_activated = False
 
     def setup_css(self):
         css_provider = Gtk.CssProvider()
@@ -204,37 +203,67 @@ class MainWindow(Adw.ApplicationWindow):
             )
         )
 
+        self.set_widget_styles()
+
     # === FUNCTIONS ===
+    def is_service_activated(self):
+        return os.path.exists(ProfileManager.APPLIED_PROFILE_PATH)
+
     def start_service(self):
-        if self.service_activated:
+        if self.is_service_activated():
+            return
+
+        profile = self.profile_manager.get_current_profile()
+        if len(profile.get_user_list()) == 0:
+            dialog = Adw.MessageDialog(
+                transient_for=self,
+                heading=_("Information"),
+                body=_("No user selected to restrict."),
+                default_response="ok",
+            )
+            dialog.add_response("ok", _("Ok"))
+            dialog.present()
+            return
+
+        if (
+            len(profile.get_website_list()) == 0
+            and len(profile.get_application_list()) == 0
+        ):
+            dialog = Adw.MessageDialog(
+                transient_for=self,
+                heading=_("Information"),
+                body=_("Application & Website lists are empty."),
+                default_response="ok",
+            )
+            dialog.add_response("ok", _("Ok"))
+
+            dialog.present()
             return
 
         process = PPCActivator.run_activator(True)
 
-        if process.returncode == 0:
-            self.service_activated = True
-            self.lbl_status.set_label(_("Status: Active"))
-
         self.set_widget_styles()
 
     def stop_service(self):
-        if not self.service_activated:
+        if not self.is_service_activated():
             return
 
         process = PPCActivator.run_activator(False)
 
-        if process.returncode == 0:
-            self.service_activated = False
-            self.lbl_status.set_label(_("Status: Inactive"))
-
         self.set_widget_styles()
 
     def set_widget_styles(self):
+        self.lbl_status.set_label(
+            _("Status: Active")
+            if self.is_service_activated()
+            else _("Status: Inactive")
+        )
+
         self.btn_service_activate.set_css_classes(
-            ["circular", "success"] if self.service_activated else ["circular"]
+            ["circular", "success"] if self.is_service_activated() else ["circular"]
         )
         self.lbl_status.set_css_classes(
-            ["title-5", "success"] if self.service_activated else ["title-5"]
+            ["title-5", "success"] if self.is_service_activated() else ["title-5"]
         )
 
     # === CALLBACKS ===
@@ -246,7 +275,7 @@ class MainWindow(Adw.ApplicationWindow):
         self.window.get_application().quit()
 
     def on_btn_service_activate_clicked(self, button):
-        if self.service_activated:
+        if self.is_service_activated():
             self.stop_service()
         else:
             self.start_service()
