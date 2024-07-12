@@ -8,12 +8,6 @@ import time
 import os
 import subprocess
 
-# Privileged run check
-if not FileRestrictionManager.check_user_privileged():
-    sys.stderr.write("You are not privileged to run this script.\n")
-    sys.exit(1)
-
-
 gi.require_version("Gtk", "4.0")
 from ui_gtk4.MainWindow import MainWindow
 
@@ -51,7 +45,7 @@ args = parser.parse_args()
 if args.startup:
     import managers.ProfileManager as ProfileManager
 
-    if not os.file.exists(ProfileManager.APPLIED_PROFILE_PATH):
+    if not os.path.exists(ProfileManager.APPLIED_PROFILE_PATH):
         print("Profile is not activated. Exiting.")
         exit(0)
 
@@ -60,23 +54,19 @@ if args.startup:
         profile_manager.load_json_from_file(ProfileManager.APPLIED_PROFILE_PATH)
     )
 
-    """
-    # TODO: Not filtering by user right now
     user_list = profile.get_user_list()
 
     if len(user_list) == 0:
         print("There is no user in user_list in profile. Nothing happened.")
         exit(0)
 
-    if os.getuid() not in user_list:
-        print(
-            "Revert back to original settings, this user is not in the restricted users list."
-        )
+    import pwd
 
-        process = PPCActivator.run_activator(False)
+    username = pwd.getpwuid(os.getuid()).pw_name
 
-        exit(process.returncode)
-    """
+    if username not in user_list:
+        print("User is not in the list")
+        exit(0)
 
     # Session Time check timer
     starts = profile.get_session_time_start()
@@ -107,13 +97,19 @@ if args.startup:
                     "--text='Your time is up! Computer is shutting down...'",
                 ]
             )
-            time.sleep(3)
-            subprocess.Popen(["poweroff"])
+            time.sleep(2)
+            subprocess.Popen(["loginctl", "kill-user", username])
             exit(1)
 
     check_session_time()
-    set_interval(60, check_session_time)  # check every minute
+    t = set_interval(check_session_time, 60)  # check every minute
+    t.join()
 
 else:
+    # Privileged run check
+    if not FileRestrictionManager.check_user_privileged():
+        sys.stderr.write("You are not privileged to run this script.\n")
+        sys.exit(1)
+
     app = Main()
     app.run(sys.argv)

@@ -16,7 +16,7 @@ chown -R :$PRIVILEGED_GROUP $PROFILES_CONFIG_DIR
 chmod -R g+rwx $PROFILES_CONFIG_DIR
 
 # Restrict access from "OTHER"(non group) users.
-chmod -R o-rwx $PROFILES_CONFIG_DIR
+chmod -R o-w $PROFILES_CONFIG_DIR
 
 # Smartdns install as service
 smartdns service install && smartdns service stop

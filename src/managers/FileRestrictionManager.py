@@ -23,18 +23,20 @@ def check_user_privileged():
 # Restrict
 def restrict_bin_file(filepath):
     if filepath:
-        os.chmod(filepath, 0o750)  # rwxr-x---
-        os.chown(filepath, 0, PRIVILEGED_GROUP_ID)  # root:sudo
+        os.chmod(filepath, 0o750)  # rwxr-xr--
+        os.chown(filepath, 0, PRIVILEGED_GROUP_ID)  # root:floppy
 
 
 def restrict_desktop_file(filepath):
     if filepath:
         os.chmod(filepath, 0o640)  # rw-r-----
-        os.chown(filepath, 0, PRIVILEGED_GROUP_ID)  # root:sudo
+        os.chown(filepath, 0, PRIVILEGED_GROUP_ID)  # root:floppy
 
 
 def restrict_conf_file(filepath):
-    restrict_desktop_file(filepath)  # same permission style
+    if filepath:
+        os.chmod(filepath, 0o655)  # rw-r--r--
+        os.chown(filepath, 0, PRIVILEGED_GROUP_ID)  # root:floppy
 
 
 # Unrestrict

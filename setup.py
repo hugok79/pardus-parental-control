@@ -76,6 +76,10 @@ data_files = [
     ),
     # Desktop file
     ("/usr/share/applications/", [f"{APP_ID}.desktop"]),
+    (
+        "/etc/xdg/autostart/",
+        ["data/tr.org.pardus.parental-control.user-check.desktop"],
+    ),
     # Polkit
     (
         "/usr/share/polkit-1/actions",

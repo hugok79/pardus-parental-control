@@ -47,6 +47,7 @@ class PPCActivator:
         self.set_application_filter()
         self.set_network_filter()
         self.set_user_groups()
+        self.copy_session_time_checker()
 
         if self.is_activated:
             self.save_applied_profile()
@@ -183,6 +184,16 @@ class PPCActivator:
 
                 if username not in profile.get_user_list():
                     LinuxUserManager.remove_user_from_privileged_group(username)
+
+    def copy_session_time_checker(self):
+        user_check_desktop_file = "tr.org.pardus.parental-control.user-check.desktop"
+        autostart_user_check_desktop_path = CWD + "/../data/" + user_check_desktop_file
+        autostart_dir = "/etc/xdg/autostart/"
+
+        if self.is_activated:
+            subprocess.run(["cp", autostart_user_check_desktop_path, autostart_dir])
+        else:
+            os.remove(autostart_dir + "/" + user_check_desktop_file)
 
 
 if __name__ == "__main__":

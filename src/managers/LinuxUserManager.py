@@ -25,7 +25,7 @@ def _add_user_to_group(user_name, group_name):
 
 
 def _remove_user_from_group(user_name, group_name):
-    subprocess.run(["gpasswd", "-d", group_name, user_name])
+    subprocess.run(["gpasswd", "-d", user_name, group_name])
 
 
 def add_user_to_privileged_group(user_name):
