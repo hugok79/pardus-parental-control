@@ -1,19 +1,17 @@
-import ui_gtk4.PActionRow as PActionRow
+import ui.widget.PActionRow as PActionRow
+
+from locale import gettext as _
+
 import gi
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Gtk, Adw, Gio, GLib  # noqa
 
-import locale  # noqa
-from locale import gettext as _  # noqa
 
-
-class ApplicationChooserDialog(Adw.PreferencesWindow):
-    def __init__(self, parent_window, application_selected_callback):
-        super().__init__(
-            application=parent_window.get_application(), transient_for=parent_window
-        )
+class DialogAppChooser(Adw.PreferencesWindow):
+    def __init__(self, application_selected_callback):
+        super().__init__()
 
         self.setup_window()
 

@@ -1,6 +1,6 @@
-src/ui_gtk4/MainWindow.py
-src/ui_gtk4/PreferencesWindow.py
-src/ui_gtk4/InputDialog.py
-src/ui_gtk4/ProfileChooserDialog.py
-src/ui_gtk4/PTimePeriodChooser.py
-src/ui_gtk4/ApplicationChooserDialog.py
+src/ui/MainWindow.py
+src/ui/page/PageApplications.py
+src/ui/page/PageEmpty.py
+src/ui/page/PageSessionTime.py
+src/ui/page/PageWebsites.py
+src/ui/widget/DialogAppChooser.py

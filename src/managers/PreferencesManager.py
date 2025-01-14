@@ -4,28 +4,33 @@ from pathlib import Path
 import copy
 
 CONFIG_DIR = Path("/var/lib/pardus/pardus-parental-control/")
-PROFILES_PATH = os.path.join(CONFIG_DIR, "profiles.json")
-APPLIED_PROFILE_PATH = os.path.join(CONFIG_DIR, "applied_profile.lock.json")
+PREFERENCES_PATH = os.path.join(CONFIG_DIR, "preferences.json")
 
-_DEFAULT_PROFILES = {
-    "profile_list": {
-        "Profile-1": {
-            "application_list": [],
-            "website_list": [],
-            "user_list": [],
-            "is_application_list_allowlist": False,
-            "is_website_list_allowlist": False,
-            "session_time_start": 0,
-            "session_time_end": 0,
-            "run_smartdns": False,
-        },
-    },
-    "current_profile": "Profile-1",
+_DEFAULT_USER_PREFERENCES = {
+    # Lists
+    "application_list": [],
+    "website_list": [],
+    # Allowlist Flags
+    "is_application_list_allowlist": False,
+    "is_website_list_allowlist": False,
+    # Active Flags
+    "is_application_filter_active": False,
+    "is_website_filter_active": False,
+    "is_session_time_filter_active": False,
+    # Session Time minutes
+    "session_time_start": 0,
+    "session_time_end": 0,
+    # Run Smartdns on website filtering flag
+    "run_smartdns": False,
+}
+
+_DEFAULT_PREFERENCES = {
+    "user_list": {},
     "base_dns_server": "1.1.1.3",
 }
 
 
-class Profile(object):
+class UserPreferences(object):
     def __init__(self, json):
         self.__dict__ = json  # deserialize json object to the profile struct
 
@@ -36,14 +41,20 @@ class Profile(object):
     def get_website_list(self):
         return self.website_list
 
-    def get_user_list(self):
-        return self.user_list
-
     def get_is_application_list_allowlist(self):
         return self.is_application_list_allowlist
 
     def get_is_website_list_allowlist(self):
         return self.is_website_list_allowlist
+
+    def get_is_application_filter_active(self):
+        return self.is_application_filter_active
+
+    def get_is_website_filter_active(self):
+        return self.is_website_filter_active
+
+    def get_is_session_time_filter_active(self):
+        return self.is_session_time_filter_active
 
     def get_session_time_start(self):
         return self.session_time_start
@@ -63,10 +74,6 @@ class Profile(object):
         if isinstance(value, list):
             self.website_list = value
 
-    def set_user_list(self, value):
-        if isinstance(value, list):
-            self.user_list = value
-
     def set_is_application_list_allowlist(self, value):
         if isinstance(value, bool):
             self.is_application_list_allowlist = value
@@ -74,6 +81,18 @@ class Profile(object):
     def set_is_website_list_allowlist(self, value):
         if isinstance(value, bool):
             self.is_website_list_allowlist = value
+
+    def set_is_application_filter_active(self, value):
+        if isinstance(value, bool):
+            self.is_application_filter_active = value
+
+    def set_is_website_filter_active(self, value):
+        if isinstance(value, bool):
+            self.is_website_filter_active = value
+
+    def set_is_session_time_filter_active(self, value):
+        if isinstance(value, bool):
+            self.is_session_time_filter_active = value
 
     def set_session_time_start(self, value):
         if isinstance(value, int):
@@ -112,13 +131,6 @@ class Profile(object):
         self.website_list.append(website_domain)
         return True
 
-    def insert_user(self, user_name):
-        if user_name in self.user_list:
-            return False
-
-        self.user_list.append(user_name)
-        return True
-
     # Delete
     def remove_application(self, app_id):
         if app_id not in self.application_list:
@@ -134,93 +146,56 @@ class Profile(object):
         self.website_list.remove(website_domain)
         return True
 
-    def remove_user(self, user_name):
-        if user_name not in self.user_list:
-            return False
 
-        self.user_list.remove(user_name)
-        return True
-
-
-class ProfileManager:
+class PreferencesManager:
     def __init__(self, json=None):
         if json is None:
             self.__dict__ = self.load_json_from_file()
         else:
             self.__dict__ = json  # deserialize json object
 
-        for key in self.profile_list:
-            self.profile_list[key] = Profile(self.profile_list[key])
+        for key in self.user_list:
+            self.user_list[key] = UserPreferences(self.user_list[key])
 
     # Getters
-    def get_profile_list(self):
-        return self.profile_list
+    def get_user_list(self):
+        return self.user_list
 
-    def get_profile(self, name) -> Profile:
-        return self.profile_list[name]
+    def get_user(self, name) -> UserPreferences:
+        return self.user_list[name]
 
-    def get_current_profile(self) -> Profile:
-        return self.get_profile(self.current_profile)
-
-    def get_current_profile_name(self):
-        return self.current_profile
-
-    def has_profile_name(self, profile_name):
-        return profile_name in self.profile_list
+    def has_user(self, name):
+        return name in self.user_list
 
     def get_base_dns_server(self):
         return self.base_dns_server
 
     # Setters
-    def set_profile_dict(self, value):
+    def set_user_list(self, value):
         if isinstance(value, dict):
-            self.profile_list = value
+            self.user_list = value
 
-        self.save_as_json_file()
-
-    def set_current_profile(self, value):
-        if isinstance(value, str):
-            self.current_profile = value
-
-        self.save_as_json_file()
+        self.save()
 
     # Insert
-    def insert_default_profile(self, profile_name):
-        self.profile_list[profile_name] = Profile(
-            copy.deepcopy(_DEFAULT_PROFILES["profile_list"]["Profile-1"])
-        )
+    def insert_new_user(self, name):
+        if name in self.user_list:
+            return self.user_list[name]
 
-        self.save_as_json_file()
+        self.user_list[name] = UserPreferences(copy.deepcopy(_DEFAULT_USER_PREFERENCES))
 
-    def duplicate_profile(self, main_profile_name, new_duplicated_profile_name):
-        self.profile_list[new_duplicated_profile_name] = Profile(
-            copy.deepcopy(self.get_profile(main_profile_name).__dict__)
-        )
+        self.save()
 
-        self.save_as_json_file()
+        return self.user_list[name]
 
     # Remove
-    def remove_profile(self, profile_name):
-        if profile_name not in self.profile_list:
+    def remove_user(self, name):
+        if name not in self.user_list:
             return
 
-        del self.profile_list[profile_name]
+        del self.user_list[name]
 
-        self.save_as_json_file()
-
-    # Update
-    def update_profile_name(self, old_name, new_name):
-        if old_name not in self.profile_list:
-            return
-
-        self.profile_list[new_name] = self.profile_list[old_name]
-
-        del self.profile_list[old_name]
-
-        if old_name == self.current_profile:
-            self.current_profile = new_name
-
-        self.save_as_json_file()
+        self.save()
 
     # JSON
     def as_json(self):
@@ -232,7 +207,7 @@ class ProfileManager:
             sort_keys=True,
         )
 
-    def save_as_json_file(self, filepath=PROFILES_PATH, json_object=None):
+    def save(self, filepath=PREFERENCES_PATH, json_object=None):
         if json_object is None:
             json_object = self.__dict__
 
@@ -255,16 +230,15 @@ class ProfileManager:
             print("Not enough permissions to create the file")
             return
 
-    def load_json_from_file(self, filepath=PROFILES_PATH):
-        print("Loading profiles from {}".format(filepath))
+    def load_json_from_file(self, filepath=PREFERENCES_PATH):
         # Read the profiles.json
         try:
             with open(filepath, "r", encoding="utf-8") as f:
                 return json.load(f)
         except FileNotFoundError:
-            print("profiles.json file not found, returning the default profiles file.")
+            print(f"'{filepath}' not found, returning the default profiles file.")
 
-            return copy.deepcopy(_DEFAULT_PROFILES)
+            return copy.deepcopy(_DEFAULT_PREFERENCES)
         except json.JSONDecodeError:
             print(
                 "{} is not valid json file. Moving file to backup: profiles.json.backup. Using default profiles.json".format(
@@ -274,16 +248,16 @@ class ProfileManager:
             # Backup current one
             os.rename(filepath, "{}.backup".format(filepath))
 
-            return copy.deepcopy(_DEFAULT_PROFILES)
+            return copy.deepcopy(_DEFAULT_PREFERENCES)
 
 
-profile_manager = None
+preferences_manager = None
 
 
-def get_default() -> ProfileManager:
-    global profile_manager
+def get_default() -> PreferencesManager:
+    global preferences_manager
 
-    if profile_manager is None:
-        profile_manager = ProfileManager()
+    if preferences_manager is None:
+        preferences_manager = PreferencesManager()
 
-    return profile_manager
+    return preferences_manager

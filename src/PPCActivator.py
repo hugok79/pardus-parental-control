@@ -70,9 +70,7 @@ class PPCActivator:
         profile_manager = ProfileManager.get_default()
         current_profile = profile_manager.get_current_profile()
 
-        profile_manager.save_as_json_file(
-            ProfileManager.APPLIED_PROFILE_PATH, current_profile
-        )
+        profile_manager.save(ProfileManager.APPLIED_PROFILE_PATH, current_profile)
 
     def remove_applied_profile(self):
         if os.path.isfile(ProfileManager.APPLIED_PROFILE_PATH):

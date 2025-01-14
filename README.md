@@ -12,8 +12,7 @@ Parental Control application for Pardus.
   - **Deny Only** List
 - ⏰ Session Time Limit
   - Limit Session Times
-- 🧑‍🧒 Profile Management
-  - You can define different restrictions for different situations and use them. 
+
 ## Installation
 Download the .deb file and install it with Pardus Package Installer.
 

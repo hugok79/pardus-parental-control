@@ -18,6 +18,7 @@ def get_all_applications():
 
     return list(apps)
 
+
 def save_all_applications():
     applist = get_all_applications()
 
@@ -30,10 +31,10 @@ def save_all_applications():
             "cmdline": app.get_commandline(),
         }
 
-    save_as_json_file(json_object)
+    save(json_object)
 
 
-# APPLICATION RESTRICTIONS:    
+# APPLICATION RESTRICTIONS:
 def restrict_application(application_id):
     if application_id in ALWAYS_ALLOWED_APPLICATIONS:
         print(application_id, " is always allowed. SKIPPING.")

@@ -1,9 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Recheck Pardus Parental Control
-Comment=Recheck Pardus Parental Control current settings and applies them.
-Exec=/usr/share/pardus/pardus-parental-control/src/Main.py --startup
-NoDisplay=true
-X-GNOME-Autostart-enabled=true
-X-GNOME-Autostart-Phase=WindowManager
-X-KDE-autostart-phase=1

@@ -1,7 +1,7 @@
 import os
 import subprocess
 
-PRIVILEGED_GROUP = "floppy"
+PRIVILEGED_GROUP = "sudo"
 PRIVILEGED_GROUP_ID = int(
     subprocess.check_output(["getent", "group", PRIVILEGED_GROUP])
     .decode()
@@ -24,19 +24,19 @@ def check_user_privileged():
 def restrict_bin_file(filepath):
     if filepath:
         os.chmod(filepath, 0o750)  # rwxr-xr--
-        os.chown(filepath, 0, PRIVILEGED_GROUP_ID)  # root:floppy
+        os.chown(filepath, 0, PRIVILEGED_GROUP_ID)  # root:sudo
 
 
 def restrict_desktop_file(filepath):
     if filepath:
         os.chmod(filepath, 0o640)  # rw-r-----
-        os.chown(filepath, 0, PRIVILEGED_GROUP_ID)  # root:floppy
+        os.chown(filepath, 0, PRIVILEGED_GROUP_ID)
 
 
 def restrict_conf_file(filepath):
     if filepath:
         os.chmod(filepath, 0o655)  # rw-r--r--
-        os.chown(filepath, 0, PRIVILEGED_GROUP_ID)  # root:floppy
+        os.chown(filepath, 0, PRIVILEGED_GROUP_ID)
 
 
 # Unrestrict

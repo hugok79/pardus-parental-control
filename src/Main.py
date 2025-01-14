@@ -1,16 +1,15 @@
 #!/usr/bin/python3
 import gi
 import sys
-import argparse
 import threading
 import managers.FileRestrictionManager as FileRestrictionManager
 import time
 import os
 import subprocess
 
-gi.require_version("Gtk", "4.0")
-from ui_gtk4.MainWindow import MainWindow
+from ui.MainWindow import MainWindow
 
+gi.require_version("Gtk", "4.0")
 from gi.repository import Gtk, Gio  # noqa
 
 
@@ -30,18 +29,7 @@ class Main(Gtk.Application):
         self.window.show_ui()
 
 
-# Argument Parsing
-parser = argparse.ArgumentParser(description="Parental Control app for Pardus.")
-
-parser.add_argument(
-    "--startup",
-    action="store_true",
-    help="Applies new settings if the user or any settings changed.",
-)
-args = parser.parse_args()
-
-
-# pardus-parental-control --startup # this is running when user logged in, stored in /etc/xdg/autostart
+"""
 if args.startup:
     import managers.ProfileManager as ProfileManager
 
@@ -106,10 +94,12 @@ if args.startup:
     t.join()
 
 else:
-    # Privileged run check
-    if not FileRestrictionManager.check_user_privileged():
-        sys.stderr.write("You are not privileged to run this script.\n")
-        sys.exit(1)
+"""
+# Privileged run check
+if not FileRestrictionManager.check_user_privileged():
+    sys.stderr.write("You are not privileged to run this script.\n")
+    sys.exit(1)
 
+if __name__ == "__main__":
     app = Main()
     app.run(sys.argv)

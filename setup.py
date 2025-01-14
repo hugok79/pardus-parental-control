@@ -40,45 +40,48 @@ data_files = [
             "src/managers/FileRestrictionManager.py",
             "src/managers/LinuxUserManager.py",
             "src/managers/NetworkFilterManager.py",
-            "src/managers/ProfileManager.py",
+            "src/managers/PreferencesManager.py",
+        ],
+    ),
+    # UI
+    (f"/usr/share/pardus/{APP_NAME}/src/ui", ["src/ui/MainWindow.py"]),
+    (
+        f"/usr/share/pardus/{APP_NAME}/src/ui/page",
+        [
+            "src/ui/page/PageApplications.py",
+            "src/ui/page/PageEmpty.py",
+            "src/ui/page/PageSessionTime.py",
+            "src/ui/page/PageWebsites.py",
         ],
     ),
     (
-        f"/usr/share/pardus/{APP_NAME}/src/ui_gtk4",
+        f"/usr/share/pardus/{APP_NAME}/src/ui/widget",
         [
-            "src/ui_gtk4/ApplicationChooserDialog.py",
-            "src/ui_gtk4/InputDialog.py",
-            "src/ui_gtk4/MainWindow.py",
-            "src/ui_gtk4/PActionRow.py",
-            "src/ui_gtk4/PreferencesWindow.py",
-            "src/ui_gtk4/ProfileChooserDialog.py",
-            "src/ui_gtk4/PTimePeriodChooser.py",
+            "src/ui/widget/DialogAppChooser.py",
+            "src/ui/widget/ListRowAvatar.py",
+            "src/ui/widget/PActionRow.py",
+            "src/ui/widget/PTimeChooserRow.py",
         ],
     ),
-    # Binary
+    # Executable
     ("/usr/bin/", [f"{APP_NAME}"]),
     # Data
-    (
-        f"/var/lib/pardus/{APP_NAME}/",
-        ["data/profiles.json"],
-    ),
+    (f"/var/lib/pardus/{APP_NAME}/", ["data/preferences.json"]),
     (
         f"/usr/share/pardus/{APP_NAME}/data",
         [
-            "data/style_gtk4.css",
-            "data/tr.org.pardus.parental-control.user-check.desktop",
+            "data/style.css",
+            "data/tr.org.pardus.parental-control.apply-settings.desktop",
         ],
     ),
-    ("/usr/share/icons/hicolor/scalable/apps/", [f"data/img/{APP_NAME}.svg"]),
-    (
-        f"/usr/share/pardus/{APP_NAME}/data/img",
-        [f"data/img/{APP_NAME}.svg"],
-    ),
+    ("/usr/share/icons/hicolor/scalable/apps/", [f"data/{APP_NAME}.svg"]),
+    (f"/usr/share/pardus/{APP_NAME}/data", [f"data/{APP_NAME}.svg"]),
     # Desktop file
     ("/usr/share/applications/", [f"{APP_ID}.desktop"]),
+    # Service
     (
         "/etc/xdg/autostart/",
-        ["data/tr.org.pardus.parental-control.user-check.desktop"],
+        ["data/tr.org.pardus.parental-control.apply-settings.desktop"],
     ),
     # Polkit
     (
@@ -89,7 +92,7 @@ data_files = [
 
 setup(
     name=f"{APP_NAME}",
-    version="0.3.0",
+    version="0.2.0",
     packages=find_packages(),
     scripts=[f"{APP_NAME}"],
     install_requires=["PyGObject"],

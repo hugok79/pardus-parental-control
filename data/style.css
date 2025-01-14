@@ -1,0 +1,21 @@
+.user-sidebar {
+    padding: 3px;
+}
+
+.user-sidebar>row {
+    margin: 3px;
+    padding: 7px;
+    border-radius: 7px;
+    min-height: 32px;
+}
+
+button.sidebar-button {
+    margin: 7px;
+    padding: 7px;
+    min-height: 24px;
+    border-radius: 7px;
+}
+
+button.sidebar-button>box {
+    padding: 3px;
+}
