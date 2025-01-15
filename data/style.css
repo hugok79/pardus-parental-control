@@ -9,6 +9,10 @@
     min-height: 32px;
 }
 
+.user-sidebar>row:selected {
+    border-left: 4px solid @accent_color;
+}
+
 button.sidebar-button {
     margin: 7px;
     padding: 7px;
