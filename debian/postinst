@@ -3,22 +3,20 @@
 set -e
 
 # Use "floppy" group for provide access only to privileged users
-PRIVILEGED_GROUP="floppy"
-PROFILES_CONFIG_DIR="/var/lib/pardus/pardus-parental-control"
+PRIVILEGED_GROUP="sudo"
+PREFERENCES_DIR="/var/lib/pardus/pardus-parental-control"
 
 # Create Profiles Path
-mkdir -p $PROFILES_CONFIG_DIR
+if [ ! -d "$PREFERENCES_DIR" ] ; then
+    mkdir --mode=775 -p $PREFERENCES_DIR
+fi
 
-# Change owner of the "eta-kisit" folder
-chown -R :$PRIVILEGED_GROUP $PROFILES_CONFIG_DIR
+# if $2 exists, then it is upgrading from an old package, if not exists, then installing from a new package.
+if [ -z "$2" ]; then
 
-# Allow access from "GROUP" users.
-chmod -R g+rwx $PROFILES_CONFIG_DIR
+    # Smartdns install as service
+    smartdns service install && smartdns service stop
 
-# Restrict access from "OTHER"(non group) users.
-chmod -R o-w $PROFILES_CONFIG_DIR
-
-# Smartdns install as service
-smartdns service install && smartdns service stop
+fi
 
 #DEBHELPER#

@@ -2,17 +2,22 @@
 
 set -e
 
-PROFILES_CONFIG_DIR="/var/lib/pardus/pardus-parental-control"
 APP_DIR="/usr/share/pardus/pardus-parental-control"
 
-# Create Profiles Path
-rm -rf $PROFILES_CONFIG_DIR
+# if $2 exist, then it is upgrading from an old package
 
-# Check if smartdns service exists
-if systemctl list-units --type=service --all | grep -q "smartdns-rs.service"; then
-  smartdns service uninstall || true
+# if $2 is not exist, so it is removing the package itself.
+if [ -z "$2" ]; then
+
+  if [ -d "$APP_DIR" ]; then
+    rm -rf $APP_DIR
+  fi
+
+  # remove smartdns service if exist:
+  if systemctl list-units --type=service --all | grep -q "smartdns-rs.service"; then
+    smartdns service uninstall || true
+  fi
+
 fi
-
-rm -rf $APP_DIR && echo "Removed $APP_DIR directory successfully."
 
 #DEBHELPER#
