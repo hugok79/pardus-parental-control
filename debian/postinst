@@ -2,7 +2,7 @@
 
 set -e
 
-# Use "floppy" group for provide access only to privileged users
+# Use "sudo" group for provide access only to privileged users
 PRIVILEGED_GROUP="sudo"
 PREFERENCES_DIR="/var/lib/pardus/pardus-parental-control"
 
@@ -11,12 +11,13 @@ if [ ! -d "$PREFERENCES_DIR" ] ; then
     mkdir --mode=775 -p $PREFERENCES_DIR
 fi
 
-# if $2 exists, then it is upgrading from an old package, if not exists, then installing from a new package.
-if [ -z "$2" ]; then
+chown -R :$PRIVILEGED_GROUP $PREFERENCES_DIR
 
-    # Smartdns install as service
-    smartdns service install && smartdns service stop
-
+# Install smartdns service if not installed
+if systemctl list-units --type=service --all | grep -q "smartdns-rs.service"; then
+    systemctl stop smartdns-rs.service || true
+else
+    smartdns service install && systemctl stop smartdns-rs.service || true
 fi
 
 #DEBHELPER#
