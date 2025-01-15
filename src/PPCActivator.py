@@ -3,206 +3,158 @@
 import sys
 import subprocess
 import os
+import threading
+import time
+
 import managers.FileRestrictionManager as FileRestrictionManager
 import managers.LinuxUserManager as LinuxUserManager
-import managers.ProfileManager as ProfileManager
+import managers.PreferencesManager as PreferencesManager
 import managers.NetworkFilterManager as NetworkFilterManager
 import managers.ApplicationManager as ApplicationManager
 
 CWD = os.path.dirname(os.path.abspath(__file__))
 
 
-def run_activator(activate):
-    process = subprocess.run(
-        [
-            "pkexec",
-            CWD + "/PPCActivator.py",
-            "1" if activate else "0",
-        ]
-    )
-
-    return process
-
-
 class PPCActivator:
-    def __init__(self, is_activated):
-        self.is_activated = is_activated
-
+    def __init__(self):
         # Privileged run check
         if not FileRestrictionManager.check_user_privileged():
             sys.stderr.write("You are not privileged to run this script.\n")
             sys.exit(1)
 
-    def run(self, is_activated=None):
+    def run(self):
         print("== PPCActivator STARTED ==")
 
-        if is_activated is not None:
-            self.is_activated = is_activated
+        self.logged_user = LinuxUserManager.get_active_session_username()
+        self.read_user_preferences()
 
-        if self.is_activated:
-            self.read_profile()
+        if self.preferences.get_is_application_filter_active():
+            self.apply_application_filter()
         else:
-            self.read_applied_profile()
+            self.clear_application_filter()
 
-        self.set_application_filter()
-        self.set_network_filter()
-        self.set_user_groups()
-        self.copy_session_time_checker()
-
-        if self.is_activated:
-            self.save_applied_profile()
+        if self.preferences.get_is_website_filter_active():
+            self.apply_website_filter()
         else:
-            self.remove_applied_profile()
+            self.clear_website_filter()
+
+        if self.preferences.get_is_session_time_filter_active():
+            # START TIMER
+            self.start_session_time_checker()
 
         print("== PPCActivator FINISHED ==")
 
-    def read_profile(self):
-        self.profile = ProfileManager.get_default().get_current_profile()
+    def read_user_preferences(self):
+        self.preferences_manager = PreferencesManager.get_default()
+        if self.preferences_manager.has_user(self.logged_user):
+            self.preferences = self.preferences_manager.get_user(self.logged_user)
+        else:
+            print("User not found in preferences.json: {}".format(self.logged_user))
+            self.clear_application_filter()
+            self.clear_website_filter()
+            print("Cleared all filters")
+            exit(0)
 
-    def read_applied_profile(self):
-        self.applied_profile = ProfileManager.Profile(
-            ProfileManager.get_default().load_json_from_file(
-                ProfileManager.APPLIED_PROFILE_PATH
-            )
+    # == Application Filtering ==
+    def apply_application_filter(self):
+        pref = self.preferences
+
+        list_length = len(pref.get_application_list())
+        if list_length == 0:
+            return
+
+        is_allowlist = pref.get_is_application_list_allowlist()
+        if is_allowlist:
+            for app in ApplicationManager.get_all_applications():
+                if app.get_id() not in pref.get_application_list():
+                    ApplicationManager.restrict_application(app.get_id())
+        else:
+            for app in pref.get_application_list():
+                ApplicationManager.restrict_application(app.get_id())
+
+    def clear_application_filter(self):
+        for app in ApplicationManager.get_all_applications():
+            ApplicationManager.unrestrict_application(app.get_id())
+
+    # == Website Filtering ==
+    def apply_website_filter(self):
+        pref = self.preferences
+
+        list_length = len(pref.get_website_list())
+        if list_length == 0:
+            return
+
+        is_allowlist = pref.get_is_website_list_allowlist()
+
+        # browser + domain configs
+        NetworkFilterManager.set_domain_filter_list(
+            pref.get_website_list(),
+            is_allowlist,
+            self.preferences_manager.get_base_dns_server(),
         )
 
-    def save_applied_profile(self):
-        profile_manager = ProfileManager.get_default()
-        current_profile = profile_manager.get_current_profile()
+        # smartdns server
+        if pref.get_run_smartdns():
+            # resolvconf
+            NetworkFilterManager.set_resolvconf_to_localhost()
+            NetworkFilterManager.enable_smartdns_service()
+            NetworkFilterManager.restart_smartdns_service()
 
-        profile_manager.save(ProfileManager.APPLIED_PROFILE_PATH, current_profile)
+    def clear_website_filter(self):
+        # browser + domain configs
+        NetworkFilterManager.reset_domain_filter_list()
 
-    def remove_applied_profile(self):
-        if os.path.isfile(ProfileManager.APPLIED_PROFILE_PATH):
-            os.remove(ProfileManager.APPLIED_PROFILE_PATH)
+        # smartdns-rs
+        NetworkFilterManager.reset_resolvconf_to_default()
+        NetworkFilterManager.stop_smartdns_service()
+        NetworkFilterManager.disable_smartdns_service()
 
-    def set_application_filter(self):
-        if self.is_activated:
-            profile = self.profile
+    # == Session Time Control ==
+    def start_session_time_checker(self):
+        # Session Time Minutes. 1440 minutes in a day.
+        start = self.preferences.get_session_time_start()
+        end = self.preferences.get_session_time_end()
 
-            is_allowlist = profile.get_is_application_list_allowlist()
-            list_length = len(profile.get_application_list())
+        if start == end:
+            print("Start and End times are equal. Not applying.")
+            exit(0)
 
-            if list_length == 0:
-                return
+        def set_interval(func, sec):
+            def func_wrapper():
+                set_interval(func, sec)
+                func()
 
-            if is_allowlist:
-                all_applications = ApplicationManager.get_all_applications()
+            t = threading.Timer(sec, func_wrapper)
+            t.start()
+            return t
 
-                for app in all_applications:
-                    if app.get_id() not in profile.get_application_list():
-                        ApplicationManager.restrict_application(app.get_id())
+        def check_session_time():
+            t = time.localtime()
+            minutes_now = (60 * t.tm_hour) + t.tm_min
 
-            else:
-                for app_id in profile.get_application_list():
-                    ApplicationManager.restrict_application(app_id)
-
-        else:
-            profile = self.applied_profile
-
-            is_allowlist = profile.get_is_application_list_allowlist()
-            list_length = len(profile.get_application_list())
-
-            if list_length == 0:
-                return
-
-            if is_allowlist:
-                all_applications = ApplicationManager.get_all_applications()
-                for app in all_applications:
-                    # Remove All app restrictions
-                    ApplicationManager.unrestrict_application(app.get_id())
-            else:
-                for app_id in profile.get_application_list():
-                    ApplicationManager.unrestrict_application(app_id)
-
-    def set_network_filter(self):
-        profile_manager = ProfileManager.get_default()
-
-        if self.is_activated:
-            profile = self.profile
-            is_allowlist = profile.get_is_website_list_allowlist()
-            list_length = len(profile.get_website_list())
-
-            if list_length == 0:
-                return
-
-            website_list = profile.get_website_list()
-
-            # browser + domain configs
-            if is_allowlist:
-                NetworkFilterManager.set_domain_filter_list(
-                    website_list, True, profile_manager.get_base_dns_server()
+            if minutes_now < start or minutes_now > end:
+                subprocess.Popen(
+                    [
+                        "zenity",
+                        "--info",
+                        "--text='Your time is up! Computer is shutting down in 30 seconds...'",
+                    ]
                 )
-            else:
-                NetworkFilterManager.set_domain_filter_list(
-                    website_list, False, profile_manager.get_base_dns_server()
-                )
+                time.sleep(30)
+                subprocess.Popen(["loginctl", "kill-user", self.logged_user])
+                exit(1)
 
-            # smartdns-rs
-            is_run_smartdns = profile.get_run_smartdns()
-            if is_run_smartdns:
-                # resolvconf
-                NetworkFilterManager.set_resolvconf_to_localhost()
-                NetworkFilterManager.enable_smartdns_service()
-                NetworkFilterManager.restart_smartdns_service()
-        else:
-            profile = self.applied_profile
-
-            is_allowlist = profile.get_is_website_list_allowlist()
-            list_length = len(profile.get_website_list())
-
-            if list_length == 0:
-                return
-
-            # browser + domain configs
-            NetworkFilterManager.reset_domain_filter_list()
-
-            # smartdns-rs
-            is_run_smartdns = profile.get_run_smartdns()
-            if is_run_smartdns:
-                NetworkFilterManager.reset_resolvconf_to_default()
-
-                NetworkFilterManager.stop_smartdns_service()
-                NetworkFilterManager.disable_smartdns_service()
-
-    def set_user_groups(self):
-        standard_users = LinuxUserManager.get_standard_users()
-
-        if self.is_activated:
-            profile = self.profile
-            for user in standard_users:
-                username = user.get_user_name()
-
-                if username not in profile.get_user_list():
-                    LinuxUserManager.add_user_to_privileged_group(username)
-        else:
-            profile = self.applied_profile
-            for user in standard_users:
-                username = user.get_user_name()
-
-                if username not in profile.get_user_list():
-                    LinuxUserManager.remove_user_from_privileged_group(username)
-
-    def copy_session_time_checker(self):
-        user_check_desktop_file = "tr.org.pardus.parental-control.user-check.desktop"
-        autostart_user_check_desktop_path = CWD + "/../data/" + user_check_desktop_file
-        autostart_dir = "/etc/xdg/autostart/"
-
-        if self.is_activated:
-            subprocess.run(["cp", autostart_user_check_desktop_path, autostart_dir])
-        else:
-            os.remove(autostart_dir + "/" + user_check_desktop_file)
+        check_session_time()
+        t = set_interval(check_session_time, 60)  # check every minute
+        t.join()
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        sys.stderr.write(
-            "Usage: {} [ 1(activate) or 0(deactivate) ]. e.g. {} 1\n".format(
-                sys.argv[0], sys.argv[0]
-            )
-        )
-        exit(1)
+    activator = PPCActivator()
+    if len(sys.argv) == 2:
+        if sys.argv[1] == "--clear":
+            activator.clear_application_filter()
+            activator.clear_website_filter()
+            exit(0)
 
-    is_activated = int(sys.argv[1])
-    activator = PPCActivator(is_activated)
     activator.run()

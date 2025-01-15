@@ -10,10 +10,10 @@ PRIVILEGED_GROUP_ID = int(
 
 
 def check_user_privileged():
-    user_groups = os.getgroups()
-    if 0 in user_groups:  # root user
+    if os.getuid() == 0:  # root user
         return True
 
+    user_groups = os.getgroups()
     if PRIVILEGED_GROUP_ID in user_groups:  # not root but in the group
         return True
 
@@ -23,7 +23,7 @@ def check_user_privileged():
 # Restrict
 def restrict_bin_file(filepath):
     if filepath:
-        os.chmod(filepath, 0o750)  # rwxr-xr--
+        os.chmod(filepath, 0o750)  # rwxr-x---
         os.chown(filepath, 0, PRIVILEGED_GROUP_ID)  # root:sudo
 
 
@@ -34,9 +34,7 @@ def restrict_desktop_file(filepath):
 
 
 def restrict_conf_file(filepath):
-    if filepath:
-        os.chmod(filepath, 0o655)  # rw-r--r--
-        os.chown(filepath, 0, PRIVILEGED_GROUP_ID)
+    restrict_desktop_file(filepath)
 
 
 # Unrestrict

@@ -47,6 +47,7 @@ address /./#
 CHROME_POLICY_PATH = Path("/etc/opt/chrome/policies/managed/policies.json")
 BRAVE_POLICY_PATH = Path("/etc/brave/policies/managed/policies.json")
 CHROMIUM_POLICY_PATH = Path("/etc/chromium/policies/managed/policies.json")
+CHROMIUM2_POLICY_PATH = Path("/etc/chromium-browser/policies/managed/policies.json")
 FIREFOX_POLICY_PATH = Path("/etc/firefox/policies/policies.json")
 
 CHROME_POLICY_JSON = {
@@ -65,7 +66,7 @@ FIREFOX_POLICY_JSON = {
     }
 }
 
-RESOLV_CONF_CONTENT = """# This file is generated & locked by eta-kisit app. Please do not change.
+RESOLV_CONF_CONTENT = """# This file is generated & locked by pardus-parental-control app. Please do not change.
 
 nameserver 127.0.0.1
 
@@ -183,25 +184,28 @@ def _set_browser_policy_domain_list(domainlist, is_allowlist):
         chromium_policy_object["URLAllowlist"] = domainlist
 
         # Block everything except allowlist
-        firefox_policy_object["policies"]["WebsiteFilter"]["Block"] = ["<all_urls>"]
-        # convert e.g. "google.com" -> "*://*.google.com/*"
-        firefox_policy_object["policies"]["WebsiteFilter"]["Exceptions"] = list(
-            map(lambda x: "*://{}/*".format(x), domainlist)
-        )
+        # TODO: Firefox policy files not working properly. Comment this until firefox fix it.
+        # firefox_policy_object["policies"]["WebsiteFilter"]["Block"] = ["<all_urls>"]
+        # # convert e.g. "google.com" -> "*://*.google.com/*"
+        # firefox_policy_object["policies"]["WebsiteFilter"]["Exceptions"] = list(
+        #     map(lambda x: "*://{}/*".format(x), domainlist)
+        # )
     else:
         chromium_policy_object["URLAllowlist"] = []
         chromium_policy_object["URLBlocklist"] = domainlist
 
         # convert e.g. "google.com" -> "*://*.google.com/*"
-        firefox_policy_object["policies"]["WebsiteFilter"]["Block"] = list(
-            map(lambda x: "*://{}/*".format(x), domainlist)
-        )
-        firefox_policy_object["policies"]["WebsiteFilter"]["Exceptions"] = []
+        # TODO: Firefox policy files not working properly. Comment this until firefox fix it.
+        # firefox_policy_object["policies"]["WebsiteFilter"]["Block"] = list(
+        #     map(lambda x: "*://{}/*".format(x), domainlist)
+        # )
+        # firefox_policy_object["policies"]["WebsiteFilter"]["Exceptions"] = []
 
     # Save for all browsers
     _save_browser_policy(CHROME_POLICY_PATH, chromium_policy_object)
     _save_browser_policy(BRAVE_POLICY_PATH, chromium_policy_object)
     _save_browser_policy(CHROMIUM_POLICY_PATH, chromium_policy_object)
+    _save_browser_policy(CHROMIUM2_POLICY_PATH, chromium_policy_object)
     _save_browser_policy(FIREFOX_POLICY_PATH, firefox_policy_object)
 
 
@@ -209,6 +213,7 @@ def _reset_browser_policy_domain_list():
     remove_file_if_exists(CHROME_POLICY_PATH)
     remove_file_if_exists(BRAVE_POLICY_PATH)
     remove_file_if_exists(CHROMIUM_POLICY_PATH)
+    remove_file_if_exists(CHROMIUM2_POLICY_PATH)
     remove_file_if_exists(FIREFOX_POLICY_PATH)
 
 
