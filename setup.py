@@ -67,13 +67,7 @@ data_files = [
     ("/usr/bin/", [f"{APP_NAME}"]),
     # Data
     (f"/var/lib/pardus/{APP_NAME}/", ["data/preferences.json"]),
-    (
-        f"/usr/share/pardus/{APP_NAME}/data",
-        [
-            "data/style.css",
-            "data/tr.org.pardus.parental-control.apply-settings.desktop",
-        ],
-    ),
+    (f"/usr/share/pardus/{APP_NAME}/data", ["data/style.css"]),
     ("/usr/share/icons/hicolor/scalable/apps/", [f"data/{APP_NAME}.svg"]),
     (f"/usr/share/pardus/{APP_NAME}/data", [f"data/{APP_NAME}.svg"]),
     # Desktop file
