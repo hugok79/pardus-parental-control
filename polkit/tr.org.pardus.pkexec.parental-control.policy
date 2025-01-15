@@ -20,6 +20,5 @@
 
     <annotate key="org.freedesktop.policykit.exec.path">/usr/share/pardus/pardus-parental-contol/src/PPCActivator.py</annotate>
     <annotate key="org.freedesktop.policykit.exec.allow_gui">true</annotate>
-    <annotate key="org.freedesktop.policykit.owner">unix-group:sudo</annotate>
   </action>
 </policyconfig>
