@@ -12,6 +12,7 @@ if [ ! -d "$PREFERENCES_DIR" ] ; then
 fi
 
 chown -R :$PRIVILEGED_GROUP $PREFERENCES_DIR
+chmod -R 775 $PREFERENCES_DIR
 
 # Install smartdns service if not installed
 if systemctl list-units --type=service --all | grep -q "smartdns-rs.service"; then

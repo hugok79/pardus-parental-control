@@ -8,7 +8,11 @@ APP_DIR="/usr/share/pardus/pardus-parental-control"
 # if $2 is not exist, so it is removing the package itself.
 
 # Remove __pycache__ files
-find $APP_DIR -name "__pycache__" -prune -exec rm -rf {} \;
+if [ -d "$APP_DIR" ]; then
+  find $APP_DIR -name "__pycache__" -prune -exec rm -rf {} \;
+fi
+
+
 
 # remove smartdns service if exist:
 if systemctl list-units --type=service --all | grep -q "smartdns-rs.service"; then
