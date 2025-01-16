@@ -16,10 +16,10 @@ class PTimeChooserRow(Adw.PreferencesRow):
         self.set_activatable(False)
 
         # Time Selection
-        adj = Gtk.Adjustment.new(minutes / 15, 0, 96, 1, 1, 0)
+        self.adjustment = Gtk.Adjustment.new(minutes / 15, 0, 96, 1, 1, 0)
         self.scale_from_time = Gtk.Scale(
             orientation=Gtk.Orientation.HORIZONTAL,
-            adjustment=adj,
+            adjustment=self.adjustment,
             margin_start=14,
             margin_end=14,
         )
@@ -42,11 +42,24 @@ class PTimeChooserRow(Adw.PreferencesRow):
         self.scale_from_time.set_value(int(value / 15))
 
     def get_minutes(self):
-        return int(self.scale_from_time.get_value() * 15)
+        value = int(self.scale_from_time.get_value())
+        minutes = value * 15  # 15 minutes steps
+
+        if value == self.adjustment.get_upper():
+            # Convert 24:00 -> 23:59
+            minutes -= 1
+
+        return minutes
 
     # Callbacks
     def on_value_changed(self, r):
-        minutes = int(r.get_value() * 15)
+        value = int(r.get_value())
+        minutes = value * 15
+
+        if value == self.adjustment.get_upper():
+            # Convert 24:00 -> 23:59
+            minutes -= 1
+
         self.on_time_changed_callback(minutes)
 
     def on_format_value(self, scale, value):

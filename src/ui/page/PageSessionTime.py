@@ -108,8 +108,6 @@ class PageSessionTime(Adw.PreferencesPage):
         self.preferences_manager.save()
 
     def on_start_time_changed(self, minutes):
-        # print("Session start time changed", minutes / 60)
-
         if minutes > self.time_chooser_end.get_minutes():
             self.time_chooser_end.set_minutes(minutes)
 
@@ -120,8 +118,6 @@ class PageSessionTime(Adw.PreferencesPage):
         self.preferences_manager.save()
 
     def on_end_time_changed(self, minutes):
-        # print("Session end time changed", minutes / 60)
-
         if minutes < self.time_chooser_start.get_minutes():
             self.time_chooser_start.set_minutes(minutes)
 
