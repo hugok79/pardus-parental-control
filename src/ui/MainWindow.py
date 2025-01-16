@@ -90,6 +90,7 @@ class MainWindow(Adw.ApplicationWindow):
     def setup_window(self):
         self.set_default_size(1000, 600)
         self.set_icon_name("pardus-parental-control")
+        self.set_title(_("Pardus Parental Control"))
         self.connect("close-request", lambda x: self.get_application().quit())
 
     def setup_sidebar(self):
