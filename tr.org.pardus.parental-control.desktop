@@ -9,6 +9,7 @@ Exec=pardus-parental-control
 Icon=pardus-parental-control
 Terminal=false
 Type=Application
+StartupNotify=true
 Categories=System;X-Pardus-Apps;
 X-GNOME-UsesNotifications=true
 Keywords=pardus;parental;control;restriction;
