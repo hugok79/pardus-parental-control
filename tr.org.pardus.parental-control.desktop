@@ -11,4 +11,5 @@ Terminal=false
 Type=Application
 Categories=System;X-Pardus-Apps;
 StartupNotify=true
+X-GNOME-UsesNotifications=true
 Keywords=pardus;parental;control;restriction;

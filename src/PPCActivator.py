@@ -12,7 +12,46 @@ import managers.PreferencesManager as PreferencesManager
 import managers.NetworkFilterManager as NetworkFilterManager
 import managers.ApplicationManager as ApplicationManager
 
-CWD = os.path.dirname(os.path.abspath(__file__))
+
+import gi
+
+gi.require_version("Gtk", "4.0")
+from gi.repository import Gtk, Gio  # noqa
+
+
+import locale  # noqa
+from locale import gettext as _  # noqa
+
+# Translation Constants:
+APPNAME = "pardus-parental-control"
+TRANSLATIONS_PATH = "/usr/share/locale"
+
+# Translation functions:
+locale.bindtextdomain(APPNAME, TRANSLATIONS_PATH)
+locale.textdomain(APPNAME)
+
+
+class NotificationApp(Gio.Application):
+    def __init__(self):
+        super().__init__(
+            application_id="tr.org.pardus.parental-control",
+            flags=Gio.ApplicationFlags.FLAGS_NONE,
+        )
+
+    def do_activate(self):
+        self.show_notification(
+            _("Your time is up!"), _("Computer is shutting down in 30 seconds.")
+        )
+
+    def show_notification(self, title, body):
+        notification = Gio.Notification.new(title)
+        notification.set_body(body)
+        notification.set_icon(Gio.ThemedIcon(name="pardus-parental-control"))
+        notification.set_priority(Gio.NotificationPriority.URGENT)
+
+        self.send_notification(None, notification)
+
+        print("notification show")
 
 
 class PPCActivator:
@@ -133,13 +172,9 @@ class PPCActivator:
             minutes_now = (60 * t.tm_hour) + t.tm_min
 
             if minutes_now < start or minutes_now > end:
-                subprocess.Popen(
-                    [
-                        "zenity",
-                        "--info",
-                        "--text='Your time is up! Computer is shutting down in 30 seconds...'",
-                    ]
-                )
+                notify_app = NotificationApp()
+                notify_app.run()
+
                 time.sleep(30)
                 subprocess.Popen(["loginctl", "kill-user", self.logged_user])
                 exit(1)
