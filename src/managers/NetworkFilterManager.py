@@ -90,18 +90,7 @@ def reset_resolvconf_to_default():
     )  # generate new resolvconf from network manager
 
 
-def default_dns_config():
-    if not os.path.isfile(SMARTDNS_CONF_PATH):
-        Path(SMARTDNS_CONF_PATH).parent.mkdir(mode=0o775, parents=True, exist_ok=True)
-
-    with open(SMARTDNS_CONF_PATH, "w") as file1:
-        # Writing data to a file
-        file1.write(SMARTDNS_CONF_DEFAULT.format(BASE_DNS_SERVER="1.1.1.3"))
-
-        print("Created smartdns default config file: {}".format(SMARTDNS_CONF_PATH))
-
-
-def set_domain_filter_list(list, is_allowlist, base_dns_server="1.1.1.3"):
+def set_domain_filter_list(list, is_allowlist, base_dns_server):
     # example list = ["google.com", "youtube.com"]
     # don't add subdomains like www.google.com or mail.google.com
 
