@@ -48,11 +48,37 @@ class NotificationApp(Gtk.Application):
             css_classes=["title-2"],
             justify=Gtk.Justification.CENTER,
         )
+
+        logged_user = LinuxUserManager.get_active_session_user()
+
+        session_avatar = Gtk.Box(
+            spacing=7, halign=Gtk.Align.CENTER, css_classes=["card"]
+        )
+        session_avatar.append(
+            Adw.Avatar(
+                text=logged_user.get_real_name(),
+                halign=Gtk.Align.START,
+                size=32,
+                margin_start=7,
+                margin_top=7,
+                margin_bottom=7,
+            )
+        )
+        session_avatar.append(
+            Gtk.Label(
+                label=logged_user.get_real_name(), halign=Gtk.Align.START, margin_end=7
+            )
+        )
         subtitle = Gtk.Label(
             label=_("Session will be closed in 10 seconds."),
             justify=Gtk.Justification.CENTER,
         )
-        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=7)
+        box = Gtk.Box(
+            orientation=Gtk.Orientation.VERTICAL,
+            valign=Gtk.Align.CENTER,
+            spacing=7,
+        )
+        box.append(session_avatar)
         box.append(title)
         box.append(subtitle)
 
