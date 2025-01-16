@@ -3,52 +3,63 @@
 #
 msgid ""
 msgstr ""
-"MIME-Version: 1.0\n"
 "Project-Id-Version: unnamed project\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-01-16 17:03+0300\n"
+"PO-Revision-Date: 2025-01-16 10:41+0300\n"
 "Last-Translator: Emin Fedar <emin.fedar@pardus.org.tr>\n"
 "Language-Team: Turkish <dev@pardus.org.tr>\n"
 "Language: tr\n"
+"MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0\n"
-"PO-Revision-Date: 2025-01-16 10:41+0300\n"
 "X-Generator: Gtranslator 42.0\n"
 
-#: src/ui/MainWindow.py:64
+#: src/ui/MainWindow.py:61
 msgid "Pardus Parental Control"
 msgstr "Pardus Ebeveyn Denetimi"
 
-#: src/ui/MainWindow.py:69
+#: src/ui/MainWindow.py:66
 msgid ""
 "Restrict user access to internet and applications. Manage session times."
 msgstr ""
-"Kullanıcıların internet ve uygulamalara erişimini sınırlayın. Oturum sürelerini yönetin."
+"Kullanıcıların internet ve uygulamalara erişimini sınırlayın. Oturum "
+"sürelerini yönetin."
 
-#: src/ui/MainWindow.py:74
+#: src/ui/MainWindow.py:71
 msgid "translator_credits"
 msgstr "Emin Fedar"
 
-#: src/ui/MainWindow.py:104
+#: src/ui/MainWindow.py:101
 msgid "Users"
 msgstr "Kullanıcılar"
 
-#: src/ui/MainWindow.py:138
+#: src/ui/MainWindow.py:135
 msgid "New User"
 msgstr "Yeni Kullanıcı"
 
-#: src/ui/MainWindow.py:183 src/ui/page/PageApplications.py:122
+#: src/ui/MainWindow.py:180 src/ui/page/PageApplications.py:122
 msgid "Applications"
 msgstr "Uygulamalar"
 
-#: src/ui/MainWindow.py:190 src/ui/page/PageWebsites.py:134
+#: src/ui/MainWindow.py:187 src/ui/page/PageWebsites.py:134
 msgid "Websites"
 msgstr "İnternet Siteleri"
 
-#: src/ui/MainWindow.py:198
+#: src/ui/MainWindow.py:195
 msgid "Session Time"
 msgstr "Oturum Süresi"
 
-#: src/ui/page/PageApplications.py:76 src/ui/page/PageSessionTime.py:67
+#: src/PPCActivator.py:47 src/PPCActivator.py:57
+msgid "Your session time is over."
+msgstr "Oturum süreniz doldu."
+
+#: src/PPCActivator.py:49 src/PPCActivator.py:58
+msgid "Computer will shut down in 30 seconds."
+msgstr "Bilgisayar 30 saniye içerisinde kapatılacaktır."
+
+#: src/ui/page/PageApplications.py:76 src/ui/page/PageSessionTime.py:66
 #: src/ui/page/PageWebsites.py:75
 msgid "Activate"
 msgstr "Aktifleştir"
@@ -85,19 +96,19 @@ msgstr "Kullanıcıların açabileceği veya açamayacağı uygulamaları seçin
 msgid "Select a user to start"
 msgstr "Başlamak için bir kullanıcı seçin"
 
-#: src/ui/page/PageSessionTime.py:77
+#: src/ui/page/PageSessionTime.py:76
 msgid "Start Time"
 msgstr "Başlangıç Zamanı"
 
-#: src/ui/page/PageSessionTime.py:78
+#: src/ui/page/PageSessionTime.py:77
 msgid "Select the start time of user can use the computer."
 msgstr "Kullanıcının bilgisayarı kullanmaya başlayabileceği zamanı seçin."
 
-#: src/ui/page/PageSessionTime.py:90
+#: src/ui/page/PageSessionTime.py:89
 msgid "End Time"
 msgstr "Bitiş Zamanı"
 
-#: src/ui/page/PageSessionTime.py:92
+#: src/ui/page/PageSessionTime.py:91
 msgid "Select the time of the user can't use the computer anymore."
 msgstr "Kullanıcının bilgisayarı artık kullanamayacağı zamanı seçin."
 

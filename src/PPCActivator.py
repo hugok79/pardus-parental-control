@@ -2,7 +2,6 @@
 
 import sys
 import subprocess
-import os
 import threading
 import time
 
@@ -16,7 +15,8 @@ import managers.ApplicationManager as ApplicationManager
 import gi
 
 gi.require_version("Gtk", "4.0")
-from gi.repository import Gtk, Gio  # noqa
+gi.require_version("Adw", "1")
+from gi.repository import Gtk, Gio, Adw  # noqa
 
 
 import locale  # noqa
@@ -31,7 +31,7 @@ locale.bindtextdomain(APPNAME, TRANSLATIONS_PATH)
 locale.textdomain(APPNAME)
 
 
-class NotificationApp(Gio.Application):
+class NotificationApp(Gtk.Application):
     def __init__(self):
         super().__init__(
             application_id="tr.org.pardus.parental-control",
@@ -39,8 +39,23 @@ class NotificationApp(Gio.Application):
         )
 
     def do_activate(self):
+        window = Adw.Window(application=self)
+        window.set_default_size(500, 200)
+        window.set_icon_name("pardus-parental-control")
+
+        label = Gtk.Label(
+            label=_("Your session time is over.")
+            + "\n"
+            + _("Computer will shut down in 30 seconds."),
+            css_classes=["title-2"],
+            justify=Gtk.Justification.CENTER,
+        )
+        window.set_content(label)
+        window.present()
+
         self.show_notification(
-            _("Your time is up!"), _("Computer is shutting down in 30 seconds.")
+            _("Your session time is over."),
+            _("Computer will shut down in 30 seconds."),
         )
 
     def show_notification(self, title, body):
