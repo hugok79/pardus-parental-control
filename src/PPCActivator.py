@@ -105,15 +105,15 @@ class PPCActivator:
         is_allowlist = pref.get_is_application_list_allowlist()
         if is_allowlist:
             for app in ApplicationManager.get_all_applications():
-                if app.get_id() not in pref.get_application_list():
-                    ApplicationManager.restrict_application(app.get_id())
+                if app not in pref.get_application_list():
+                    ApplicationManager.restrict_application(app)
         else:
             for app in pref.get_application_list():
-                ApplicationManager.restrict_application(app.get_id())
+                ApplicationManager.restrict_application(app)
 
     def clear_application_filter(self):
         for app in ApplicationManager.get_all_applications():
-            ApplicationManager.unrestrict_application(app.get_id())
+            ApplicationManager.unrestrict_application(app)
 
     # == Website Filtering ==
     def apply_website_filter(self):
@@ -179,6 +179,7 @@ class PPCActivator:
                 subprocess.Popen(["loginctl", "kill-user", self.logged_user])
                 exit(1)
 
+        time.sleep(2)
         check_session_time()
         t = set_interval(check_session_time, 60)  # check every minute
         t.join()
