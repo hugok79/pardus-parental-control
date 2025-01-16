@@ -1,4 +1,3 @@
-import ui.widget.PActionRow as PActionRow
 from ui.widget.PTimeChooserRow import PTimeChooserRow
 from locale import gettext as _
 
