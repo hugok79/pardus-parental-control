@@ -43,19 +43,25 @@ class NotificationApp(Gtk.Application):
         window.set_default_size(500, 200)
         window.set_icon_name("pardus-parental-control")
 
-        label = Gtk.Label(
-            label=_("Your session time is over.")
-            + "\n"
-            + _("Computer will shut down in 30 seconds."),
+        title = Gtk.Label(
+            label=_("Your session time is over."),
             css_classes=["title-2"],
             justify=Gtk.Justification.CENTER,
         )
-        window.set_content(label)
+        subtitle = Gtk.Label(
+            label=_("Session will be closed in 10 seconds."),
+            justify=Gtk.Justification.CENTER,
+        )
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=7)
+        box.append(title)
+        box.append(subtitle)
+
+        window.set_content(box)
         window.present()
 
         self.show_notification(
             _("Your session time is over."),
-            _("Computer will shut down in 30 seconds."),
+            _("Session will be closed in 10 seconds."),
         )
 
     def show_notification(self, title, body):
