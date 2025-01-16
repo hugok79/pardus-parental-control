@@ -1,8 +1,5 @@
-# from ui.PreferencesWindow import PreferencesWindow
-# from ui.ProfileChooserDialog import ProfileChooserDialog
 import managers.PreferencesManager as PreferencesManager
 import managers.LinuxUserManager as LinuxUserManager
-# import PPCActivator
 
 # Widgets
 from ui.widget.ListRowAvatar import ListRowAvatar
