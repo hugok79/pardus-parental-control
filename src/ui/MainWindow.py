@@ -59,14 +59,15 @@ class MainWindow(Adw.ApplicationWindow):
     def setup_about(self):
         self.about_dialog = Adw.AboutWindow(
             application_name=_("Pardus Parental Control"),
+            application_icon="pardus-parental-control",
             version="0.2.0",
             website="https://pardus.org.tr",
             copyright="©2025 Pardus Developers",
             comments=_(
                 "Restrict user access to internet and applications. Manage session times."
             ),
-            application_icon="pardus-parental-control",
             developer_name="Pardus Developers",
+            developers=["Emin Fedar"],
             license_type=Gtk.License.GPL_3_0,
             translator_credits=_("translator_credits"),
             hide_on_close=True,
