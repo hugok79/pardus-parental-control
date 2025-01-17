@@ -56,7 +56,6 @@ msgid "Your session time is over."
 msgstr "Oturum süreniz doldu."
 
 #: src/PPCActivator.py:52 src/PPCActivator.py:64
-#, fuzzy
 msgid "Session will be closed in 10 seconds."
 msgstr "Oturumunuz 10 saniye içerisinde kapatılacaktır."
 

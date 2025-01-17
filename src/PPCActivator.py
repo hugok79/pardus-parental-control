@@ -16,7 +16,7 @@ import gi
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
-from gi.repository import Gtk, Gio, Adw  # noqa
+from gi.repository import Gtk, Gio, GLib, Adw  # noqa
 
 
 import locale  # noqa
@@ -38,25 +38,39 @@ class NotificationApp(Gtk.Application):
             flags=Gio.ApplicationFlags.FLAGS_NONE,
         )
 
+        self.logged_user_name = LinuxUserManager.get_active_session_username()
+
     def do_activate(self):
+        self.setup_window()
+
+        def kill_user(username):
+            subprocess.Popen(["loginctl", "kill-user", username])
+
+            return False
+
+        GLib.timeout_add_seconds(10, kill_user, self.logged_user_name)
+
+    def setup_window(self):
         window = Adw.Window(application=self)
         window.set_default_size(500, 200)
         window.set_icon_name("pardus-parental-control")
 
-        title = Gtk.Label(
-            label=_("Your session time is over."),
-            css_classes=["title-2"],
-            justify=Gtk.Justification.CENTER,
-        )
+        # UI
+        ui = self.setup_ui()
 
-        logged_user = LinuxUserManager.get_active_session_user()
+        window.set_content(ui)
+        window.present()
+
+    def setup_ui(self):
+        user = LinuxUserManager.get_user_object(self.logged_user_name)
+        real_name = user.get_real_name()
 
         session_avatar = Gtk.Box(
             spacing=7, halign=Gtk.Align.CENTER, css_classes=["card"]
         )
         session_avatar.append(
             Adw.Avatar(
-                text=logged_user.get_real_name(),
+                text=real_name,
                 halign=Gtk.Align.START,
                 size=32,
                 margin_start=7,
@@ -65,9 +79,14 @@ class NotificationApp(Gtk.Application):
             )
         )
         session_avatar.append(
-            Gtk.Label(
-                label=logged_user.get_real_name(), halign=Gtk.Align.START, margin_end=7
-            )
+            Gtk.Label(label=real_name, halign=Gtk.Align.START, margin_end=7)
+        )
+
+        title = Gtk.Label(
+            label=_("Your session time is over."),
+            css_classes=["title-2"],
+            justify=Gtk.Justification.CENTER,
+            margin_top=14,
         )
         subtitle = Gtk.Label(
             label=_("Session will be closed in 10 seconds."),
@@ -82,23 +101,7 @@ class NotificationApp(Gtk.Application):
         box.append(title)
         box.append(subtitle)
 
-        window.set_content(box)
-        window.present()
-
-        self.show_notification(
-            _("Your session time is over."),
-            _("Session will be closed in 10 seconds."),
-        )
-
-    def show_notification(self, title, body):
-        notification = Gio.Notification.new(title)
-        notification.set_body(body)
-        notification.set_icon(Gio.ThemedIcon(name="pardus-parental-control"))
-        notification.set_priority(Gio.NotificationPriority.URGENT)
-
-        self.send_notification(None, notification)
-
-        print("notification show")
+        return box
 
 
 class PPCActivator:
@@ -111,7 +114,9 @@ class PPCActivator:
     def run(self):
         print("== PPCActivator STARTED ==")
 
-        self.logged_user = LinuxUserManager.get_active_session_username()
+        self.logged_user_name = LinuxUserManager.get_active_session_username()
+        self.logged_user = LinuxUserManager.get_user_object(self.logged_user_name)
+
         self.read_user_preferences()
 
         if self.preferences.get_is_application_filter_active():
@@ -132,10 +137,12 @@ class PPCActivator:
 
     def read_user_preferences(self):
         self.preferences_manager = PreferencesManager.get_default()
-        if self.preferences_manager.has_user(self.logged_user):
-            self.preferences = self.preferences_manager.get_user(self.logged_user)
+        if self.preferences_manager.has_user(self.logged_user_name):
+            self.preferences = self.preferences_manager.get_user(self.logged_user_name)
         else:
-            print("User not found in preferences.json: {}".format(self.logged_user))
+            print(
+                "User not found in preferences.json: {}".format(self.logged_user_name)
+            )
             self.clear_application_filter()
             self.clear_website_filter()
             print("Cleared all filters")
@@ -216,14 +223,15 @@ class PPCActivator:
 
         def check_session_time():
             t = time.localtime()
+            print(t)
             minutes_now = (60 * t.tm_hour) + t.tm_min
+            print(minutes_now, start, end)
 
             if minutes_now < start or minutes_now > end:
                 notify_app = NotificationApp()
                 notify_app.run()
 
-                time.sleep(30)
-                subprocess.Popen(["loginctl", "kill-user", self.logged_user])
+                # unreachable
                 exit(1)
 
         time.sleep(2)
