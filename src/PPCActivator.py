@@ -2,7 +2,6 @@
 
 import sys
 import subprocess
-import threading
 import time
 
 import managers.FileRestrictionManager as FileRestrictionManager
@@ -212,15 +211,6 @@ class PPCActivator:
             print("Start and End times are equal. Not applying.")
             exit(0)
 
-        def set_interval(func, sec):
-            def func_wrapper():
-                set_interval(func, sec)
-                func()
-
-            t = threading.Timer(sec, func_wrapper)
-            t.start()
-            return t
-
         def check_session_time():
             t = time.localtime()
             print(t)
@@ -234,10 +224,12 @@ class PPCActivator:
                 # unreachable
                 exit(1)
 
-        time.sleep(2)
+            return True
+
+        GLib.timeout_add_seconds(30, check_session_time)
+
+        time.sleep(1)
         check_session_time()
-        t = set_interval(check_session_time, 60)  # check every minute
-        t.join()
 
 
 if __name__ == "__main__":
