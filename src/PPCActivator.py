@@ -38,21 +38,31 @@ class NotificationApp(Gtk.Application):
         )
 
         self.logged_user_name = LinuxUserManager.get_active_session_username()
+        self.seconds_left = 10
 
     def do_activate(self):
         self.setup_window()
 
-        def kill_user(username):
-            subprocess.Popen(["loginctl", "kill-user", username])
+        GLib.timeout_add_seconds(1, self.tick_logout_seconds)
 
-            return False
+    def tick_logout_seconds(self):
+        self.seconds_left -= 1
+        self.subtitle.set_text(
+            _("Session will be closed in {} seconds.").format(self.seconds_left)
+        )
 
-        GLib.timeout_add_seconds(10, kill_user, self.logged_user_name)
+        if self.seconds_left == 0:
+            subprocess.Popen(["loginctl", "kill-user", self.logged_user_name])
+            sys.exit(0)
+            # return False  # stop looping
+
+        return True
 
     def setup_window(self):
         window = Adw.Window(application=self)
         window.set_default_size(500, 200)
         window.set_icon_name("pardus-parental-control")
+        window.set_hide_on_close(True)
 
         # UI
         ui = self.setup_ui()
@@ -87,8 +97,8 @@ class NotificationApp(Gtk.Application):
             justify=Gtk.Justification.CENTER,
             margin_top=14,
         )
-        subtitle = Gtk.Label(
-            label=_("Session will be closed in 10 seconds."),
+        self.subtitle = Gtk.Label(
+            label=_("Session will be closed in {} seconds.").format(self.seconds_left),
             justify=Gtk.Justification.CENTER,
         )
         box = Gtk.Box(
@@ -98,7 +108,7 @@ class NotificationApp(Gtk.Application):
         )
         box.append(session_avatar)
         box.append(title)
-        box.append(subtitle)
+        box.append(self.subtitle)
 
         return box
 
