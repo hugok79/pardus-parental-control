@@ -1,22 +1,35 @@
 #!/bin/sh
-
 set -e
 
 APP_DIR="/usr/share/pardus/pardus-parental-control"
-
-# if $2 exist, then it is upgrading from an old package
-# if $2 is not exist, so it is removing the package itself.
-
-# Remove __pycache__ files
-if [ -d "$APP_DIR" ]; then
-  find $APP_DIR -name "__pycache__" -prune -exec rm -rf {} \;
-fi
+PREFERENCES_DIR="/var/lib/pardus/pardus-parental-control"
 
 
+case "$1" in
+    remove)
+        # Remove smartdns service
+        if systemctl list-units --type=service --all | grep -q "smartdns-rs.service"; then
+            # smartdns-rs service exists
+            smartdns service uninstall || true
+        fi
 
-# remove smartdns service if exist:
-if systemctl list-units --type=service --all | grep -q "smartdns-rs.service"; then
-    smartdns service uninstall || true
-fi
+        # Remove preferences
+        if [ -d "$PREFERENCES_DIR" ] ; then
+            rm -rf $PREFERENCES_DIR || true
+            echo "Removed Configurations: $PREFERENCES_DIR"
+        fi
+        ;;
+
+    upgrade|abort-upgrade)
+        # do nothing on upgrade
+        ;;
+
+    *)
+        echo "postrm called with unknown argument \`$1'" >&2
+        exit 0
+        ;;
+esac
 
 #DEBHELPER#
+
+exit 0

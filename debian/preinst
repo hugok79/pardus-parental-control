@@ -1,0 +1,39 @@
+#!/bin/sh
+set -e
+
+# Use "sudo" group for provide access only to privileged users
+PRIVILEGED_GROUP="sudo"
+PREFERENCES_DIR="/var/lib/pardus/pardus-parental-control"
+
+case "$1" in
+    install)
+        if systemctl list-units --type=service --all | grep -q "smartdns-rs.service"; then
+            # smartdns-rs service exists
+            systemctl stop smartdns-rs.service || true
+        else
+            # smartdns-rs service not exists
+            smartdns service install && systemctl stop smartdns-rs.service || true
+        fi
+
+        # Create Preferences Path
+        if [ ! -d "$PREFERENCES_DIR" ] ; then
+            mkdir --mode=775 -p $PREFERENCES_DIR
+        fi
+
+        chown -R :$PRIVILEGED_GROUP $PREFERENCES_DIR
+        chmod -R 775 $PREFERENCES_DIR
+        ;;
+
+    upgrade|abort-upgrade)
+        # do nothing on upgrade
+        ;;
+
+    *)
+        echo "preinst called with unknown argument \`$1'" >&2
+        exit 0
+        ;;
+esac
+
+#DEBHELPER#
+
+exit 0

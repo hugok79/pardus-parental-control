@@ -66,7 +66,6 @@ data_files = [
     # Executable
     ("/usr/bin/", [f"{APP_NAME}"]),
     # Data
-    (f"/var/lib/pardus/{APP_NAME}/", ["data/preferences.json"]),
     (f"/usr/share/pardus/{APP_NAME}/data", ["data/style.css"]),
     ("/usr/share/icons/hicolor/scalable/apps/", [f"data/{APP_NAME}.svg"]),
     (f"/usr/share/pardus/{APP_NAME}/data", [f"data/{APP_NAME}.svg"]),

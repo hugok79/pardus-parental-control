@@ -1,8 +1,28 @@
 #!/bin/sh
-
 set -e
 
-# disable restrictions before uninstall:
-/usr/share/pardus/pardus-parental-control/src/PPCActivator.py --disable || true
+
+case "$1" in
+    remove)
+        # disable restrictions before uninstall:
+        /usr/share/pardus/pardus-parental-control/src/PPCActivator.py --disable || true
+
+        ;;
+    upgrade|abort-upgrade)
+        # do nothing on upgrade
+        ;;
+
+    *)
+        echo "prerm called with unknown argument \`$1'" >&2
+        exit 0
+        ;;
+esac
+
+# Remove __pycache__ files
+if [ -d "$APP_DIR" ]; then
+    find $APP_DIR -name "__pycache__" -prune -exec rm -rf {} \;
+fi
 
 #DEBHELPER#
+
+exit 0
