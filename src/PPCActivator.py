@@ -147,13 +147,14 @@ class PPCActivator:
     def read_user_preferences(self):
         self.preferences_manager = PreferencesManager.get_default()
         if self.preferences_manager.has_user(self.logged_user_name):
+            print("User found:", self.logged_user_name)
             self.preferences = self.preferences_manager.get_user(self.logged_user_name)
         else:
+            self.clear_application_filter()
+            self.clear_website_filter()
             print(
                 "User not found in preferences.json: {}".format(self.logged_user_name)
             )
-            self.clear_application_filter()
-            self.clear_website_filter()
             print("Cleared all filters")
             exit(0)
 
@@ -221,25 +222,24 @@ class PPCActivator:
             print("Start and End times are equal. Not applying.")
             exit(0)
 
-        def check_session_time():
+        # Check time loop
+        t = time.localtime()
+        minutes_now = (60 * t.tm_hour) + t.tm_min
+
+        while minutes_now >= start or minutes_now <= end:
+            time.sleep(30.0)
+
             t = time.localtime()
-            print(t)
             minutes_now = (60 * t.tm_hour) + t.tm_min
-            print(minutes_now, start, end)
+            print("Minutes left: ", end - minutes_now)
 
-            if minutes_now < start or minutes_now > end:
-                notify_app = NotificationApp()
-                notify_app.run()
+        print("Time is up! Shutting down...")
 
-                # unreachable
-                exit(1)
+        # Time is up! -- Session time finished
+        notify_app = NotificationApp()
+        notify_app.run()
 
-            return True
-
-        GLib.timeout_add_seconds(30, check_session_time)
-
-        time.sleep(1)
-        check_session_time()
+        exit(0)
 
 
 if __name__ == "__main__":
