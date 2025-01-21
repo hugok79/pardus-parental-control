@@ -34,7 +34,7 @@ class NotificationApp(Gtk.Application):
     def __init__(self):
         super().__init__(
             application_id="tr.org.pardus.parental-control",
-            flags=Gio.ApplicationFlags.FLAGS_NONE,
+            flags=Gio.ApplicationFlags.DEFAULT_FLAGS,
         )
 
         self.logged_user_name = LinuxUserManager.get_active_session_username()
@@ -113,14 +113,16 @@ class NotificationApp(Gtk.Application):
         return box
 
 
-class PPCActivator:
+class PPCActivator(Gio.Application):
     def __init__(self):
         # Privileged run check
         if not FileRestrictionManager.check_user_privileged():
             sys.stderr.write("You are not privileged to run this script.\n")
             sys.exit(1)
 
-    def run(self):
+        super().__init__(flags=Gio.ApplicationFlags.DEFAULT_FLAGS)
+
+    def do_activate(self):
         print("== PPCActivator STARTED ==")
 
         self.logged_user_name = LinuxUserManager.get_active_session_username()
@@ -140,7 +142,7 @@ class PPCActivator:
 
         if self.preferences.get_is_session_time_filter_active():
             # START TIMER
-            self.start_session_time_checker()
+            GLib.idle_add(self.start_session_time_checker)
 
         print("== PPCActivator FINISHED ==")
 

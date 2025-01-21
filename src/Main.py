@@ -13,7 +13,7 @@ class Main(Gtk.Application):
     def __init__(self):
         super().__init__(
             application_id="tr.org.pardus.parental-control",
-            flags=Gio.ApplicationFlags.FLAGS_NONE,
+            flags=Gio.ApplicationFlags.DEFAULT_FLAGS,
         )
 
         self.window = None
