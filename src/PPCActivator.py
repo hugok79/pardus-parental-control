@@ -226,7 +226,7 @@ class PPCActivator:
         t = time.localtime()
         minutes_now = (60 * t.tm_hour) + t.tm_min
 
-        while minutes_now >= start or minutes_now <= end:
+        while minutes_now >= start and minutes_now <= end:
             time.sleep(30.0)
 
             t = time.localtime()
