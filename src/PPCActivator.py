@@ -245,7 +245,7 @@ class PPCActivator:
 if __name__ == "__main__":
     activator = PPCActivator()
     if len(sys.argv) == 2:
-        if sys.argv[1] == "--clear":
+        if sys.argv[1] == "--disable":
             activator.clear_application_filter()
             activator.clear_website_filter()
             exit(0)

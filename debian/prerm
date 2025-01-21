@@ -1,0 +1,8 @@
+#!/bin/sh
+
+set -e
+
+# disable restrictions before uninstall:
+/usr/share/pardus/pardus-parental-control/src/PPCActivator.py --disable || true
+
+#DEBHELPER#
