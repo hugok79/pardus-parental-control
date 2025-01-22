@@ -1,4 +1,49 @@
-pardus-parental-control (0.2.0) UNRELEASED; urgency=medium
+pardus-parental-control (0.3.0) yirmiuc; urgency=medium
+
+  * fix: smartdns-rs dependency
+  * feat: logo
+  * fix: Main.py
+  * feat: sidebar row selected border effect
+  * fix: window icon
+  * fix: remove left border of selected row
+  * feat: debian13 compatibility
+  * fix: postinst & postrm scripts
+  * fix: postrm directory exists check, postinst file permission
+  * translations: turkish update
+  * fix: time upper limit
+  * chore: unused import
+  * chore: remove unused imports
+  * fix: polkit root as owner
+  * feat: notification on session time up
+  * fix: app, not app_id typo
+  * feat: window present on session time over PPCActivator.py
+  * fix: typo
+  * fix: window title
+  * fix: polkit typo
+  * fix: use base_dns_server from preferences
+  * fix: notification needs StartupNotify
+  * feat: updated session time over dialog
+  * fix: improved user session detection
+  * feat: better session time over UI
+  * fix: improved logged user get
+  * feat: improve about dialog
+  * feat: new icon
+  * feat: remove threading, use GLib for interval
+  * feat: session timeout UI shows seconds left
+  * feat: added prerm disable restrictions before remove
+  * fix: session time check loop added
+  * fix: package maintaining scripts bugs
+  * fix: typo
+  * fix: preventing log out
+  * chore: print format
+  * feat!: smartdns-rs always active by default
+  * feat!: better application filtering
+  * chore: resolv.conf comment
+  * fix: prerm variable
+
+ -- Emin Fedar <emin.fedar@pardus.org.tr>  Wed, 22 Jan 2025 15:26:04 +0300
+
+pardus-parental-control (0.2.0) yirmiuc; urgency=medium
 
   * fix: profiles.json
   * fix: PPCActivator user bug

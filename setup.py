@@ -87,7 +87,7 @@ data_files = [
 
 setup(
     name=f"{APP_NAME}",
-    version="0.2.0",
+    version="0.3.0",
     packages=find_packages(),
     scripts=[f"{APP_NAME}"],
     install_requires=["PyGObject"],
