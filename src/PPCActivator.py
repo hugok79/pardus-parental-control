@@ -172,15 +172,17 @@ class PPCActivator(Gio.Application):
         is_allowlist = pref.get_is_application_list_allowlist()
         if is_allowlist:
             for app in ApplicationManager.get_all_applications():
-                if app.get_id() not in pref.get_application_list():
-                    ApplicationManager.restrict_application(app.get_id())
+                if app.get_filename() in pref.get_application_list():
+                    ApplicationManager.unrestrict_application(app.get_filename())
+                else:
+                    ApplicationManager.restrict_application(app.get_filename())
         else:
             for app_id in pref.get_application_list():
                 ApplicationManager.restrict_application(app_id)
 
     def clear_application_filter(self):
         for app in ApplicationManager.get_all_applications():
-            ApplicationManager.unrestrict_application(app.get_id())
+            ApplicationManager.unrestrict_application(app.get_filename())
 
     # == Website Filtering ==
     def apply_website_filter(self):

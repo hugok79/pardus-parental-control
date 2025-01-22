@@ -7,5 +7,5 @@ NoDisplay=true
 StartupNotify=true
 X-GNOME-UsesNotifications=true
 X-GNOME-Autostart-enabled=true
-X-GNOME-Autostart-Phase=WindowManager
+X-GNOME-Autostart-Phase=Initialization
 X-KDE-autostart-phase=1

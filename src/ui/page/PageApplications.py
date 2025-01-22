@@ -132,8 +132,8 @@ class PageApplications(Adw.PreferencesPage):
 
         # Fill the applications:
         app_list = self.preferences.get_application_list() if self.preferences else []
-        for app_id in app_list:
-            app_info = Gio.DesktopAppInfo.new(app_id)
+        for desktop_file in app_list:
+            app_info = Gio.DesktopAppInfo.new_from_filename(desktop_file)
 
             self.insert_app_row(group, app_info)
 
@@ -182,9 +182,7 @@ class PageApplications(Adw.PreferencesPage):
             return
 
         if isinstance(user_data, Gio.DesktopAppInfo):
-            app_id = user_data.get_id()
-
-            if self.preferences.remove_application(app_id):
+            if self.preferences.remove_application(user_data.get_filename()):
                 self.group_applications.remove(action_row)
                 self.preferences_manager.save()
 
@@ -192,6 +190,6 @@ class PageApplications(Adw.PreferencesPage):
         if not self.preferences:
             return
 
-        if self.preferences.insert_application(app.get_id()):
+        if self.preferences.insert_application(app.get_filename()):
             self.insert_app_row(self.group_applications, app)
             self.preferences_manager.save()

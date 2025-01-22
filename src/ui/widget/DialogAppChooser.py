@@ -1,3 +1,4 @@
+import managers.ApplicationManager as ApplicationManager
 import ui.widget.PActionRow as PActionRow
 
 from locale import gettext as _
@@ -37,16 +38,8 @@ class DialogAppChooser(Adw.PreferencesWindow):
         GLib.timeout_add(10, self.add_all_applications_to_group, group)
 
     # == FUNCTIONS ==
-    def get_all_applications(self):
-        apps = Gio.AppInfo.get_all()
-        # Filter only visible applications
-        apps = filter(lambda a: a.should_show(), apps)
-        apps = sorted(apps, key=lambda a: a.get_name())  # Sort alphabetically
-
-        return list(apps)
-
     def add_all_applications_to_group(self, group):
-        for app in self.get_all_applications():
+        for app in ApplicationManager.get_all_applications():
             action_row = PActionRow.new(
                 title=app.get_name(),
                 subtitle=app.get_id(),
