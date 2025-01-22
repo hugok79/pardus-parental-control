@@ -1,6 +1,7 @@
 #!/bin/sh
 set -e
 
+APP_DIR="/usr/share/pardus/pardus-parental-control"
 
 case "$1" in
     remove)
