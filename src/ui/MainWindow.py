@@ -253,8 +253,6 @@ class MainWindow(Adw.ApplicationWindow):
 
         self.leaflet.navigate(Adw.NavigationDirection.FORWARD)
 
-        # print("self.selected_user:", self.selected_user)
-
     def on_sidebar_row_activated(self, listbox, row):
         self.leaflet.navigate(Adw.NavigationDirection.FORWARD)
 

@@ -22,7 +22,7 @@ def get_all_applications():
 # APPLICATION RESTRICTIONS:
 def restrict_application(application_id):
     if application_id in ALWAYS_ALLOWED_APPLICATIONS:
-        print(application_id, " is always allowed. SKIPPING.")
+        print(application_id, " is always allowed. Skipping.")
         return
 
     try:
@@ -62,9 +62,7 @@ def restrict_application(application_id):
 
     FileRestrictionManager.restrict_bin_file(executable_file_path)
 
-    print("Restricted:\t", desktop_file_path)
-    print("  executable_file_path:\t", executable_file_path)
-    print("  cmdline:\t\t", app.get_commandline())
+    print("Restricted:", desktop_file_path, "|", executable_file_path)
 
 
 def unrestrict_application(application_id):
@@ -101,6 +99,4 @@ def unrestrict_application(application_id):
 
     FileRestrictionManager.unrestrict_bin_file(executable_file_path)
 
-    print("Unrestricted:\t", desktop_file_path)
-    print("  executable_file_path:\t", executable_file_path)
-    print("  cmdline:\t\t", app.get_commandline())
+    print("Unrestricted:", desktop_file_path, "|", executable_file_path)
