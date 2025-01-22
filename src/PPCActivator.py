@@ -9,6 +9,7 @@ import managers.LinuxUserManager as LinuxUserManager
 import managers.PreferencesManager as PreferencesManager
 import managers.NetworkFilterManager as NetworkFilterManager
 import managers.ApplicationManager as ApplicationManager
+import managers.SmartdnsManager as SmartdnsManager
 
 
 import gi
@@ -192,27 +193,15 @@ class PPCActivator(Gio.Application):
         is_allowlist = pref.get_is_website_list_allowlist()
 
         # browser + domain configs
-        NetworkFilterManager.set_domain_filter_list(
+        NetworkFilterManager.apply_domain_filter_list(
             pref.get_website_list(),
             is_allowlist,
-            self.preferences_manager.get_base_dns_server(),
+            self.preferences_manager.get_base_dns_servers(),
         )
-
-        # smartdns server
-        if pref.get_run_smartdns():
-            # resolvconf
-            NetworkFilterManager.set_resolvconf_to_localhost()
-            NetworkFilterManager.enable_smartdns_service()
-            NetworkFilterManager.restart_smartdns_service()
 
     def clear_website_filter(self):
         # browser + domain configs
-        NetworkFilterManager.reset_domain_filter_list()
-
-        # smartdns-rs
-        NetworkFilterManager.reset_resolvconf_to_default()
-        NetworkFilterManager.stop_smartdns_service()
-        NetworkFilterManager.disable_smartdns_service()
+        NetworkFilterManager.clear_domain_filter_list()
 
     # == Session Time Control ==
     def start_session_time_checker(self):
@@ -221,7 +210,7 @@ class PPCActivator(Gio.Application):
         end = self.preferences.get_session_time_end()
 
         if start == end:
-            print("Start and End times are equal. Not applying.")
+            print("Configuration Start and End times are equal. Not applying.")
             exit(0)
 
         # Check time loop
@@ -229,7 +218,7 @@ class PPCActivator(Gio.Application):
         minutes_now = (60 * t.tm_hour) + t.tm_min
 
         while minutes_now >= start and minutes_now <= end:
-            time.sleep(30.0)
+            time.sleep(60)
 
             t = time.localtime()
             minutes_now = (60 * t.tm_hour) + t.tm_min

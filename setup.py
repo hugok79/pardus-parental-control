@@ -37,10 +37,12 @@ data_files = [
         f"/usr/share/pardus/{APP_NAME}/src/managers",
         [
             "src/managers/ApplicationManager.py",
+            "src/managers/BrowserManager.py",
             "src/managers/FileRestrictionManager.py",
             "src/managers/LinuxUserManager.py",
             "src/managers/NetworkFilterManager.py",
             "src/managers/PreferencesManager.py",
+            "src/managers/SmartdnsManager.py",
         ],
     ),
     # UI

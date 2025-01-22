@@ -112,20 +112,8 @@ class PageWebsites(Adw.PreferencesPage):
             activatable_widget=btn_deny,
         )
 
-        # Smartdns option:
-        btn_smartdns = Gtk.CheckButton()
-        btn_smartdns.connect("toggled", self.on_btn_smartdns_clicked)
-        row_smartdns = PActionRow.new(
-            title=_("Run Local DNS Server"),
-            subtitle=_(
-                "Enabling this creates a local smartdns-rs server.\n\nThis prevents accessing websites system-wide, even in terminal screen, but uses more resources."
-            ),
-            activatable_widget=btn_smartdns,
-        )
-
         group.add(row_allow)
         group.add(row_deny)
-        group.add(row_smartdns)
 
         return group
 
@@ -201,13 +189,6 @@ class PageWebsites(Adw.PreferencesPage):
         if btn.get_active():
             self.preferences.set_is_website_list_allowlist(False)
             self.preferences_manager.save()
-
-    def on_btn_smartdns_clicked(self, btn):
-        if not self.preferences:
-            return
-
-        self.preferences.set_run_smartdns(btn.get_active())
-        self.preferences_manager.save()
 
     def on_new_website_entered(self, entry_row):
         if not self.preferences:

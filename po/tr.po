@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: unnamed project\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-20 13:34+0300\n"
+"POT-Creation-Date: 2025-01-22 11:15+0300\n"
 "PO-Revision-Date: 2025-01-16 10:41+0300\n"
 "Last-Translator: Emin Fedar <emin.fedar@pardus.org.tr>\n"
 "Language-Team: Turkish <dev@pardus.org.tr>\n"
@@ -43,7 +43,7 @@ msgstr "Yeni Kullanıcı"
 msgid "Applications"
 msgstr "Uygulamalar"
 
-#: src/ui/MainWindow.py:189 src/ui/page/PageWebsites.py:134
+#: src/ui/MainWindow.py:189 src/ui/page/PageWebsites.py:122
 msgid "Websites"
 msgstr "İnternet Siteleri"
 
@@ -51,11 +51,11 @@ msgstr "İnternet Siteleri"
 msgid "Session Time"
 msgstr "Oturum Süresi"
 
-#: src/PPCActivator.py:57 src/PPCActivator.py:99
+#: src/PPCActivator.py:51 src/PPCActivator.py:101
 msgid "Session will be closed in {} seconds."
 msgstr "Oturumunuz {} saniye içerisinde kapatılacaktır."
 
-#: src/PPCActivator.py:93
+#: src/PPCActivator.py:95
 msgid "Your session time is over."
 msgstr "Oturum süreniz doldu."
 
@@ -124,27 +124,11 @@ msgstr "Sadece listedeki internet sitelerine izin ver. Diğerlerini engelle."
 msgid "Deny only the websites in list. Allow others."
 msgstr "Sadece listedeki internet sitelerini engelle. Diğerlerine izin ver."
 
-#: src/ui/page/PageWebsites.py:119
-msgid "Run Local DNS Server"
-msgstr "Yerel DNS Sunucusu Çalıştır"
-
-#: src/ui/page/PageWebsites.py:121
-msgid ""
-"Enabling this creates a local smartdns-rs server.\n"
-"\n"
-"This prevents accessing websites system-wide, even in terminal screen, but "
-"uses more resources."
-msgstr ""
-"Bunu aktif etmek yerel bir smartdns-rs sunucusu çalıştırır.\n"
-"\n"
-"Sistem genelinde, terminal ekranında bile internet erişimini filtreler.\n"
-"Biraz daha fazla kaynak kullanır."
-
-#: src/ui/page/PageWebsites.py:135
+#: src/ui/page/PageWebsites.py:123
 msgid "Enter websites the restricted user can or can't open."
 msgstr "Kullanıcının girebileceği veya giremeyeceği internet sitelerini girin."
 
-#: src/ui/page/PageWebsites.py:140
+#: src/ui/page/PageWebsites.py:128
 msgid "example.com"
 msgstr "ornek.com"
 

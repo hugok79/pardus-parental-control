@@ -20,13 +20,11 @@ _DEFAULT_USER_PREFERENCES = {
     # Session Time minutes
     "session_time_start": 0,
     "session_time_end": 0,
-    # Run Smartdns on website filtering flag
-    "run_smartdns": False,
 }
 
 _DEFAULT_PREFERENCES = {
     "user_list": {},
-    "base_dns_server": "1.1.1.3",
+    "base_dns_servers": ["1.1.1.3"],
 }
 
 
@@ -61,9 +59,6 @@ class UserPreferences(object):
 
     def get_session_time_end(self):
         return self.session_time_end
-
-    def get_run_smartdns(self):
-        return self.run_smartdns
 
     # Setters
     def set_application_list(self, value):
@@ -101,10 +96,6 @@ class UserPreferences(object):
     def set_session_time_end(self, value):
         if isinstance(value, int):
             self.session_time_end = value
-
-    def set_run_smartdns(self, value):
-        if isinstance(value, bool):
-            self.run_smartdns = value
 
     # JSON
     def as_json(self):
@@ -167,8 +158,8 @@ class PreferencesManager:
     def has_user(self, name):
         return name in self.user_list
 
-    def get_base_dns_server(self):
-        return self.base_dns_server
+    def get_base_dns_servers(self):
+        return self.base_dns_servers
 
     # Setters
     def set_user_list(self, value):
@@ -176,6 +167,10 @@ class PreferencesManager:
             self.user_list = value
 
         self.save()
+
+    def set_base_dns_servers(self, value):
+        if isinstance(value, list):
+            self.set_base_dns_servers = value
 
     # Insert
     def insert_new_user(self, name):
@@ -227,7 +222,9 @@ class PreferencesManager:
                     sort_keys=True,
                 )
         except PermissionError:
-            print("Not enough permissions to create the file")
+            print(
+                "Not enough permissions to create the file:",
+            )
             return
 
     def load_json_from_file(self, filepath=PREFERENCES_PATH):
