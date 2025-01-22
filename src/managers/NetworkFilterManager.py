@@ -4,7 +4,7 @@ import managers.SmartdnsManager as SmartdnsManager
 import managers.BrowserManager as BrowserManager
 
 RESOLV_CONF_PATH = "/etc/resolv.conf"
-RESOLV_CONF_CONTENT = """# This file is generated & locked by eta-kisit app. Please do not change.
+RESOLV_CONF_CONTENT = """# This file is generated & locked by pardus-parental-control app. Please do not change.
 
 nameserver 127.0.0.1
 
