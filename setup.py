@@ -73,11 +73,6 @@ data_files = [
     (f"/usr/share/pardus/{APP_NAME}/data", [f"data/{APP_NAME}.svg"]),
     # Desktop file
     ("/usr/share/applications/", [f"{APP_ID}.desktop"]),
-    # Service
-    (
-        "/etc/xdg/autostart/",
-        ["data/tr.org.pardus.parental-control.apply-settings.desktop"],
-    ),
     # Polkit
     (
         "/usr/share/polkit-1/actions",

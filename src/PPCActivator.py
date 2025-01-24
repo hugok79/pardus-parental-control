@@ -54,8 +54,8 @@ class NotificationApp(Gtk.Application):
 
         if self.seconds_left == 0:
             subprocess.Popen(["loginctl", "kill-user", self.logged_user_name])
-            sys.exit(0)
-            # return False  # stop looping
+
+            self.quit()
 
         return True
 
@@ -114,26 +114,43 @@ class NotificationApp(Gtk.Application):
         return box
 
 
-class PPCActivator(Gio.Application):
+class PPCActivator:
     def __init__(self):
         # Privileged run check
         if not FileRestrictionManager.check_user_privileged():
             sys.stderr.write("You are not privileged to run this script.\n")
             sys.exit(1)
 
-        super().__init__(
-            application_id="tr.org.pardus.parental-control.apply-settings",
-            flags=Gio.ApplicationFlags.DEFAULT_FLAGS,
-        )
+        self.logged_user_name = None
+        self.preferences = None
+        self.preferences_manager = PreferencesManager.get_default()
 
-    def do_activate(self):
-        print("== PPCActivator STARTED ==")
+    def run_check_loop(self):
+        while True:
+            time.sleep(1)
 
-        self.logged_user_name = LinuxUserManager.get_active_session_username()
-        self.logged_user = LinuxUserManager.get_user_object(self.logged_user_name)
+            if self.preferences and self.preferences.is_session_time_filter_active():
+                if self.is_session_time_ended():
+                    app = NotificationApp()
+                    app.run()
 
-        self.read_user_preferences()
+            current_logged_username = LinuxUserManager.get_active_session_username()
 
+            # ignore debian-gdm
+            if current_logged_username == "Debian-gdm":
+                current_logged_username = None
+
+            if self.logged_user_name != current_logged_username:
+                print(
+                    "active user changed: {} -> {}".format(
+                        self.logged_user_name, current_logged_username
+                    )
+                )
+                self.logged_user_name = current_logged_username
+
+                self.on_active_session_user_changed()
+
+    def apply_preferences(self):
         if self.preferences.get_is_application_filter_active():
             self.apply_application_filter()
         else:
@@ -143,25 +160,6 @@ class PPCActivator(Gio.Application):
             self.apply_website_filter()
         else:
             self.clear_website_filter()
-
-        if self.preferences.get_is_session_time_filter_active():
-            self.start_session_time_checker()
-
-        print("== PPCActivator FINISHED ==")
-
-    def read_user_preferences(self):
-        self.preferences_manager = PreferencesManager.get_default()
-        if self.preferences_manager.has_user(self.logged_user_name):
-            print("User found:", self.logged_user_name)
-            self.preferences = self.preferences_manager.get_user(self.logged_user_name)
-        else:
-            self.clear_application_filter()
-            self.clear_website_filter()
-            print(
-                "User not found in preferences.json: {}".format(self.logged_user_name)
-            )
-            print("Cleared all filters")
-            sys.exit(0)
 
     # == Application Filtering ==
     def apply_application_filter(self):
@@ -208,36 +206,46 @@ class PPCActivator(Gio.Application):
         NetworkFilterManager.clear_domain_filter_list()
 
     # == Session Time Control ==
-    def start_session_time_checker(self):
+    def is_session_time_ended(self):
         # Session Time Minutes. 1440 minutes in a day.
         start = self.preferences.get_session_time_start()
         end = self.preferences.get_session_time_end()
 
         if start == end:
             print("Configuration Start and End times are equal. Not applying.")
-            return
+            return False
 
-        self.tick_session_time_check(start, end)
-
-        GLib.timeout_add_seconds(60, self.tick_session_time_check, start, end)
-
-        self.hold()
-
-    def tick_session_time_check(self, start, end):
         t = time.localtime()
         minutes_now = (60 * t.tm_hour) + t.tm_min
 
         if minutes_now >= start and minutes_now <= end:
-            print("Minutes left: ", end - minutes_now)
-            return True
+            print("Minutes left: {}".format(end - minutes_now))
+            return False
 
         print("Time is up! Shutting down...")
+        return True
 
-        # Time is up! -- Session time finished
-        notify_app = NotificationApp()
-        notify_app.run()
+    # Events
+    def on_active_session_user_changed(self):
+        if self.logged_user_name:
+            if self.preferences_manager.has_user(self.logged_user_name):
+                self.preferences = self.preferences_manager.get_user(
+                    self.logged_user_name
+                )
 
-        return False
+                self.apply_preferences()
+            else:
+                self.preferences = None
+                self.clear_application_filter()
+                self.clear_website_filter()
+                print(
+                    "User not found in preferences.json: {}".format(
+                        self.logged_user_name
+                    )
+                )
+                print("Cleared all filters")
+        else:
+            self.preferences = None
 
 
 if __name__ == "__main__":
@@ -248,4 +256,4 @@ if __name__ == "__main__":
             activator.clear_website_filter()
             sys.exit(0)
 
-    activator.run()
+    activator.run_check_loop()
