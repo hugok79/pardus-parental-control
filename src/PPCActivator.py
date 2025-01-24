@@ -3,13 +3,13 @@
 import sys
 import subprocess
 import time
+import logging
 
 import managers.FileRestrictionManager as FileRestrictionManager
 import managers.LinuxUserManager as LinuxUserManager
 import managers.PreferencesManager as PreferencesManager
 import managers.NetworkFilterManager as NetworkFilterManager
 import managers.ApplicationManager as ApplicationManager
-import managers.SmartdnsManager as SmartdnsManager
 
 
 import gi
@@ -29,6 +29,16 @@ TRANSLATIONS_PATH = "/usr/share/locale"
 # Translation functions:
 locale.bindtextdomain(APPNAME, TRANSLATIONS_PATH)
 locale.textdomain(APPNAME)
+
+logging.basicConfig(
+    filename="/var/log/pardus-parental-control.log",
+    level=logging.DEBUG,
+    format="(%(asctime)s) [%(levelname)s]: %(message)s",
+)
+
+
+def log(msg):
+    logging.debug(msg)
 
 
 class NotificationApp(Gtk.Application):
@@ -129,7 +139,10 @@ class PPCActivator:
         while True:
             time.sleep(1)
 
-            if self.preferences and self.preferences.is_session_time_filter_active():
+            if (
+                self.preferences
+                and self.preferences.get_is_session_time_filter_active()
+            ):
                 if self.is_session_time_ended():
                     app = NotificationApp()
                     app.run()
@@ -141,7 +154,7 @@ class PPCActivator:
                 current_logged_username = None
 
             if self.logged_user_name != current_logged_username:
-                print(
+                log(
                     "active user changed: {} -> {}".format(
                         self.logged_user_name, current_logged_username
                     )
@@ -151,15 +164,20 @@ class PPCActivator:
                 self.on_active_session_user_changed()
 
     def apply_preferences(self):
+        log("Applying application filters for: {}".format(self.logged_user_name))
+
         if self.preferences.get_is_application_filter_active():
             self.apply_application_filter()
         else:
             self.clear_application_filter()
+        log("Applied application filters.")
 
+        log("Applying website filters for: {}".format(self.logged_user_name))
         if self.preferences.get_is_website_filter_active():
             self.apply_website_filter()
         else:
             self.clear_website_filter()
+        log("Applied website filters.")
 
     # == Application Filtering ==
     def apply_application_filter(self):
@@ -212,17 +230,17 @@ class PPCActivator:
         end = self.preferences.get_session_time_end()
 
         if start == end:
-            print("Configuration Start and End times are equal. Not applying.")
+            log("Configuration Start and End times are equal. Not applying.")
             return False
 
         t = time.localtime()
         minutes_now = (60 * t.tm_hour) + t.tm_min
 
         if minutes_now >= start and minutes_now <= end:
-            print("Minutes left: {}".format(end - minutes_now))
+            log("Minutes left: {}".format(end - minutes_now))
             return False
 
-        print("Time is up! Shutting down...")
+        log("Time is up! Shutting down...")
         return True
 
     # Events
@@ -238,12 +256,12 @@ class PPCActivator:
                 self.preferences = None
                 self.clear_application_filter()
                 self.clear_website_filter()
-                print(
+                log(
                     "User not found in preferences.json: {}".format(
                         self.logged_user_name
                     )
                 )
-                print("Cleared all filters")
+                log("Cleared all filters")
         else:
             self.preferences = None
 
