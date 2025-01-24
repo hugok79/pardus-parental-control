@@ -237,7 +237,6 @@ class PPCActivator:
         minutes_now = (60 * t.tm_hour) + t.tm_min
 
         if minutes_now >= start and minutes_now <= end:
-            log("Minutes left: {}".format(end - minutes_now))
             return False
 
         log("Time is up! Shutting down...")
@@ -245,6 +244,9 @@ class PPCActivator:
 
     # Events
     def on_active_session_user_changed(self):
+        # update json file values
+        self.preferences_manager.update_json_from_file()
+
         if self.logged_user_name:
             if self.preferences_manager.has_user(self.logged_user_name):
                 self.preferences = self.preferences_manager.get_user(

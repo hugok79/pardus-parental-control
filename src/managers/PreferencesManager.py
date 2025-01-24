@@ -148,6 +148,12 @@ class PreferencesManager:
         for key in self.user_list:
             self.user_list[key] = UserPreferences(self.user_list[key])
 
+    def update_json_from_file(self):
+        self.__dict__ = self.load_json_from_file()
+
+        for key in self.user_list:
+            self.user_list[key] = UserPreferences(self.user_list[key])
+
     # Getters
     def get_user_list(self):
         return self.user_list
