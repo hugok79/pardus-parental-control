@@ -1,7 +1,6 @@
 #!/bin/sh
 set -e
 
-APP_DIR="/usr/share/pardus/pardus-parental-control"
 PREFERENCES_DIR="/var/lib/pardus/pardus-parental-control"
 
 
@@ -25,8 +24,6 @@ case "$1" in
         ;;
 
     *)
-        echo "postrm called with unknown argument \`$1'" >&2
-        exit 0
         ;;
 esac
 
