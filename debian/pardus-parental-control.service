@@ -1,10 +1,9 @@
 [Unit]
 Description=Pardus Parental Control service
-After=graphical.target
 
 [Service]
 Type=simple
 ExecStart=/usr/bin/python3 /usr/share/pardus/pardus-parental-control/src/PPCActivator.py
 
 [Install]
-WantedBy=graphical.target
+WantedBy=graphical-session.target

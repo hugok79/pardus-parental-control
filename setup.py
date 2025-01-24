@@ -31,7 +31,11 @@ data_files = [
     # Source Code
     (
         f"/usr/share/pardus/{APP_NAME}/src",
-        ["src/Main.py", "src/PPCActivator.py"],
+        [
+            "src/Main.py",
+            "src/PPCActivator.py",
+            "src/NotificationApp.py",
+        ],
     ),
     (
         f"/usr/share/pardus/{APP_NAME}/src/managers",
