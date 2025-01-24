@@ -49,7 +49,9 @@ def apply_domain_filter_list(domain_list, is_allowlist, dns_servers):
     SmartdnsManager.create_smartdns_config(domain_list, is_allowlist, dns_servers)
 
     # Service
-    SmartdnsManager.enable_smartdns_service()
+    if SmartdnsManager.enable_smartdns_service().returncode != 0:
+        SmartdnsManager.install_smartdns_service()
+        SmartdnsManager.enable_smartdns_service()
     SmartdnsManager.restart_smartdns_service()
 
     # Browser Policies

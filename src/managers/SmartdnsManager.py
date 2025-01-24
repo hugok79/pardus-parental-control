@@ -103,3 +103,7 @@ def disable_smartdns_service():
 
 def enable_smartdns_service():
     return subprocess.run(["systemctl", "enable", "smartdns-rs.service"])
+
+
+def install_smartdns_service():
+    return subprocess.run(["smartdns", "service", "install"])
