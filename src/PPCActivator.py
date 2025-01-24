@@ -121,7 +121,10 @@ class PPCActivator(Gio.Application):
             sys.stderr.write("You are not privileged to run this script.\n")
             sys.exit(1)
 
-        super().__init__(flags=Gio.ApplicationFlags.DEFAULT_FLAGS)
+        super().__init__(
+            application_id="tr.org.pardus.parental-control.apply-settings",
+            flags=Gio.ApplicationFlags.DEFAULT_FLAGS,
+        )
 
     def do_activate(self):
         print("== PPCActivator STARTED ==")
@@ -142,8 +145,7 @@ class PPCActivator(Gio.Application):
             self.clear_website_filter()
 
         if self.preferences.get_is_session_time_filter_active():
-            # START TIMER
-            GLib.idle_add(self.start_session_time_checker)
+            self.start_session_time_checker()
 
         print("== PPCActivator FINISHED ==")
 
@@ -159,7 +161,7 @@ class PPCActivator(Gio.Application):
                 "User not found in preferences.json: {}".format(self.logged_user_name)
             )
             print("Cleared all filters")
-            exit(0)
+            sys.exit(0)
 
     # == Application Filtering ==
     def apply_application_filter(self):
@@ -213,18 +215,21 @@ class PPCActivator(Gio.Application):
 
         if start == end:
             print("Configuration Start and End times are equal. Not applying.")
-            exit(0)
+            return
 
-        # Check time loop
+        self.tick_session_time_check(start, end)
+
+        GLib.timeout_add_seconds(60, self.tick_session_time_check, start, end)
+
+        self.hold()
+
+    def tick_session_time_check(self, start, end):
         t = time.localtime()
         minutes_now = (60 * t.tm_hour) + t.tm_min
 
-        while minutes_now >= start and minutes_now <= end:
-            time.sleep(60)
-
-            t = time.localtime()
-            minutes_now = (60 * t.tm_hour) + t.tm_min
+        if minutes_now >= start and minutes_now <= end:
             print("Minutes left: ", end - minutes_now)
+            return True
 
         print("Time is up! Shutting down...")
 
@@ -232,7 +237,7 @@ class PPCActivator(Gio.Application):
         notify_app = NotificationApp()
         notify_app.run()
 
-        exit(0)
+        return False
 
 
 if __name__ == "__main__":
@@ -241,6 +246,6 @@ if __name__ == "__main__":
         if sys.argv[1] == "--disable":
             activator.clear_application_filter()
             activator.clear_website_filter()
-            exit(0)
+            sys.exit(0)
 
     activator.run()
