@@ -6,10 +6,11 @@ import managers.FileRestrictionManager as FileRestrictionManager
 from ui.MainWindow import MainWindow
 
 gi.require_version("Gtk", "4.0")
-from gi.repository import Gtk, Gio  # noqa
+gi.require_version("Adw", "1")
+from gi.repository import Gtk, Gio, Adw  # noqa
 
 
-class Main(Gtk.Application):
+class Main(Adw.Application):
     def __init__(self):
         super().__init__(
             application_id="tr.org.pardus.parental-control",
