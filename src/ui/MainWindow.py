@@ -266,7 +266,15 @@ class MainWindow(Adw.ApplicationWindow):
         self.about_dialog.present()
 
     def on_btn_new_user_clicked(self, btn):
-        GLib.spawn_async(
-            argv=["gnome-control-center", "user-accounts"],
-            flags=GLib.SpawnFlags.SEARCH_PATH,
-        )
+        current_de = os.environ.get("XDG_CURRENT_DESKTOP")
+
+        if current_de == "GNOME":
+            GLib.spawn_async(
+                argv=["gnome-control-center", "user-accounts"],
+                flags=GLib.SpawnFlags.SEARCH_PATH,
+            )
+        elif current_de == "XFCE":
+            GLib.spawn_async(
+                argv=["users-admin"],
+                flags=GLib.SpawnFlags.SEARCH_PATH,
+            )
