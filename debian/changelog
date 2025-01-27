@@ -1,3 +1,19 @@
+pardus-parental-control (0.3.1) yirmiuc; urgency=medium
+
+  * chore: remove unnecessary lines on debian scripts
+  * fix: smartdns service not installed
+  * fix: autostart timeout error
+  * feat!: use service instead of autostart
+  * feat: new logger
+  * feat: update json file values after session change
+  * feat!: separate NotificationApp.py
+  * fix: service
+  * feat!: remove service, use .desktop file (needed for GUI access)
+  * fix: accountsservice dependency
+  * fix: xfce support
+
+ -- Emin Fedar <emin.fedar@pardus.org.tr>  Mon, 27 Jan 2025 14:59:35 +0300
+
 pardus-parental-control (0.3.0) yirmiuc; urgency=medium
 
   * fix: smartdns-rs dependency
