@@ -33,37 +33,54 @@ class PPCActivator:
             sys.stderr.write("You are not privileged to run this script.\n")
             sys.exit(1)
 
-        self.logged_user_name = None
+        # Logged user preferences:
+        self.logged_user_name = LinuxUserManager.get_active_session_username()
         self.preferences = None
         self.preferences_manager = PreferencesManager.get_default()
 
-    def run_check_loop(self):
-        while True:
-            time.sleep(1)
+        if self.logged_user_name:
+            if self.preferences_manager.has_user(self.logged_user_name):
+                self.preferences = self.preferences_manager.get_user(
+                    self.logged_user_name
+                )
 
-            if (
-                self.preferences
-                and self.preferences.get_is_session_time_filter_active()
-            ):
-                if self.is_session_time_ended():
-                    notification_app = NotificationApp()
-                    notification_app.run()
-
-            current_logged_username = LinuxUserManager.get_active_session_username()
-
-            # ignore debian-gdm
-            if current_logged_username == "Debian-gdm":
-                current_logged_username = None
-
-            if self.logged_user_name != current_logged_username:
+                self.apply_preferences()
+            else:
+                self.clear_application_filter()
+                self.clear_website_filter()
                 log(
-                    "active user changed: {} -> {}".format(
-                        self.logged_user_name, current_logged_username
+                    "User not found in preferences.json: {}".format(
+                        self.logged_user_name
                     )
                 )
-                self.logged_user_name = current_logged_username
+                log("Cleared all filters")
 
-                self.on_active_session_user_changed()
+                # Exit if user not in preferences list.
+                sys.exit(0)
+
+    def run(self):
+        if not self.logged_user_name or not self.preferences:
+            return
+
+        # Session time check:
+        if not self.preferences.get_is_session_time_filter_active():
+            return
+
+        self.check_session_time()
+
+        while True:
+            # Time.sleep sleeps process, nothing happens, no resource usage.
+            time.sleep(60)
+
+            # Check session time every minute
+            self.check_session_time()
+
+    def check_session_time(self):
+        if self.is_session_time_ended():
+            notification_app = NotificationApp()
+            notification_app.run()
+
+            sys.exit(0)
 
     def apply_preferences(self):
         log("Applying application filters for: {}".format(self.logged_user_name))
@@ -144,31 +161,6 @@ class PPCActivator:
         log("Time is up! Shutting down...")
         return True
 
-    # Events
-    def on_active_session_user_changed(self):
-        # update json file values
-        self.preferences_manager.update_json_from_file()
-
-        if self.logged_user_name:
-            if self.preferences_manager.has_user(self.logged_user_name):
-                self.preferences = self.preferences_manager.get_user(
-                    self.logged_user_name
-                )
-
-                self.apply_preferences()
-            else:
-                self.preferences = None
-                self.clear_application_filter()
-                self.clear_website_filter()
-                log(
-                    "User not found in preferences.json: {}".format(
-                        self.logged_user_name
-                    )
-                )
-                log("Cleared all filters")
-        else:
-            self.preferences = None
-
 
 if __name__ == "__main__":
     activator = PPCActivator()
@@ -178,4 +170,4 @@ if __name__ == "__main__":
             activator.clear_website_filter()
             sys.exit(0)
 
-    activator.run_check_loop()
+    activator.run()

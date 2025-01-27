@@ -35,6 +35,7 @@ data_files = [
             "src/Main.py",
             "src/PPCActivator.py",
             "src/NotificationApp.py",
+            "src/launch-ppcservice.sh",
         ],
     ),
     (
@@ -81,6 +82,11 @@ data_files = [
     (
         "/usr/share/polkit-1/actions",
         ["polkit/tr.org.pardus.pkexec.parental-control.policy"],
+    ),
+    # Service
+    (
+        "/etc/xdg/autostart/",
+        ["data/tr.org.pardus.parental-control.apply-settings.desktop"],
     ),
 ] + compile_translations()
 

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Pardus Parental Control Service
+Comment=Pardus Parental Control Service. Applies settings on every login.
+Exec=/usr/share/pardus/pardus-parental-control/src/launch-ppcservice.sh
+NoDisplay=true
+X-GNOME-Autostart-enabled=true
+X-GNOME-Autostart-Phase=Initialization
+X-KDE-autostart-phase=1
