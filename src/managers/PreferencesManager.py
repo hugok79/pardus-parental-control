@@ -24,7 +24,7 @@ _DEFAULT_USER_PREFERENCES = {
 
 _DEFAULT_PREFERENCES = {
     "user_list": {},
-    "base_dns_servers": ["1.1.1.3"],
+    "base_dns_servers": ["195.175.39.39", "195.175.39.40"],  # OpenDNS Family Shield
 }
 
 

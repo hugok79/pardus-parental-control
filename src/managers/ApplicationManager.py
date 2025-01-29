@@ -6,7 +6,26 @@ import shutil
 
 
 CONFIG_DIR = Path("/var/lib/pardus/pardus-parental-control/")
-ALWAYS_ALLOWED_APPLICATIONS = [""]
+ALWAYS_ALLOWED_APPLICATIONS = [
+    "xfce4-clipman.desktop",
+    "xfce4-screenshooter.desktop",
+    "xfce4-session-logout.desktop",
+]
+ALWAYS_ALLOWED_BINARIES = [
+    "flatpak",
+    "bash",
+    "sh",
+    "snap",
+    "exo-open",
+    "libreoffice",
+    "xfce4-panel",
+    "xfce4-session-logout",
+    "sudo",
+    "pkexec",
+    "xfwm4",
+    "python",
+    "python3",
+]
 
 
 def _get_flatpak_applications():
@@ -30,14 +49,56 @@ def get_all_applications():
 
     # Filter only visible applications
     apps = filter(lambda a: not a.get_nodisplay(), apps)
+    # Filter XFCE apps:
+    apps = filter(lambda a: not a.get_boolean("X-XfcePluggable"), apps)
+
     apps = sorted(apps, key=lambda a: a.get_name())  # Sort alphabetically
 
     return list(apps)
 
 
+def _get_executable_path(app):
+    executable = app.get_executable()
+
+    # String to Path
+    if executable[0] == '"':
+        # '"/opt/Youtube Music/youtube-music" %u' -> '/opt/Youtube Music/youtube-music'
+        cmdline = app.get_commandline()
+        if cmdline:
+            executable = cmdline.split('"')[1]
+        else:
+            print(
+                "- Skip - executable and cmdline is corrupted in application:",
+                executable,
+                cmdline,
+            )
+            return None
+
+    # Absolute Path to Executable Name
+    if executable[0] == "/":
+        # '/opt/Youtube Music/youtube-music' -> 'youtube-music'
+        executable = executable.split("/")[-1]
+
+    # Allowed Lists
+    if executable in ALWAYS_ALLOWED_BINARIES:
+        print("- Skip - Always Allowed Binary:", executable)
+        return None
+
+    # Don't restrict Chrom(e|ium) links:
+    if "chrom" in executable and "chrom" not in app.get_id():
+        print("- Skip - Chrome Link:", app.get_id())
+        return None
+
+    # Convert to absolute path
+    return shutil.which(executable)
+
+
 # APPLICATION RESTRICTIONS:
 def restrict_application(desktop_file):
-    if desktop_file in ALWAYS_ALLOWED_APPLICATIONS:
+    # /usr/share/applications/abc.desktop -> abc.desktop
+    app_id = desktop_file.split("/")[-1]
+
+    if app_id in ALWAYS_ALLOWED_APPLICATIONS:
         print(desktop_file, " is always allowed. Skipping.")
         return
 
@@ -47,72 +108,31 @@ def restrict_application(desktop_file):
         print("Application not found:", desktop_file)
         return
 
-    executable_file_path = app.get_executable()
-
     # Restrict desktopfile
     FileRestrictionManager.restrict_desktop_file(desktop_file)
 
-    # Restrict executable
-    if (
-        "flatpak" in executable_file_path
-        or "snap" in executable_file_path
-        or "/bin/sh" in executable_file_path
-        or "/bin/bash" in executable_file_path
-        or "sh" == executable_file_path
-        or "bash" == executable_file_path
-    ):
-        print(
-            "Not restricting executable because flatpak/snap/bash/sh program:",
-            executable_file_path,
-        )
-        return
+    executable_path = _get_executable_path(app)
+    if executable_path:
+        FileRestrictionManager.restrict_bin_file(executable_path)
 
-    # Don't restrict Chrom(e|ium) links:
-    if "chrom" in executable_file_path and "chrom" not in desktop_file:
-        return
-
-    # Convert to absolute path
-    if not executable_file_path.startswith("/"):
-        executable_file_path = shutil.which(executable_file_path)
-
-    FileRestrictionManager.restrict_bin_file(executable_file_path)
-
-    print("Restricted:", desktop_file, "|", executable_file_path)
+    print("Restricted:", desktop_file, "|", executable_path)
 
 
 def unrestrict_application(desktop_file):
+    # /usr/share/applications/abc.desktop -> abc.desktop
     try:
         app = Gio.DesktopAppInfo.new_from_filename(desktop_file)
     except TypeError:
         print("Application not found:", desktop_file)
         return
 
-    executable_file_path = app.get_executable()
-
     # Unrestrict desktopfile
     FileRestrictionManager.unrestrict_desktop_file(desktop_file)
 
-    # Unrestrict executable
-    if (
-        "flatpak" in executable_file_path
-        or "snap" in executable_file_path
-        or "/bin/sh" in executable_file_path
-        or "/bin/bash" in executable_file_path
-        or "sh" == executable_file_path
-        or "bash" == executable_file_path
-    ):
-        print("Unrestricted .desktop only:", desktop_file)
-        return
-
-    # Don't unrestrict Chrome links:
-    if "chrom" in executable_file_path and "chrom" not in desktop_file:
-        print("Unrestricted .desktop only:", desktop_file)
-        return
-
     # Convert to absolute path
-    if not executable_file_path.startswith("/"):
-        executable_file_path = shutil.which(executable_file_path)
-
-    FileRestrictionManager.unrestrict_bin_file(executable_file_path)
-
-    print("Unrestricted:", desktop_file, "|", executable_file_path)
+    executable_path = _get_executable_path(app)
+    if executable_path:
+        FileRestrictionManager.unrestrict_bin_file(executable_path)
+        print("Unrestricted:", desktop_file, "|", executable_path)
+    else:
+        print("Unrestricted .desktop only:", desktop_file)

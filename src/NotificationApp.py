@@ -21,7 +21,7 @@ locale.bindtextdomain(APPNAME, TRANSLATIONS_PATH)
 locale.textdomain(APPNAME)
 
 
-class NotificationApp(Gtk.Application):
+class NotificationApp(Adw.Application):
     def __init__(self):
         super().__init__(
             application_id="tr.org.pardus.parental-control-notification",

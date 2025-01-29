@@ -1,9 +1,7 @@
 #!/usr/bin/python3
 
 import sys
-import subprocess
 import time
-import os
 import logging
 
 import managers.FileRestrictionManager as FileRestrictionManager
@@ -13,6 +11,8 @@ import managers.NetworkFilterManager as NetworkFilterManager
 import managers.ApplicationManager as ApplicationManager
 
 from NotificationApp import NotificationApp
+
+from gi.repository import Gio, Gtk, GLib  # noqa
 
 
 logging.basicConfig(
@@ -26,13 +26,19 @@ def log(msg):
     logging.debug(msg)
 
 
-class PPCActivator:
+class PPCActivator(Gtk.Application):
     def __init__(self):
         # Privileged run check
         if not FileRestrictionManager.check_user_privileged():
             sys.stderr.write("You are not privileged to run this script.\n")
             sys.exit(1)
 
+        super().__init__(
+            application_id="tr.org.pardus.parental-control.apply-settings",
+            flags=Gio.ApplicationFlags.DEFAULT_FLAGS,
+        )
+
+    def do_activate(self):
         # Logged user preferences:
         self.logged_user_name = LinuxUserManager.get_active_session_username()
         self.preferences = None
@@ -43,6 +49,12 @@ class PPCActivator:
                 self.preferences = self.preferences_manager.get_user(
                     self.logged_user_name
                 )
+
+                if self.preferences.get_is_session_time_filter_active():
+                    empty_window = Gtk.Window(application=self)  # prevent closing app
+
+                    self.check_session_time()
+                    GLib.timeout_add_seconds(60, self.check_session_time)
 
                 self.apply_preferences()
             else:
@@ -58,29 +70,15 @@ class PPCActivator:
                 # Exit if user not in preferences list.
                 sys.exit(0)
 
-    def run(self):
-        if not self.logged_user_name or not self.preferences:
-            return
-
-        # Session time check:
-        if not self.preferences.get_is_session_time_filter_active():
-            return
-
-        self.check_session_time()
-
-        while True:
-            # Time.sleep sleeps process, nothing happens, no resource usage.
-            time.sleep(60)
-
-            # Check session time every minute
-            self.check_session_time()
-
     def check_session_time(self):
         if self.is_session_time_ended():
             notification_app = NotificationApp()
             notification_app.run()
 
             sys.exit(0)
+            return GLib.SOURCE_REMOVE
+
+        return GLib.SOURCE_CONTINUE
 
     def apply_preferences(self):
         log("Applying application filters for: {}".format(self.logged_user_name))
