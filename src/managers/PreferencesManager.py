@@ -24,7 +24,10 @@ _DEFAULT_USER_PREFERENCES = {
 
 _DEFAULT_PREFERENCES = {
     "user_list": {},
-    "base_dns_servers": ["195.175.39.39", "195.175.39.40"],  # OpenDNS Family Shield
+    "base_dns_servers": [
+        "185.228.168.10",
+        "185.228.169.11",
+    ],  # Cleanbrowsing Adult Filter
 }
 
 
