@@ -11,6 +11,11 @@ bind-tcp [::]:53
 tcp-idle-time 5
 """
 
+SMARTDNS_CONF_DENY_ADULT_PREPEND = """
+domain-set -name adult -type list -file /usr/share/pardus/pardus-parental-control/data/anti-adult.list
+address /domain-set:adult/#
+"""
+
 SMARTDNS_CONF_DNS_SERVER_TEMPLATE = """
 server {DNS_SERVER}
 server-tcp {DNS_SERVER}
@@ -49,6 +54,8 @@ def _generate_domain_list_config(domain_list, is_allowlist):
     else:
         for d in domain_list:
             content += SMARTDNS_CONF_DENY_DOMAIN_TEMPLATE.format(domain=d)
+
+        content += SMARTDNS_CONF_DENY_ADULT_PREPEND
 
     return content
 

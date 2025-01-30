@@ -73,9 +73,15 @@ data_files = [
     # Executable
     ("/usr/bin/", [f"{APP_NAME}"]),
     # Data
-    (f"/usr/share/pardus/{APP_NAME}/data", ["data/style.css"]),
+    (
+        f"/usr/share/pardus/{APP_NAME}/data",
+        [
+            "data/style.css",
+            f"data/{APP_NAME}.svg",
+            "data/anti-adult.list",
+        ],
+    ),
     ("/usr/share/icons/hicolor/scalable/apps/", [f"data/{APP_NAME}.svg"]),
-    (f"/usr/share/pardus/{APP_NAME}/data", [f"data/{APP_NAME}.svg"]),
     # Desktop file
     ("/usr/share/applications/", [f"{APP_ID}.desktop"]),
     # Polkit

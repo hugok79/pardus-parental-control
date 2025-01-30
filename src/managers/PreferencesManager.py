@@ -24,10 +24,7 @@ _DEFAULT_USER_PREFERENCES = {
 
 _DEFAULT_PREFERENCES = {
     "user_list": {},
-    "base_dns_servers": [
-        "185.228.168.10",
-        "185.228.169.11",
-    ],  # Cleanbrowsing Adult Filter
+    "base_dns_servers": ["1.1.1.3", "1.0.0.3"],
 }
 
 
