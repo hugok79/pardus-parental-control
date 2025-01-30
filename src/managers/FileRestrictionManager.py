@@ -1,6 +1,5 @@
 import os
 import subprocess
-import shutil
 
 PRIVILEGED_GROUP = "sudo"
 PRIVILEGED_GROUP_ID = int(
@@ -30,14 +29,6 @@ def restrict_bin_file(filepath):
 
 def restrict_desktop_file(filepath):
     if filepath:
-        if "flatpak/" in filepath:
-            # flatpak .desktop files are symlinks, so chmod doesn't work on them.
-            if os.path.islink(filepath):
-                restricted_name = "{}.RESTRICTED".format(filepath)
-                os.rename(filepath, restricted_name)
-
-                shutil.copyfile(restricted_name, filepath, follow_symlinks=True)
-
         os.chmod(filepath, 0o640)  # rw-r-----
         os.chown(filepath, 0, PRIVILEGED_GROUP_ID)
 
@@ -53,15 +44,8 @@ def unrestrict_conf_file(filepath):
 
 def unrestrict_desktop_file(filepath):
     if filepath:
-        if "flatpak/" in filepath:
-            # flatpak .desktop files are symlinks, so chmod doesn't work on them.
-            if not os.path.islink(filepath):
-                restricted_name = "{}.RESTRICTED".format(filepath)
-                os.remove(filepath)
-                os.rename(restricted_name, filepath)
-        else:
-            os.chmod(filepath, 0o644)  # rw-r--r--
-            os.chown(filepath, 0, 0)  # root:root
+        os.chmod(filepath, 0o644)  # rw-r--r--
+        os.chown(filepath, 0, 0)  # root:root
 
 
 def unrestrict_bin_file(filepath):

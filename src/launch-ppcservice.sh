@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sleep 1
+sleep 0.5
 
 /usr/bin/pkexec /usr/share/pardus/pardus-parental-control/src/PPCActivator.py &
 
