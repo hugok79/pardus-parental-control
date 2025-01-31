@@ -1,3 +1,13 @@
+pardus-parental-control (0.3.2) UNRELEASED; urgency=medium
+
+  * fix: Gtk.Application -> Adw.Application
+  * feat!: better xfce compatibility
+  * feat: new base dns
+  * feat: better ad & adult filtering
+  * fix: better flatpak .desktop handling
+
+ -- Emin Fedar <emin.fedar@pardus.org.tr>  Fri, 31 Jan 2025 08:20:56 +0300
+
 pardus-parental-control (0.3.1) yirmiuc; urgency=medium
 
   * chore: remove unnecessary lines on debian scripts

@@ -13,7 +13,7 @@ def get_user_object(username):
     return manager.get_user(username)
 
 
-def get_active_session_username():
+def get_sessions():
     process = subprocess.run(
         ["loginctl", "list-sessions", "-o", "json"], capture_output=True
     )
@@ -29,7 +29,7 @@ def get_active_session_username():
         print("[ERR] loginctl no session found.")
         return None
 
-    return json_array[0]["user"]
+    return json_array
 
 
 def get_standard_users():

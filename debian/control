@@ -15,6 +15,7 @@ Depends: ${misc:Depends},
          gir1.2-glib-2.0,
          gir1.2-gtk-4.0,
          gir1.2-adw-1,
+         gir1.2-malcontent-0,
          gir1.2-accountsservice-1.0,
          smartdns-rs
 Description: Parental Control application for Pardus

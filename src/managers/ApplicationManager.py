@@ -2,6 +2,7 @@ import os
 from gi.repository import Gio
 from pathlib import Path
 import managers.FileRestrictionManager as FileRestrictionManager
+import managers.MalcontentManager as MalcontentManager
 import shutil
 
 
@@ -28,7 +29,7 @@ ALWAYS_ALLOWED_BINARIES = [
 ]
 
 
-def _get_flatpak_applications():
+def get_flatpak_applications():
     apps = []
 
     flatpak_dir = "/var/lib/flatpak/exports/share/applications/"
@@ -45,7 +46,7 @@ def get_all_applications():
     apps = Gio.AppInfo.get_all()
 
     if os.getuid() == 0:
-        apps.extend(_get_flatpak_applications())
+        apps.extend(get_flatpak_applications())
 
     # Filter only visible applications
     apps = filter(lambda a: not a.get_nodisplay(), apps)
@@ -95,6 +96,9 @@ def _get_executable_path(app):
 
 # APPLICATION RESTRICTIONS:
 def restrict_application(desktop_file):
+    if "flatpak/exports/" in desktop_file:
+        return
+
     # /usr/share/applications/abc.desktop -> abc.desktop
     app_id = desktop_file.split("/")[-1]
 
@@ -118,8 +122,19 @@ def restrict_application(desktop_file):
     print("Restricted:", desktop_file, "|", executable_path)
 
 
+def restrict_flatpaks(app_id_list, user_id):
+    print("Restricted flatpaks: ", app_id_list)
+    MalcontentManager.apply_flatpak_blocklist(app_id_list, user_id)
+
+
+def unrestrict_all_flatpaks():
+    MalcontentManager.clear_flatpak_blocklist_all_users()
+
+
 def unrestrict_application(desktop_file):
-    # /usr/share/applications/abc.desktop -> abc.desktop
+    if "flatpak/exports/" in desktop_file:
+        return
+
     try:
         app = Gio.DesktopAppInfo.new_from_filename(desktop_file)
     except TypeError:

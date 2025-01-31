@@ -22,13 +22,13 @@ locale.textdomain(APPNAME)
 
 
 class NotificationApp(Adw.Application):
-    def __init__(self):
+    def __init__(self, logged_user_name):
         super().__init__(
-            application_id="tr.org.pardus.parental-control-notification",
-            flags=Gio.ApplicationFlags.DEFAULT_FLAGS,
+            application_id="tr.org.pardus.parental-control.notificationapp",
+            flags=Gio.ApplicationFlags.NON_UNIQUE,
         )
 
-        self.logged_user_name = LinuxUserManager.get_active_session_username()
+        self.logged_user_name = logged_user_name
         self.seconds_left = 10
 
     def do_activate(self):

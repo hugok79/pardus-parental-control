@@ -45,6 +45,7 @@ data_files = [
             "src/managers/BrowserManager.py",
             "src/managers/FileRestrictionManager.py",
             "src/managers/LinuxUserManager.py",
+            "src/managers/MalcontentManager.py",
             "src/managers/NetworkFilterManager.py",
             "src/managers/PreferencesManager.py",
             "src/managers/SmartdnsManager.py",
@@ -92,19 +93,19 @@ data_files = [
     # Service
     (
         "/etc/xdg/autostart/",
-        ["data/tr.org.pardus.parental-control.apply-settings.desktop"],
+        ["data/tr.org.pardus.parental-control.apply.desktop"],
     ),
 ] + compile_translations()
 
 setup(
     name=f"{APP_NAME}",
-    version="0.3.0",
+    version="0.3.2",
     packages=find_packages(),
     scripts=[f"{APP_NAME}"],
     install_requires=["PyGObject"],
     data_files=data_files,
     author="Pardus Developers",
-    author_email="gelistirici@pardus.org.tr",
+    author_email="dev@pardus.org.tr",
     description="Parental Control and Restriction application for Pardus",
     license="GPLv3",
     keywords="",

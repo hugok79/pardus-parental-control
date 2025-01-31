@@ -1,10 +1,12 @@
 #!/bin/bash
 
-sleep 0.5
+sleep 1
 
-/usr/bin/pkexec /usr/share/pardus/pardus-parental-control/src/PPCActivator.py &
+USER_ID=$(id -u)
 
-sleep 1.5
+/usr/bin/pkexec /usr/share/pardus/pardus-parental-control/src/PPCActivator.py $USER_ID $USER &
+
+sleep 2
 
 exit 0
 
