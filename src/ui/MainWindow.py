@@ -62,11 +62,11 @@ class MainWindow(Adw.ApplicationWindow):
             application_icon="pardus-parental-control",
             version="0.3.2",
             website="https://pardus.org.tr",
-            copyright="©2025 Pardus Developers",
+            copyright="© TÜBİTAK BİLGEM",
             comments=_(
                 "Restrict user access to internet and applications. Manage session times."
             ),
-            developer_name="Pardus Developers",
+            developer_name=_("Pardus Developers"),
             developers=["Emin Fedar"],
             license_type=Gtk.License.GPL_3_0,
             translator_credits=_("translator_credits"),

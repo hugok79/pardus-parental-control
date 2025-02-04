@@ -3,9 +3,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: unnamed project\n"
+"Project-Id-Version: pardus-parental-control\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-22 11:15+0300\n"
+"POT-Creation-Date: 2025-02-04 13:29+0300\n"
 "PO-Revision-Date: 2025-01-16 10:41+0300\n"
 "Last-Translator: Emin Fedar <emin.fedar@pardus.org.tr>\n"
 "Language-Team: Turkish <dev@pardus.org.tr>\n"
@@ -26,6 +26,10 @@ msgid ""
 msgstr ""
 "Kullanıcıların internet ve uygulamalara erişimini sınırlayın. Oturum "
 "sürelerini yönetin."
+
+#: src/ui/MainWindow.py:69
+msgid "Pardus Developers"
+msgstr "Pardus Geliştiricileri"
 
 #: src/ui/MainWindow.py:72
 msgid "translator_credits"
@@ -51,11 +55,11 @@ msgstr "İnternet Siteleri"
 msgid "Session Time"
 msgstr "Oturum Süresi"
 
-#: src/PPCActivator.py:51 src/PPCActivator.py:101
+#: src/NotificationApp.py:42 src/NotificationApp.py:92
 msgid "Session will be closed in {} seconds."
-msgstr "Oturumunuz {} saniye içerisinde kapatılacaktır."
+msgstr "Oturum {} saniye içerisinde kapatılacaktır."
 
-#: src/PPCActivator.py:95
+#: src/NotificationApp.py:86
 msgid "Your session time is over."
 msgstr "Oturum süreniz doldu."
 
@@ -132,10 +136,10 @@ msgstr "Kullanıcının girebileceği veya giremeyeceği internet sitelerini gir
 msgid "example.com"
 msgstr "ornek.com"
 
-#: src/ui/widget/DialogAppChooser.py:26
+#: src/ui/widget/DialogAppChooser.py:27
 msgid "Select Application..."
 msgstr "Uygulama Seçiniz..."
 
-#: src/ui/widget/DialogAppChooser.py:30
+#: src/ui/widget/DialogAppChooser.py:31
 msgid "Loading..."
 msgstr "Yükleniyor..."

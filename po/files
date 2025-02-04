@@ -1,5 +1,6 @@
 src/ui/MainWindow.py
 src/PPCActivator.py
+src/NotificationApp.py
 src/ui/page/PageApplications.py
 src/ui/page/PageEmpty.py
 src/ui/page/PageSessionTime.py
