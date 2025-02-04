@@ -1,8 +1,8 @@
 Source: pardus-parental-control
 Section: utils
 Priority: optional
-Maintainer: Pardus Developers <gelistirici@pardus.org.tr>
-Build-Depends: debhelper (>= 13), dh-python, python3-all, python3-setuptools
+Maintainer: Emin Fedar <emin.fedar@pardus.org.tr>
+Build-Depends: debhelper (>= 12), dh-python, python3-all, python3-setuptools
 Standards-Version: 4.6.1
 Homepage: https://github.com/pardus/pardus-parental-control
 
