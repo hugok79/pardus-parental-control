@@ -61,7 +61,7 @@ class MainWindow(Adw.ApplicationWindow):
             application_name=_("Pardus Parental Control"),
             application_icon="pardus-parental-control",
             version="0.3.2",
-            website="https://pardus.org.tr",
+            website="https://github.com/pardus/pardus-parental-control",
             copyright="© TÜBİTAK BİLGEM",
             comments=_(
                 "Restrict user access to internet and applications. Manage session times."
