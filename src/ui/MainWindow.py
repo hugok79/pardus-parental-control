@@ -122,8 +122,16 @@ class MainWindow(Adw.ApplicationWindow):
 
             listbox.append(ListRowAvatar(fullname, username))
 
+        # Select first user on startup
+        first_row = listbox.get_row_at_index(0)
+        if first_row:
+            listbox.select_row(first_row)
+
         scrolledwindow = Gtk.ScrolledWindow(
-            child=listbox, width_request=200, vexpand=True
+            child=listbox,
+            hscrollbar_policy=Gtk.PolicyType.NEVER,
+            vexpand=True,
+            width_request=220,
         )
         box.append(Gtk.Separator(margin_start=7, margin_end=7))
         box.append(scrolledwindow)
@@ -204,24 +212,22 @@ class MainWindow(Adw.ApplicationWindow):
     def setup_ui(self):
         self.leaflet = Adw.Leaflet.new()
 
-        # Sidebar
-        sidebar = self.setup_sidebar()
-        self.leaflet.append(sidebar)
-
+        # Open Sidebar Button
         self.btn_open_sidebar = Gtk.Button.new_from_icon_name("open-menu-symbolic")
         self.btn_open_sidebar.connect("clicked", self.on_btn_open_sidebar_clicked)
         self.leaflet.bind_property(
             "folded", self.btn_open_sidebar, "visible", GObject.BindingFlags.SYNC_CREATE
         )
 
-        # Separator
-        self.leaflet.append(
-            Gtk.Separator(orientation=Gtk.Orientation.VERTICAL)
-        ).set_navigatable(False)
+        # Contents
+        main_content = self.setup_main()
+        sidebar = self.setup_sidebar()
+        separator = Gtk.Separator(orientation=Gtk.Orientation.VERTICAL)
 
-        # Preferences
-        preferences = self.setup_main()
-        self.leaflet.append(preferences)
+        # Add to leaflet
+        self.leaflet.append(sidebar)
+        self.leaflet.append(separator).set_navigatable(False)
+        self.leaflet.append(main_content)
 
         self.set_content(self.leaflet)
 
