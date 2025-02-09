@@ -1,9 +1,12 @@
 [Desktop Entry]
 Name=Pardus Parental Control
+Name[pt]=Controlo Parental Pardus
 Name[tr]=Pardus Ebeveyn Denetimi
 GenericName=Parental Control
+GenericName[pt]=Controlo Parental
 GenericName[tr]=Ebeveyn Denetimi
 Comment=Parental Control and Restriction application for Pardus
+Comment[pt]=Aplicação de controlo parental e restrições para o Pardus
 Comment[tr]=Pardus için Ebeveyn Denetimi uygulaması
 Exec=pardus-parental-control
 Icon=pardus-parental-control
