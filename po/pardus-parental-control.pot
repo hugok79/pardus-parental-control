@@ -1,145 +1,144 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-# Emin Fedar <emin.fedar@pardus.org.tr>, 2025.
-#
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: pardus-parental-control\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-02-09 18:25+0000\n"
-"PO-Revision-Date: 2025-01-16 10:41+0300\n"
-"Last-Translator: Emin Fedar <emin.fedar@pardus.org.tr>\n"
-"Language-Team: Turkish <dev@pardus.org.tr>\n"
-"Language: tr\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0\n"
-"X-Generator: Gtranslator 42.0\n"
 
 #: src/ui/MainWindow.py:61 src/ui/MainWindow.py:94
 msgid "Pardus Parental Control"
-msgstr "Pardus Ebeveyn Denetimi"
+msgstr ""
 
 #: src/ui/MainWindow.py:67
 msgid ""
 "Restrict user access to internet and applications. Manage session times."
 msgstr ""
-"Kullanıcıların internet ve uygulamalara erişimini sınırlayın. Oturum "
-"sürelerini yönetin."
 
 #: src/ui/MainWindow.py:69
 msgid "Pardus Developers"
-msgstr "Pardus Geliştiricileri"
+msgstr ""
 
 #: src/ui/MainWindow.py:72
 msgid "translator_credits"
-msgstr "Emin Fedar"
+msgstr ""
 
 #: src/ui/MainWindow.py:103
 msgid "Users"
-msgstr "Kullanıcılar"
+msgstr ""
 
 #: src/ui/MainWindow.py:145
 msgid "New User"
-msgstr "Yeni Kullanıcı"
+msgstr ""
 
 #: src/ui/MainWindow.py:190 src/ui/page/PageApplications.py:122
 msgid "Applications"
-msgstr "Uygulamalar"
+msgstr ""
 
 #: src/ui/MainWindow.py:197 src/ui/page/PageWebsites.py:122
 msgid "Websites"
-msgstr "İnternet Siteleri"
+msgstr ""
 
 #: src/ui/MainWindow.py:205
 msgid "Session Time"
-msgstr "Oturum Süresi"
+msgstr ""
 
 #: src/NotificationApp.py:42 src/NotificationApp.py:92
 msgid "Session will be closed in {} seconds."
-msgstr "Oturum {} saniye içerisinde kapatılacaktır."
+msgstr ""
 
 #: src/NotificationApp.py:86
 msgid "Your session time is over."
-msgstr "Oturum süreniz doldu."
+msgstr ""
 
 #: src/ui/page/PageApplications.py:76 src/ui/page/PageSessionTime.py:66
 #: src/ui/page/PageWebsites.py:75
 msgid "Activate"
-msgstr "Aktifleştir"
+msgstr ""
 
 #: src/ui/page/PageApplications.py:92 src/ui/page/PageWebsites.py:91
 msgid "Filter Type"
-msgstr "Filtreleme Tipi"
+msgstr ""
 
 #: src/ui/page/PageApplications.py:93
 msgid "Change the type of filtering for applications"
-msgstr "Uygulamalar için filtreleme tipini değiştirin"
+msgstr ""
 
 #: src/ui/page/PageApplications.py:105 src/ui/page/PageWebsites.py:104
 msgid "Allow List"
-msgstr "İzinliler Listesi"
+msgstr ""
 
 #: src/ui/page/PageApplications.py:106
 msgid "Allow only the selected applications to run. Deny others."
-msgstr "Sadece seçilen uygulamaların açılmasına izin ver. Diğerlerini engelle."
+msgstr ""
 
 #: src/ui/page/PageApplications.py:111 src/ui/page/PageWebsites.py:110
 msgid "Deny List"
-msgstr "Yasaklılar Listesi"
+msgstr ""
 
 #: src/ui/page/PageApplications.py:112
 msgid "Deny only the selected applications to run. Allow others."
-msgstr "Sadece seçilen uygulamaları engelle. Diğerlerine izin ver."
+msgstr ""
 
 #: src/ui/page/PageApplications.py:123
 msgid "Select applications the restricted user can or can't open."
-msgstr "Kullanıcıların açabileceği veya açamayacağı uygulamaları seçin."
+msgstr ""
 
 #: src/ui/page/PageEmpty.py:19
 msgid "Select a user to start"
-msgstr "Başlamak için bir kullanıcı seçin"
+msgstr ""
 
 #: src/ui/page/PageSessionTime.py:76
 msgid "Start Time"
-msgstr "Başlangıç Zamanı"
+msgstr ""
 
 #: src/ui/page/PageSessionTime.py:77
 msgid "Select the start time of user can use the computer."
-msgstr "Kullanıcının bilgisayarı kullanmaya başlayabileceği zamanı seçin."
+msgstr ""
 
 #: src/ui/page/PageSessionTime.py:89
 msgid "End Time"
-msgstr "Bitiş Zamanı"
+msgstr ""
 
 #: src/ui/page/PageSessionTime.py:91
 msgid "Select the time of the user can't use the computer anymore."
-msgstr "Kullanıcının bilgisayarı artık kullanamayacağı zamanı seçin."
+msgstr ""
 
 #: src/ui/page/PageWebsites.py:92
 msgid "Change the type of filtering for websites"
-msgstr "İnternet siteleri için filtreleme tipini seçin"
+msgstr ""
 
 #: src/ui/page/PageWebsites.py:105
 msgid "Allow only the websites in list. Deny others."
-msgstr "Sadece listedeki internet sitelerine izin ver. Diğerlerini engelle."
+msgstr ""
 
 #: src/ui/page/PageWebsites.py:111
 msgid "Deny only the websites in list. Allow others."
-msgstr "Sadece listedeki internet sitelerini engelle. Diğerlerine izin ver."
+msgstr ""
 
 #: src/ui/page/PageWebsites.py:123
 msgid "Enter websites the restricted user can or can't open."
-msgstr "Kullanıcının girebileceği veya giremeyeceği internet sitelerini girin."
+msgstr ""
 
 #: src/ui/page/PageWebsites.py:128
 msgid "example.com"
-msgstr "ornek.com"
+msgstr ""
 
 #: src/ui/widget/DialogAppChooser.py:27
 msgid "Select Application..."
-msgstr "Uygulama Seçiniz..."
+msgstr ""
 
 #: src/ui/widget/DialogAppChooser.py:31
 msgid "Loading..."
-msgstr "Yükleniyor..."
+msgstr ""
