@@ -23,7 +23,7 @@ def _build_app_filter(list_app_id):
         builder.blocklist_flatpak_ref("app/{}/{}/stable".format(a, arch))
 
     builder.set_allow_user_installation(True)
-    builder.set_allow_system_installation(False)
+    builder.set_allow_system_installation(True)
 
     new_app_filter = builder.end()
 
