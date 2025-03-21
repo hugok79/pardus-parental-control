@@ -15,7 +15,7 @@ import gi
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
-from gi.repository import Gtk, GLib, Gdk, Gio, GObject, Adw  # noqa
+from gi.repository import Gtk, GLib, Gdk, GObject, Adw  # noqa
 
 
 CWD = os.path.dirname(os.path.abspath(__file__))
@@ -60,7 +60,7 @@ class MainWindow(Adw.ApplicationWindow):
         self.about_dialog = Adw.AboutWindow(
             application_name=_("Pardus Parental Control"),
             application_icon="pardus-parental-control",
-            version="0.3.3",
+            version="0.4.0",
             website="https://github.com/pardus/pardus-parental-control",
             copyright="© TÜBİTAK BİLGEM",
             comments=_(
@@ -259,19 +259,19 @@ class MainWindow(Adw.ApplicationWindow):
 
         self.leaflet.navigate(Adw.NavigationDirection.FORWARD)
 
-    def on_sidebar_row_activated(self, listbox, row):
+    def on_sidebar_row_activated(self, _listbox, _row):
         self.leaflet.navigate(Adw.NavigationDirection.FORWARD)
 
-    def on_btn_open_sidebar_clicked(self, btn):
+    def on_btn_open_sidebar_clicked(self, _btn):
         self.leaflet.navigate(Adw.NavigationDirection.BACK)
 
     def on_destroy(self, b):
-        self.window.get_application().quit()
+        self.get_application().quit()
 
-    def on_btn_about_dialog_clicked(self, btn):
+    def on_btn_about_dialog_clicked(self, _btn):
         self.about_dialog.present()
 
-    def on_btn_new_user_clicked(self, btn):
+    def on_btn_new_user_clicked(self, _btn):
         current_de = os.environ.get("XDG_CURRENT_DESKTOP")
 
         if current_de == "GNOME":

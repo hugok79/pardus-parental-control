@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Pardus Parental Control\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-09 18:25+0000\n"
+"POT-Creation-Date: 2025-03-21 15:05+0300\n"
 "PO-Revision-Date: 2025-02-09 18:47+0000\n"
 "Last-Translator: Hugo Carvalho <hugokarvalho@hotmail.com>\n"
 "Language-Team: Portuguese\n"
@@ -23,8 +23,11 @@ msgid "Pardus Parental Control"
 msgstr "Controlo Parental Pardus"
 
 #: src/ui/MainWindow.py:67
-msgid "Restrict user access to internet and applications. Manage session times."
-msgstr "Restringir o acesso dos utilizadores à Internet e às aplicações. Gerir os tempos de sessão."
+msgid ""
+"Restrict user access to internet and applications. Manage session times."
+msgstr ""
+"Restringir o acesso dos utilizadores à Internet e às aplicações. Gerir os "
+"tempos de sessão."
 
 #: src/ui/MainWindow.py:69
 msgid "Pardus Developers"
@@ -42,11 +45,11 @@ msgstr "Utilizadores"
 msgid "New User"
 msgstr "Novo utilizador"
 
-#: src/ui/MainWindow.py:190 src/ui/page/PageApplications.py:122
+#: src/ui/MainWindow.py:190 src/ui/page/PageApplications.py:125
 msgid "Applications"
 msgstr "Aplicações"
 
-#: src/ui/MainWindow.py:197 src/ui/page/PageWebsites.py:122
+#: src/ui/MainWindow.py:197 src/ui/page/PageWebsites.py:125
 msgid "Websites"
 msgstr "Websites"
 
@@ -62,76 +65,95 @@ msgstr "A sessão será encerrada em {} segundos."
 msgid "Your session time is over."
 msgstr "O seu tempo de sessão terminou."
 
-#: src/ui/page/PageApplications.py:76 src/ui/page/PageSessionTime.py:66
-#: src/ui/page/PageWebsites.py:75
+#: src/ui/page/PageApplications.py:76 src/ui/page/PageApplications.py:163
+#: src/ui/page/PageSessionTime.py:65 src/ui/page/PageSessionTime.py:131
+#: src/ui/page/PageWebsites.py:75 src/ui/page/PageWebsites.py:173
+#, fuzzy
+msgid "Active"
+msgstr "Ativar"
+
+#: src/ui/page/PageApplications.py:76 src/ui/page/PageApplications.py:163
+#: src/ui/page/PageSessionTime.py:65 src/ui/page/PageSessionTime.py:131
+#: src/ui/page/PageWebsites.py:75 src/ui/page/PageWebsites.py:173
 msgid "Activate"
 msgstr "Ativar"
 
-#: src/ui/page/PageApplications.py:92 src/ui/page/PageWebsites.py:91
+#: src/ui/page/PageApplications.py:95 src/ui/page/PageWebsites.py:94
 msgid "Filter Type"
 msgstr "Tipo de filtragem"
 
-#: src/ui/page/PageApplications.py:93
+#: src/ui/page/PageApplications.py:96
 msgid "Change the type of filtering for applications"
 msgstr "Alterar o tipo de filtragem das aplicações"
 
-#: src/ui/page/PageApplications.py:105 src/ui/page/PageWebsites.py:104
+#: src/ui/page/PageApplications.py:108 src/ui/page/PageWebsites.py:107
 msgid "Allow List"
 msgstr "Lista de permissões"
 
-#: src/ui/page/PageApplications.py:106
+#: src/ui/page/PageApplications.py:109
 msgid "Allow only the selected applications to run. Deny others."
-msgstr "Permitir que apenas as aplicações selecionadas sejam executadas. Recusar outras."
+msgstr ""
+"Permitir que apenas as aplicações selecionadas sejam executadas. Recusar "
+"outras."
 
-#: src/ui/page/PageApplications.py:111 src/ui/page/PageWebsites.py:110
+#: src/ui/page/PageApplications.py:114 src/ui/page/PageWebsites.py:113
 msgid "Deny List"
 msgstr "Lista de recusas"
 
-#: src/ui/page/PageApplications.py:112
+#: src/ui/page/PageApplications.py:115
 msgid "Deny only the selected applications to run. Allow others."
-msgstr "Recusar a execução apenas das aplicações selecionadas. Permitir outras."
+msgstr ""
+"Recusar a execução apenas das aplicações selecionadas. Permitir outras."
 
-#: src/ui/page/PageApplications.py:123
+#: src/ui/page/PageApplications.py:126
 msgid "Select applications the restricted user can or can't open."
-msgstr "Selecionar as aplicações que o utilizador restrito pode ou não pode abrir."
+msgstr ""
+"Selecionar as aplicações que o utilizador restrito pode ou não pode abrir."
 
 #: src/ui/page/PageEmpty.py:19
 msgid "Select a user to start"
 msgstr "Selecionar um utilizador para iniciar"
 
-#: src/ui/page/PageSessionTime.py:76
+#: src/ui/page/PageSessionTime.py:58
+msgid "Weekends"
+msgstr ""
+
+#: src/ui/page/PageSessionTime.py:58
+msgid "Weekdays"
+msgstr ""
+
+#: src/ui/page/PageSessionTime.py:59
+#, fuzzy
+msgid "Select the time range of the computer can be used on {}."
+msgstr ""
+"Selecionar o momento em que o utilizador já não pode utilizar o computador."
+
+#: src/ui/page/PageSessionTime.py:97
 msgid "Start Time"
 msgstr "Hora de início"
 
-#: src/ui/page/PageSessionTime.py:77
-msgid "Select the start time of user can use the computer."
-msgstr "Selecionar a hora de início em que o utilizador pode utilizar o computador."
-
-#: src/ui/page/PageSessionTime.py:89
+#: src/ui/page/PageSessionTime.py:106
 msgid "End Time"
 msgstr "Hora do final"
 
-#: src/ui/page/PageSessionTime.py:91
-msgid "Select the time of the user can't use the computer anymore."
-msgstr "Selecionar o momento em que o utilizador já não pode utilizar o computador."
-
-#: src/ui/page/PageWebsites.py:92
+#: src/ui/page/PageWebsites.py:95
 msgid "Change the type of filtering for websites"
 msgstr "Alterar o tipo de filtragem dos websites"
 
-#: src/ui/page/PageWebsites.py:105
+#: src/ui/page/PageWebsites.py:108
 msgid "Allow only the websites in list. Deny others."
 msgstr "Permitir apenas os websites da lista. Recusar outros."
 
-#: src/ui/page/PageWebsites.py:111
+#: src/ui/page/PageWebsites.py:114
 msgid "Deny only the websites in list. Allow others."
 msgstr "Recusar apenas os websites da lista. Permitir outros."
 
-#: src/ui/page/PageWebsites.py:123
+#: src/ui/page/PageWebsites.py:126
 msgid "Enter websites the restricted user can or can't open."
-msgstr "Introduzir os websites que o utilizador restrito pode ou não pode abrir."
+msgstr ""
+"Introduzir os websites que o utilizador restrito pode ou não pode abrir."
 
-#: src/ui/page/PageWebsites.py:128
+#: src/ui/page/PageWebsites.py:131
 msgid "example.com"
 msgstr "exemplo.com"
 
@@ -142,3 +164,8 @@ msgstr "Selecionar aplicação..."
 #: src/ui/widget/DialogAppChooser.py:31
 msgid "Loading..."
 msgstr "A carregar..."
+
+#~ msgid "Select the start time of user can use the computer."
+#~ msgstr ""
+#~ "Selecionar a hora de início em que o utilizador pode utilizar o "
+#~ "computador."

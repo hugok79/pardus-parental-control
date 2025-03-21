@@ -7,19 +7,29 @@ CONFIG_DIR = Path("/var/lib/pardus/pardus-parental-control/")
 PREFERENCES_PATH = os.path.join(CONFIG_DIR, "preferences.json")
 
 _DEFAULT_USER_PREFERENCES = {
-    # Lists
-    "application_list": [],
-    "website_list": [],
-    # Allowlist Flags
-    "is_application_list_allowlist": False,
-    "is_website_list_allowlist": False,
-    # Active Flags
-    "is_application_filter_active": False,
-    "is_website_filter_active": False,
-    "is_session_time_filter_active": False,
+    "application": {
+        "list": [],
+        "allowlist": False,
+        "active": False,
+    },
+    "website": {
+        "list": [],
+        "allowlist": False,
+        "active": False,
+    },
     # Session Time minutes
-    "session_time_start": 0,
-    "session_time_end": 0,
+    "session_time": {
+        "weekday": {
+            "start": 0,
+            "end": 0,
+            "active": False,
+        },
+        "weekend": {
+            "start": 0,
+            "end": 0,
+            "active": False,
+        },
+    },
 }
 
 _DEFAULT_PREFERENCES = {
@@ -28,74 +38,108 @@ _DEFAULT_PREFERENCES = {
 }
 
 
-class UserPreferences(object):
-    def __init__(self, json):
-        self.__dict__ = json  # deserialize json object to the profile struct
+class ListConfig(object):
+    def __init__(self, obj):
+        self.__dict__ = obj
 
     # Getters
-    def get_application_list(self):
-        return self.application_list
+    def get_list(self):
+        return self.list
 
-    def get_website_list(self):
-        return self.website_list
+    def get_allowlist(self):
+        return self.allowlist
 
-    def get_is_application_list_allowlist(self):
-        return self.is_application_list_allowlist
-
-    def get_is_website_list_allowlist(self):
-        return self.is_website_list_allowlist
-
-    def get_is_application_filter_active(self):
-        return self.is_application_filter_active
-
-    def get_is_website_filter_active(self):
-        return self.is_website_filter_active
-
-    def get_is_session_time_filter_active(self):
-        return self.is_session_time_filter_active
-
-    def get_session_time_start(self):
-        return self.session_time_start
-
-    def get_session_time_end(self):
-        return self.session_time_end
+    def get_active(self):
+        return self.active
 
     # Setters
-    def set_application_list(self, value):
+    def set_list(self, value):
         if isinstance(value, list):
-            self.application_list = value
+            self.list = value
 
-    def set_website_list(self, value):
-        if isinstance(value, list):
-            self.website_list = value
-
-    def set_is_application_list_allowlist(self, value):
+    def set_allowlist(self, value):
         if isinstance(value, bool):
-            self.is_application_list_allowlist = value
+            self.allowlist = value
 
-    def set_is_website_list_allowlist(self, value):
+    def set_active(self, value):
         if isinstance(value, bool):
-            self.is_website_list_allowlist = value
+            self.active = value
 
-    def set_is_application_filter_active(self, value):
-        if isinstance(value, bool):
-            self.is_application_filter_active = value
+    # Update
+    def list_insert(self, element):
+        if element in self.list:
+            return False
 
-    def set_is_website_filter_active(self, value):
-        if isinstance(value, bool):
-            self.is_website_filter_active = value
+        self.list.append(element)
+        return True
 
-    def set_is_session_time_filter_active(self, value):
-        if isinstance(value, bool):
-            self.is_session_time_filter_active = value
+    def list_remove(self, element):
+        if element not in self.list:
+            return False
 
-    def set_session_time_start(self, value):
+        self.list.remove(element)
+        return True
+
+
+class SessionTimeConfig(object):
+    def __init__(self, obj):
+        self.__dict__ = obj
+
+        self.weekday = SessionTimeDaysConfig(self.weekday)
+        self.weekend = SessionTimeDaysConfig(self.weekend)
+
+    def get_weekday(self):
+        return self.weekday
+
+    def get_weekend(self):
+        return self.weekend
+
+
+class SessionTimeDaysConfig(object):
+    def __init__(self, obj):
+        self.__dict__ = obj
+
+    # Getters
+    def get_start(self):
+        return self.start
+
+    def get_end(self):
+        return self.end
+
+    def get_active(self):
+        return self.active
+
+    # Setters
+    def set_start(self, value):
         if isinstance(value, int):
-            self.session_time_start = value
+            self.start = value
 
-    def set_session_time_end(self, value):
+    def set_end(self, value):
         if isinstance(value, int):
-            self.session_time_end = value
+            self.end = value
+
+    def set_active(self, value):
+        if isinstance(value, bool):
+            self.active = value
+
+
+class UserPreferences(object):
+    def __init__(self, json_object):
+        self.__dict__ = json_object  # deserialize json object to the profile struct
+
+        self.application = ListConfig(self.application)
+        self.website = ListConfig(self.website)
+        self.session_time = SessionTimeConfig(self.session_time)
+
+    # Getters
+    def get_application(self):
+        return self.application
+
+    def get_website(self):
+        return self.website
+
+    def get_session_time(self):
+        return self.session_time
 
     # JSON
     def as_json(self):
@@ -107,52 +151,82 @@ class UserPreferences(object):
             sort_keys=True,
         )
 
-    # Insert
-    def insert_application(self, app_id):
-        if app_id in self.application_list:
-            return False
-
-        self.application_list.append(app_id)
-        return True
-
-    def insert_website(self, website_domain):
-        if website_domain in self.website_list:
-            return False
-
-        self.website_list.append(website_domain)
-        return True
-
-    # Delete
-    def remove_application(self, app_id):
-        if app_id not in self.application_list:
-            return False
-
-        self.application_list.remove(app_id)
-        return True
-
-    def remove_website(self, website_domain):
-        if website_domain not in self.website_list:
-            return False
-
-        self.website_list.remove(website_domain)
-        return True
-
 
 class PreferencesManager:
-    def __init__(self, json=None):
-        if json is None:
+    def __init__(self, json_object=None):
+        if json_object is None:
             self.__dict__ = self.load_json_from_file()
         else:
-            self.__dict__ = json  # deserialize json object
+            self.__dict__ = json_object  # deserialize json object
 
-        for key in self.user_list:
-            self.user_list[key] = UserPreferences(self.user_list[key])
+        self.migrate_user_list()
 
     def update_json_from_file(self):
         self.__dict__ = self.load_json_from_file()
 
+        self.migrate_user_list()
+
+    def migrate_user_list(self):
+        # Convert old <0.4.0 preferences to new one:
         for key in self.user_list:
-            self.user_list[key] = UserPreferences(self.user_list[key])
+            if "application_list" in self.user_list[key].keys():
+                # Uses old format!
+                print(f"{key} user uses old format, migrating to new one...")
+
+                # Copy default empty preferences
+                old = self.user_list[key]
+                new = UserPreferences(copy.deepcopy(_DEFAULT_USER_PREFERENCES))
+
+                # From -> To
+                # "application_list": [] -> application.list
+                # "website_list": [] -> website.list
+
+                # "is_application_list_allowlist": False -> application.allowlist
+                # "is_website_list_allowlist": False, -> website.allowlist
+
+                # "is_application_filter_active": False, -> application.active
+                # "is_website_filter_active": False, -> website.active
+                # "is_session_time_filter_active": False, -> session_time.weekday.active && session_time.weekend.active
+
+                # # Session Time minutes
+                # "session_time_start": 0, -> session_time.weekday.start && session_time.weekend.start
+                # "session_time_end": 0,  -> session_time.weekday.end && session_time.weekend.end
+
+                # Application
+                new.get_application().set_list(old["application_list"])
+                new.get_application().set_allowlist(
+                    old["is_application_list_allowlist"]
+                )
+                new.get_application().set_active(old["is_application_filter_active"])
+
+                # Website
+                new.get_website().set_list(old["website_list"])
+                new.get_website().set_allowlist(old["is_website_list_allowlist"])
+                new.get_website().set_active(old["is_website_filter_active"])
+
+                # Session Time
+                new.get_session_time().get_weekday().set_active(
+                    old["is_session_time_filter_active"]
+                )
+                new.get_session_time().get_weekend().set_active(
+                    old["is_session_time_filter_active"]
+                )
+
+                new.get_session_time().get_weekday().set_start(
+                    old["session_time_start"]
+                )
+                new.get_session_time().get_weekend().set_start(
+                    old["session_time_start"]
+                )
+
+                new.get_session_time().get_weekday().set_end(old["session_time_end"])
+                new.get_session_time().get_weekend().set_end(old["session_time_end"])
+
+                self.user_list[key] = new
+                print(f"{key} migration finished")
+                print(self.user_list[key])
+            else:
+                self.user_list[key] = UserPreferences(self.user_list[key])
 
     # Getters
     def get_user_list(self):

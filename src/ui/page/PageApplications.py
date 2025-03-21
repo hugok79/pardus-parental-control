@@ -7,7 +7,7 @@ import gi
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
-from gi.repository import Gtk, Gdk, Gio, GObject, Adw  # noqa
+from gi.repository import Gtk, Gio, GObject, Adw  # noqa
 
 
 class PageApplications(Adw.PreferencesPage):
@@ -67,23 +67,26 @@ class PageApplications(Adw.PreferencesPage):
 
         switch = Gtk.Switch(
             valign=Gtk.Align.CENTER,
-            active=self.preferences.get_is_application_filter_active()
+            active=self.preferences.get_application().get_active()
             if self.preferences
             else False,
         )
-        switch.connect("state-set", self.on_switch_changed)
 
-        row = Adw.ActionRow(title=_("Activate"), use_markup=False)
+        row = Adw.ActionRow(
+            title=_("Active") if switch.get_active() else _("Activate"),
+            use_markup=False,
+        )
         row.add_suffix(switch)
         row.set_activatable_widget(switch)
 
+        switch.connect("state-set", self.on_switch_changed, row)
         group_switch.add(row)
 
         return (group_switch, switch)
 
     def setup_group_filter_type(self):
         is_allowlist = (
-            self.preferences.get_is_application_list_allowlist()
+            self.preferences.get_application().get_allowlist()
             if self.preferences
             else False
         )
@@ -131,7 +134,9 @@ class PageApplications(Adw.PreferencesPage):
         group.set_header_suffix(btn_add)
 
         # Fill the applications:
-        app_list = self.preferences.get_application_list() if self.preferences else []
+        app_list = (
+            self.preferences.get_application().get_list() if self.preferences else []
+        )
         for desktop_file in app_list:
             app_info = Gio.DesktopAppInfo.new_from_filename(desktop_file)
 
@@ -151,14 +156,15 @@ class PageApplications(Adw.PreferencesPage):
         group.add(row)
 
     # == CALLBACKS ==
-    def on_switch_changed(self, btn, value):
+    def on_switch_changed(self, btn, value, row):
         if not self.preferences:
             return
 
-        self.preferences.set_is_application_filter_active(value)
+        row.set_title(_("Active") if value else _("Activate"))
+        self.preferences.get_application().set_active(value)
         self.preferences_manager.save()
 
-    def on_btn_add_clicked(self, btn):
+    def on_btn_add_clicked(self, _btn):
         self.dialog_app_chooser.present()
 
     def on_btn_allow_clicked(self, btn):
@@ -166,7 +172,7 @@ class PageApplications(Adw.PreferencesPage):
             return
 
         if btn.get_active():
-            self.preferences.set_is_application_list_allowlist(True)
+            self.preferences.get_application().set_allowlist(True)
             self.preferences_manager.save()
 
     def on_btn_deny_clicked(self, btn):
@@ -174,15 +180,15 @@ class PageApplications(Adw.PreferencesPage):
             return
 
         if btn.get_active():
-            self.preferences.set_is_application_list_allowlist(False)
+            self.preferences.get_application().set_allowlist(False)
             self.preferences_manager.save()
 
-    def on_row_delete_clicked(self, btn, action_row, user_data):
+    def on_row_delete_clicked(self, _btn, action_row, user_data):
         if not self.preferences:
             return
 
         if isinstance(user_data, Gio.DesktopAppInfo):
-            if self.preferences.remove_application(user_data.get_filename()):
+            if self.preferences.get_application().list_remove(user_data.get_filename()):
                 self.group_applications.remove(action_row)
                 self.preferences_manager.save()
 
@@ -190,6 +196,6 @@ class PageApplications(Adw.PreferencesPage):
         if not self.preferences:
             return
 
-        if self.preferences.insert_application(app.get_filename()):
+        if self.preferences.get_application().list_insert(app.get_filename()):
             self.insert_app_row(self.group_applications, app)
             self.preferences_manager.save()

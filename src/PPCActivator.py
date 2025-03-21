@@ -2,6 +2,7 @@
 
 import sys
 import time
+import datetime
 import logging
 
 import managers.FileRestrictionManager as FileRestrictionManager
@@ -34,6 +35,8 @@ class PPCActivator(Gtk.Application):
             flags=Gio.ApplicationFlags.NON_UNIQUE,
         )
 
+        self.setup_variables()
+
         if argv[1] and argv[1] != "--disable" and len(argv) == 3:
             self.logged_user_id = argv[1]
             self.logged_user_name = argv[2]
@@ -44,15 +47,15 @@ class PPCActivator(Gtk.Application):
                     self.last_active_session_id = self.session_id
                     break
 
-    def do_activate(self):
-        # Logged user preferences:
+    def setup_variables(self):
         self.preferences = None
         self.preferences_manager = PreferencesManager.get_default()
         self.session_time_started = None
 
+    def do_activate(self):
         self.log("PPCActivator Launched.")
 
-        empty_window = Gtk.Window(
+        _empty_window = Gtk.Window(
             application=self
         )  # this is needed to make application status "activated", otherwise 120 seconds of preventing user logout happens
 
@@ -89,13 +92,11 @@ class PPCActivator(Gtk.Application):
         self.preferences_manager.update_json_from_file()
         self.preferences = self.preferences_manager.get_user(self.logged_user_name)
 
-        if self.preferences.get_is_session_time_filter_active():
+        session_time_prefs = self.get_session_time_preferences()
+        if session_time_prefs.get_active():
             if self.session_time_started is None:
                 self.log(
-                    "Session Time checking started. Start:{}, End:{}".format(
-                        self.preferences.get_session_time_start(),
-                        self.preferences.get_session_time_end(),
-                    )
+                    f"Session Time checking started. Start:{session_time_prefs.get_start()}, End:{session_time_prefs.get_end()}"
                 )
                 self.check_session_time()
                 self.session_time_started = GLib.timeout_add_seconds(
@@ -108,13 +109,13 @@ class PPCActivator(Gtk.Application):
             self.log("Session Time checking stopped.")
 
         self.log(" - Application filters...")
-        if self.preferences.get_is_application_filter_active():
+        if self.preferences.get_application().get_active():
             self.apply_application_filter()
         else:
             self.clear_application_filter()
 
         self.log(" - Website filters...")
-        if self.preferences.get_is_website_filter_active():
+        if self.preferences.get_website().get_active():
             self.apply_website_filter()
         else:
             self.clear_website_filter()
@@ -135,16 +136,16 @@ class PPCActivator(Gtk.Application):
     def apply_application_filter(self):
         pref = self.preferences
 
-        list_length = len(pref.get_application_list())
+        list_length = len(pref.get_application().get_list())
         if list_length == 0:
             return
 
-        is_allowlist = pref.get_is_application_list_allowlist()
+        is_allowlist = pref.get_application().get_allowlist()
         if is_allowlist:
             for app in ApplicationManager.get_all_applications():
                 if (
                     "flatpak" not in app.get_filename()
-                    and app.get_filename() in pref.get_application_list()
+                    and app.get_filename() in pref.get_application().get_list()
                 ):
                     ApplicationManager.unrestrict_application(app.get_filename())
                 else:
@@ -152,19 +153,19 @@ class PPCActivator(Gtk.Application):
 
             blocked_app_ids = []
             for app in ApplicationManager.get_flatpak_applications():
-                if app.get_filename() not in pref.get_application_list():
+                if app.get_filename() not in pref.get_application().get_list():
                     app_id = app.get_id()[:-8]  # remove .desktop suffix
                     blocked_app_ids.append(app_id)
 
             ApplicationManager.restrict_flatpaks(blocked_app_ids, self.logged_user_id)
 
         else:
-            for desktop_file in pref.get_application_list():
+            for desktop_file in pref.get_application().get_list():
                 ApplicationManager.restrict_application(desktop_file)
 
             blocked_app_ids = []
             for app in ApplicationManager.get_flatpak_applications():
-                if app.get_filename() in pref.get_application_list():
+                if app.get_filename() in pref.get_application().get_list():
                     app_id = app.get_id()[:-8]  # remove .desktop suffix
                     blocked_app_ids.append(app_id)
 
@@ -180,15 +181,15 @@ class PPCActivator(Gtk.Application):
     def apply_website_filter(self):
         pref = self.preferences
 
-        list_length = len(pref.get_website_list())
+        list_length = len(pref.get_website().get_list())
         if list_length == 0:
             return
 
-        is_allowlist = pref.get_is_website_list_allowlist()
+        is_allowlist = pref.get_website().get_allowlist()
 
         # browser + domain configs
         NetworkFilterManager.apply_domain_filter_list(
-            pref.get_website_list(),
+            pref.get_website().get_list(),
             is_allowlist,
             self.preferences_manager.get_base_dns_servers(),
         )
@@ -198,10 +199,23 @@ class PPCActivator(Gtk.Application):
         NetworkFilterManager.clear_domain_filter_list()
 
     # == Session Time Control ==
+    def get_session_time_preferences(self):
+        pref = self.preferences.get_session_time()
+
+        is_current_day_weekend = (
+            datetime.datetime.today().weekday() > 4
+        )  # 5: Sat, 6: Sun
+
+        week = pref.get_weekend() if is_current_day_weekend else pref.get_weekday()
+
+        return week
+
     def is_session_time_ended(self):
+        week = self.get_session_time_preferences()
+
         # Session Time Minutes. 1440 minutes in a day.
-        start = self.preferences.get_session_time_start()
-        end = self.preferences.get_session_time_end()
+        start = week.get_start()
+        end = week.get_end()
 
         if start == end:
             print(
@@ -218,15 +232,13 @@ class PPCActivator(Gtk.Application):
         self.log("Time is up! Shutting down...")
         return True
 
-    def seat_properties_changed(self, proxy, properties_changed, properties_removed):
+    def seat_properties_changed(self, _proxy, properties_changed, _properties_removed):
         props = properties_changed.unpack()
         if "ActiveSession" in props:
             # Active session changed:
-            (session_id, session_path) = props["ActiveSession"]
+            (session_id, _session_path) = props["ActiveSession"]
             self.log(
-                "Active Session Changed: {}->{}".format(
-                    self.last_active_session_id, session_id
-                )
+                f"Active Session Changed: {self.last_active_session_id}->{session_id}"
             )
             if session_id == self.session_id:
                 self.log("Session opened, applying preferences.")
@@ -254,7 +266,7 @@ class PPCActivator(Gtk.Application):
         self.log("DBus Connected.")
 
     def log(self, msg):
-        message = "({}@{}): {}".format(self.logged_user_name, self.session_id, msg)
+        message = f"({self.logged_user_name}@{self.session_id}): {msg}"
         print(message)
         logging.debug(message)
 

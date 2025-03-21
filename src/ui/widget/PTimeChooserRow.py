@@ -9,9 +9,11 @@ from locale import gettext as _  # noqa
 
 
 class PTimeChooserRow(Adw.PreferencesRow):
-    def __init__(self, on_time_changed_callback, minutes=0):
+    def __init__(self, on_time_changed_callback, minutes, user_data):
         super().__init__()
         self.on_time_changed_callback = on_time_changed_callback
+        self.user_data = user_data
+        self.grouped_widget = None
 
         self.set_activatable(False)
 
@@ -41,6 +43,12 @@ class PTimeChooserRow(Adw.PreferencesRow):
     def set_minutes(self, value):
         self.scale_from_time.set_value(int(value / 15))
 
+    def set_grouped_widget(self, widget):
+        self.grouped_widget = widget
+
+    def get_grouped_widget(self):
+        return self.grouped_widget
+
     def get_minutes(self):
         value = int(self.scale_from_time.get_value())
         minutes = value * 15  # 15 minutes steps
@@ -60,9 +68,9 @@ class PTimeChooserRow(Adw.PreferencesRow):
             # Convert 24:00 -> 23:59
             minutes -= 1
 
-        self.on_time_changed_callback(minutes)
+        self.on_time_changed_callback(self, minutes, self.user_data)
 
-    def on_format_value(self, scale, value):
+    def on_format_value(self, _scale, value):
         hours = int(value / 4)
         minutes = int(value % 4) * 15
         return f"{hours:02d}:{minutes:02d}"

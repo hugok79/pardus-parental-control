@@ -7,7 +7,7 @@ import gi
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
-from gi.repository import Gtk, Gdk, Gio, GObject, Adw  # noqa
+from gi.repository import Gtk, GObject, Adw  # noqa
 
 
 class PageWebsites(Adw.PreferencesPage):
@@ -66,23 +66,26 @@ class PageWebsites(Adw.PreferencesPage):
 
         switch = Gtk.Switch(
             valign=Gtk.Align.CENTER,
-            active=self.preferences.get_is_website_filter_active()
+            active=self.preferences.get_website().get_active()
             if self.preferences
             else False,
         )
-        switch.connect("state-set", self.on_switch_changed)
 
-        row = Adw.ActionRow(title=_("Activate"), use_markup=False)
+        row = Adw.ActionRow(
+            title=_("Active") if switch.get_active() else _("Activate"),
+            use_markup=False,
+        )
         row.add_suffix(switch)
         row.set_activatable_widget(switch)
 
+        switch.connect("state-set", self.on_switch_changed, row)
         group_switch.add(row)
 
         return (group_switch, switch)
 
     def setup_group_filter_type(self):
         is_allowlist = (
-            self.preferences.get_is_website_list_allowlist()
+            self.preferences.get_website().get_allowlist()
             if self.preferences
             else False
         )
@@ -142,7 +145,7 @@ class PageWebsites(Adw.PreferencesPage):
         group.set_header_suffix(btn_add)
 
         # Websites
-        domains = self.preferences.get_website_list() if self.preferences else []
+        domains = self.preferences.get_website().get_list() if self.preferences else []
         for domain in domains:
             self.insert_website_row(group, domain)
 
@@ -163,14 +166,15 @@ class PageWebsites(Adw.PreferencesPage):
             return True
 
     # == CALLBACKS ==
-    def on_switch_changed(self, btn, value):
+    def on_switch_changed(self, btn, value, row):
         if not self.preferences:
             return
 
-        self.preferences.set_is_website_filter_active(value)
+        row.set_title(_("Active") if value else _("Activate"))
+        self.preferences.get_website().set_active(value)
         self.preferences_manager.save()
 
-    def on_btn_add_clicked(self, btn):
+    def on_btn_add_clicked(self, _btn):
         self.row_new_website.set_visible(True)
         self.row_new_website.grab_focus()
 
@@ -179,7 +183,7 @@ class PageWebsites(Adw.PreferencesPage):
             return
 
         if btn.get_active():
-            self.preferences.set_is_website_list_allowlist(True)
+            self.preferences.get_website().set_allowlist(True)
             self.preferences_manager.save()
 
     def on_btn_deny_clicked(self, btn):
@@ -187,7 +191,7 @@ class PageWebsites(Adw.PreferencesPage):
             return
 
         if btn.get_active():
-            self.preferences.set_is_website_list_allowlist(False)
+            self.preferences.get_website().set_allowlist(False)
             self.preferences_manager.save()
 
     def on_new_website_entered(self, entry_row):
@@ -213,7 +217,7 @@ class PageWebsites(Adw.PreferencesPage):
 
         self.preferences_manager.save()
 
-    def on_row_delete_clicked(self, btn, action_row, user_data):
+    def on_row_delete_clicked(self, _btn, action_row, _user_data):
         if not self.preferences:
             return
 

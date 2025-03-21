@@ -1,12 +1,11 @@
-from ui.widget.PTimeChooserRow import PTimeChooserRow
 from locale import gettext as _
-
-
 import gi
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
-from gi.repository import Gtk, Gdk, Gio, GObject, Adw  # noqa
+from gi.repository import Gtk, GObject, Adw  # noqa
+
+from ui.widget.PTimeChooserRow import PTimeChooserRow
 
 
 class PageSessionTime(Adw.PreferencesPage):
@@ -27,101 +26,129 @@ class PageSessionTime(Adw.PreferencesPage):
         self.username = username
 
         # Remove UI
-        self.remove(self.group_switch)
-        self.remove(self.group_start)
-        self.remove(self.group_end)
+        self.remove(self.group_weekday)
+        self.remove(self.group_weekend)
 
         # Recreate UI
         self.setup_ui()
 
     def setup_ui(self):
-        (self.group_switch, switch) = self.setup_group_switch()
+        self.group_weekday = self.setup_group_times(False)
+        self.group_weekend = self.setup_group_times(True)
 
-        self.group_start = self.setup_group_start()
-        self.group_end = self.setup_group_end()
+        self.add(self.group_weekday)
+        self.add(self.group_weekend)
 
-        # Bind Active Switch
-        switch.bind_property(
-            "state", self.group_start, "sensitive", GObject.BindingFlags.SYNC_CREATE
-        )
-        switch.bind_property(
-            "state", self.group_end, "sensitive", GObject.BindingFlags.SYNC_CREATE
-        )
+    def setup_group_times(self, is_weekend):
+        is_active = False
+        if self.preferences:
+            if is_weekend:
+                is_active = (
+                    self.preferences.get_session_time().get_weekend().get_active()
+                )
+            else:
+                is_active = (
+                    self.preferences.get_session_time().get_weekday().get_active()
+                )
 
-        self.add(self.group_switch)
-        self.add(self.group_start)
-        self.add(self.group_end)
-
-    def setup_group_switch(self):
-        group_switch = Adw.PreferencesGroup()
-
-        switch = Gtk.Switch(
-            valign=Gtk.Align.CENTER,
-            active=self.preferences.get_is_session_time_filter_active()
-            if self.preferences
-            else False,
-        )
-        switch.connect("state-set", self.on_switch_changed)
-
-        row = Adw.ActionRow(title=_("Activate"), use_markup=False)
-        row.add_suffix(switch)
-        row.set_activatable_widget(switch)
-
-        group_switch.add(row)
-
-        return (group_switch, switch)
-
-    def setup_group_start(self):
-        group = Adw.PreferencesGroup(
-            title=_("Start Time"),
-            description=_("Select the start time of user can use the computer."),
+        title = _("Weekends") if is_weekend else _("Weekdays")
+        subtitle = _("Select the time range of the computer can be used on {}.").format(
+            title
         )
 
-        minutes = self.preferences.get_session_time_start() if self.preferences else 0
-        self.time_chooser_start = PTimeChooserRow(self.on_start_time_changed, minutes)
-        group.add(self.time_chooser_start)
+        # Expander Row
+        expander = Adw.ExpanderRow(
+            title=_("Active") if is_active else _("Activate"),
+            show_enable_switch=True,
+            enable_expansion=is_active,
+        )
+        expander.connect("notify::enable-expansion", self.on_switch_changed, is_weekend)
 
-        return group
+        min_start = 0
+        min_end = 0
+        if self.preferences:
+            if is_weekend:
+                week = self.preferences.get_session_time().get_weekend()
+            else:
+                week = self.preferences.get_session_time().get_weekday()
 
-    def setup_group_end(self):
-        # End Time:
-        group = Adw.PreferencesGroup(
-            title=_("End Time"),
-            description=_(
-                "Select the time of the user can't use the computer anymore."
+            min_start = week.get_start()
+            min_end = week.get_end()
+
+        # Time Choosers
+        time_chooser_start = PTimeChooserRow(
+            self.on_start_time_changed, min_start, is_weekend
+        )
+        time_chooser_end = PTimeChooserRow(
+            self.on_end_time_changed, min_end, is_weekend
+        )
+        # Use later to balance values
+        time_chooser_start.set_grouped_widget(time_chooser_end)
+        time_chooser_end.set_grouped_widget(time_chooser_start)
+        time_chooser_start.add_css_class("view")
+        time_chooser_end.add_css_class("view")
+
+        expander.add_row(
+            Gtk.Label(
+                label=_("Start Time"),
+                # margin_start=12,
+                margin_top=7,
+                margin_bottom=7,
             ),
         )
+        expander.add_row(time_chooser_start)
+        expander.add_row(
+            Gtk.Label(
+                label=_("End Time"),
+                # margin_start=12,
+                margin_top=7,
+                margin_bottom=7,
+            ),
+        )
+        expander.add_row(time_chooser_end)
 
-        minutes = self.preferences.get_session_time_end() if self.preferences else 0
-        self.time_chooser_end = PTimeChooserRow(self.on_end_time_changed, minutes)
-        group.add(self.time_chooser_end)
+        # Group
+        group = Adw.PreferencesGroup(title=title, description=subtitle)
+        group.add(expander)
 
         return group
 
     # == CALLBACKS ==
-    def on_switch_changed(self, btn, value):
+    def on_switch_changed(self, expander_row, param, is_weekend):
         if not self.preferences:
             return
 
-        self.preferences.set_is_session_time_filter_active(value)
+        value = expander_row.get_property(param.name)
+
+        pref = self.preferences.get_session_time()
+        week = pref.get_weekend() if is_weekend else pref.get_weekday()
+
+        week.set_active(value)
+        expander_row.set_title(_("Active") if value else _("Activate"))
         self.preferences_manager.save()
 
-    def on_start_time_changed(self, minutes):
-        if minutes > self.time_chooser_end.get_minutes():
-            self.time_chooser_end.set_minutes(minutes)
-
+    def on_start_time_changed(self, time_chooser, minutes, is_weekend):
         if not self.preferences:
             return
 
-        self.preferences.set_session_time_start(minutes)
+        pref = self.preferences.get_session_time()
+        week = pref.get_weekend() if is_weekend else pref.get_weekday()
+
+        if minutes > week.get_end():
+            time_chooser.get_grouped_widget().set_minutes(minutes)
+
+        week.set_start(minutes)
         self.preferences_manager.save()
 
-    def on_end_time_changed(self, minutes):
-        if minutes < self.time_chooser_start.get_minutes():
-            self.time_chooser_start.set_minutes(minutes)
-
+    def on_end_time_changed(self, time_chooser, minutes, is_weekend):
         if not self.preferences:
             return
 
-        self.preferences.set_session_time_end(minutes)
+        pref = self.preferences.get_session_time()
+        week = pref.get_weekend() if is_weekend else pref.get_weekday()
+
+        if minutes < week.get_start():
+            time_chooser.get_grouped_widget().set_minutes(minutes)
+
+        week.set_end(minutes)
         self.preferences_manager.save()

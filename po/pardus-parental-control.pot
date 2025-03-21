@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-09 18:25+0000\n"
+"POT-Creation-Date: 2025-03-21 15:05+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,11 +42,11 @@ msgstr ""
 msgid "New User"
 msgstr ""
 
-#: src/ui/MainWindow.py:190 src/ui/page/PageApplications.py:122
+#: src/ui/MainWindow.py:190 src/ui/page/PageApplications.py:125
 msgid "Applications"
 msgstr ""
 
-#: src/ui/MainWindow.py:197 src/ui/page/PageWebsites.py:122
+#: src/ui/MainWindow.py:197 src/ui/page/PageWebsites.py:125
 msgid "Websites"
 msgstr ""
 
@@ -62,36 +62,43 @@ msgstr ""
 msgid "Your session time is over."
 msgstr ""
 
-#: src/ui/page/PageApplications.py:76 src/ui/page/PageSessionTime.py:66
-#: src/ui/page/PageWebsites.py:75
+#: src/ui/page/PageApplications.py:76 src/ui/page/PageApplications.py:163
+#: src/ui/page/PageSessionTime.py:65 src/ui/page/PageSessionTime.py:131
+#: src/ui/page/PageWebsites.py:75 src/ui/page/PageWebsites.py:173
+msgid "Active"
+msgstr ""
+
+#: src/ui/page/PageApplications.py:76 src/ui/page/PageApplications.py:163
+#: src/ui/page/PageSessionTime.py:65 src/ui/page/PageSessionTime.py:131
+#: src/ui/page/PageWebsites.py:75 src/ui/page/PageWebsites.py:173
 msgid "Activate"
 msgstr ""
 
-#: src/ui/page/PageApplications.py:92 src/ui/page/PageWebsites.py:91
+#: src/ui/page/PageApplications.py:95 src/ui/page/PageWebsites.py:94
 msgid "Filter Type"
 msgstr ""
 
-#: src/ui/page/PageApplications.py:93
+#: src/ui/page/PageApplications.py:96
 msgid "Change the type of filtering for applications"
 msgstr ""
 
-#: src/ui/page/PageApplications.py:105 src/ui/page/PageWebsites.py:104
+#: src/ui/page/PageApplications.py:108 src/ui/page/PageWebsites.py:107
 msgid "Allow List"
 msgstr ""
 
-#: src/ui/page/PageApplications.py:106
+#: src/ui/page/PageApplications.py:109
 msgid "Allow only the selected applications to run. Deny others."
 msgstr ""
 
-#: src/ui/page/PageApplications.py:111 src/ui/page/PageWebsites.py:110
+#: src/ui/page/PageApplications.py:114 src/ui/page/PageWebsites.py:113
 msgid "Deny List"
 msgstr ""
 
-#: src/ui/page/PageApplications.py:112
+#: src/ui/page/PageApplications.py:115
 msgid "Deny only the selected applications to run. Allow others."
 msgstr ""
 
-#: src/ui/page/PageApplications.py:123
+#: src/ui/page/PageApplications.py:126
 msgid "Select applications the restricted user can or can't open."
 msgstr ""
 
@@ -99,39 +106,43 @@ msgstr ""
 msgid "Select a user to start"
 msgstr ""
 
-#: src/ui/page/PageSessionTime.py:76
+#: src/ui/page/PageSessionTime.py:58
+msgid "Weekends"
+msgstr ""
+
+#: src/ui/page/PageSessionTime.py:58
+msgid "Weekdays"
+msgstr ""
+
+#: src/ui/page/PageSessionTime.py:59
+msgid "Select the time range of the computer can be used on {}."
+msgstr ""
+
+#: src/ui/page/PageSessionTime.py:97
 msgid "Start Time"
 msgstr ""
 
-#: src/ui/page/PageSessionTime.py:77
-msgid "Select the start time of user can use the computer."
-msgstr ""
-
-#: src/ui/page/PageSessionTime.py:89
+#: src/ui/page/PageSessionTime.py:106
 msgid "End Time"
 msgstr ""
 
-#: src/ui/page/PageSessionTime.py:91
-msgid "Select the time of the user can't use the computer anymore."
-msgstr ""
-
-#: src/ui/page/PageWebsites.py:92
+#: src/ui/page/PageWebsites.py:95
 msgid "Change the type of filtering for websites"
 msgstr ""
 
-#: src/ui/page/PageWebsites.py:105
+#: src/ui/page/PageWebsites.py:108
 msgid "Allow only the websites in list. Deny others."
 msgstr ""
 
-#: src/ui/page/PageWebsites.py:111
+#: src/ui/page/PageWebsites.py:114
 msgid "Deny only the websites in list. Allow others."
 msgstr ""
 
-#: src/ui/page/PageWebsites.py:123
+#: src/ui/page/PageWebsites.py:126
 msgid "Enter websites the restricted user can or can't open."
 msgstr ""
 
-#: src/ui/page/PageWebsites.py:128
+#: src/ui/page/PageWebsites.py:131
 msgid "example.com"
 msgstr ""
 
