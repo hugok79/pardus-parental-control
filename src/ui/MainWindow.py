@@ -83,7 +83,7 @@ class MainWindow(Adw.ApplicationWindow):
         # Setup AccountsService UserManager for monitoring user changes
         self.user_manager = AccountsService.UserManager.get_default()
         self.user_manager.connect("user-added", self.refresh_users_listbox)
-        self.user_manager.connect("user-removed", self.refresh_users_listbox)
+        self.user_manager.connect("user-removed", self.on_user_removed)
         self.user_manager.connect("user-changed", self.refresh_users_listbox)
 
     def setup_css(self):
@@ -121,7 +121,7 @@ class MainWindow(Adw.ApplicationWindow):
         self.users_listbox.connect("row-selected", self.on_sidebar_row_selected)
         self.users_listbox.connect("row-activated", self.on_sidebar_row_activated)
 
-        self.refresh_users_listbox()
+        self.refresh_users_listbox(None, None)  # Initial load
         scrolledwindow = Gtk.ScrolledWindow(
             child=self.users_listbox,
             hscrollbar_policy=Gtk.PolicyType.NEVER,
@@ -148,7 +148,7 @@ class MainWindow(Adw.ApplicationWindow):
 
         return box
 
-    def refresh_users_listbox(self, *args):
+    def refresh_users_listbox(self, user_manager, user):
         # Remove all existing rows in the listbox
         while self.users_listbox.get_first_child():
             self.users_listbox.remove(self.users_listbox.get_first_child())
@@ -164,6 +164,17 @@ class MainWindow(Adw.ApplicationWindow):
         first_row = self.users_listbox.get_row_at_index(0)
         if first_row:
             self.users_listbox.select_row(first_row)
+
+    def on_user_removed(self, user_manager, user):
+        # Handle user removal by removing from preferences and refreshing UI
+        if user is not None:
+            username = user.get_user_name()
+            if self.preferences_manager.has_user(username):
+                self.preferences_manager.remove_user(username)
+        
+        # Refresh the UI
+        self.refresh_users_listbox(user_manager, user)
+
     def setup_main(self):
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 
