@@ -15,7 +15,8 @@ import gi
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
-from gi.repository import Gtk, GLib, Gdk, GObject, Adw  # noqa
+gi.require_version("AccountsService", "1.0")
+from gi.repository import Gtk, GLib, Gdk, Gio, GObject, Adw, AccountsService  # noqa
 
 
 CWD = os.path.dirname(os.path.abspath(__file__))
@@ -79,6 +80,12 @@ class MainWindow(Adw.ApplicationWindow):
         self.preferences_manager = PreferencesManager.get_default()
         self.selected_user = None
 
+        # Setup AccountsService UserManager for monitoring user changes
+        self.user_manager = AccountsService.UserManager.get_default()
+        self.user_manager.connect("user-added", self.refresh_users_listbox)
+        self.user_manager.connect("user-removed", self.on_user_removed)
+        self.user_manager.connect("user-changed", self.refresh_users_listbox)
+
     def setup_css(self):
         css_provider = Gtk.CssProvider()
         css_provider.load_from_path(f"{DATA_DIR}/style.css")
@@ -110,25 +117,13 @@ class MainWindow(Adw.ApplicationWindow):
         box.append(side_headerbar)
 
         # Scrolled Sidebar Window
-        listbox = Gtk.ListBox(css_classes=["user-sidebar"])
-        listbox.connect("row-selected", self.on_sidebar_row_selected)
-        listbox.connect("row-activated", self.on_sidebar_row_activated)
+        self.users_listbox = Gtk.ListBox(css_classes=["user-sidebar"])
+        self.users_listbox.connect("row-selected", self.on_sidebar_row_selected)
+        self.users_listbox.connect("row-activated", self.on_sidebar_row_activated)
 
-        # Fill listbox
-        users = LinuxUserManager.get_standard_users()
-        for u in users:
-            username = u.get_user_name()
-            fullname = u.get_real_name() if u.get_real_name() else username
-
-            listbox.append(ListRowAvatar(fullname, username))
-
-        # Select first user on startup
-        first_row = listbox.get_row_at_index(0)
-        if first_row:
-            listbox.select_row(first_row)
-
+        self.refresh_users_listbox(None, None)  # Initial load
         scrolledwindow = Gtk.ScrolledWindow(
-            child=listbox,
+            child=self.users_listbox,
             hscrollbar_policy=Gtk.PolicyType.NEVER,
             vexpand=True,
             width_request=220,
@@ -152,6 +147,33 @@ class MainWindow(Adw.ApplicationWindow):
         box.append(btn_new_user)
 
         return box
+
+    def refresh_users_listbox(self, user_manager, user):
+        # Remove all existing rows in the listbox
+        while self.users_listbox.get_first_child():
+            self.users_listbox.remove(self.users_listbox.get_first_child())
+
+        users = LinuxUserManager.get_standard_users()
+        for u in users:
+            username = u.get_user_name()
+            fullname = u.get_real_name() if u.get_real_name() else username
+
+            self.users_listbox.append(ListRowAvatar(fullname, username))
+
+        # Select first user on startup
+        first_row = self.users_listbox.get_row_at_index(0)
+        if first_row:
+            self.users_listbox.select_row(first_row)
+
+    def on_user_removed(self, user_manager, user):
+        # Handle user removal by removing from preferences and refreshing UI
+        if user is not None:
+            username = user.get_user_name()
+            if self.preferences_manager.has_user(username):
+                self.preferences_manager.remove_user(username)
+
+        # Refresh the UI
+        self.refresh_users_listbox(user_manager, user)
 
     def setup_main(self):
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
@@ -239,6 +261,9 @@ class MainWindow(Adw.ApplicationWindow):
             self.view_stack.set_visible_child_name("applications")
             self.view_switcher.set_visible(True)
 
+        # If no row is selected or the row is None, do nothing
+        if row is None or not isinstance(row, Gtk.ListBoxRow):
+            return
         selected_username = row.get_child().get_username()
 
         if self.selected_user != selected_username:
