@@ -18,17 +18,11 @@ _DEFAULT_USER_PREFERENCES = {
         "active": False,
     },
     # Session Time minutes
-    "session_time": {
-        "weekday": {
-            "start": 0,
-            "end": 0,
-            "active": False,
-        },
-        "weekend": {
-            "start": 0,
-            "end": 0,
-            "active": False,
-        },
+    "daily_usage": {
+        "start": [0, 0, 0, 0, 0, 0, 0],
+        "end": [0, 0, 0, 0, 0, 0, 0],
+        "limit": [0, 0, 0, 0, 0, 0, 0],
+        "active": [False, False, False, False, False, False, False],
     },
 }
 
@@ -85,42 +79,35 @@ class SessionTimeConfig(object):
     def __init__(self, obj):
         self.__dict__ = obj
 
-        self.weekday = SessionTimeDaysConfig(self.weekday)
-        self.weekend = SessionTimeDaysConfig(self.weekend)
-
-    def get_weekday(self):
-        return self.weekday
-
-    def get_weekend(self):
-        return self.weekend
-
-
-class SessionTimeDaysConfig(object):
-    def __init__(self, obj):
-        self.__dict__ = obj
-
     # Getters
-    def get_start(self):
-        return self.start
+    def get_start(self, weekday):
+        return self.start[weekday]
 
-    def get_end(self):
-        return self.end
+    def get_end(self, weekday):
+        return self.end[weekday]
 
-    def get_active(self):
-        return self.active
+    def get_limit(self, weekday):
+        return self.limit[weekday]
+
+    def get_active(self, weekday):
+        return self.active[weekday]
 
     # Setters
-    def set_start(self, value):
+    def set_start(self, weekday, value):
         if isinstance(value, int):
-            self.start = value
+            self.start[weekday] = value
 
-    def set_end(self, value):
+    def set_end(self, weekday, value):
         if isinstance(value, int):
-            self.end = value
+            self.end[weekday] = value
 
-    def set_active(self, value):
-        if isinstance(value, bool):
-            self.active = value
+    def set_limit(self, weekday, value):
+        if isinstance(value, int):
+            self.limit[weekday] = value
+
+    def set_active(self, weekday, value):
+        if isinstance(value, int):
+            self.active[weekday] = value
 
 
 class UserPreferences(object):
@@ -129,7 +116,7 @@ class UserPreferences(object):
 
         self.application = ListConfig(self.application)
         self.website = ListConfig(self.website)
-        self.session_time = SessionTimeConfig(self.session_time)
+        self.daily_usage = SessionTimeConfig(self.daily_usage)
 
     # Getters
     def get_application(self):
@@ -138,8 +125,8 @@ class UserPreferences(object):
     def get_website(self):
         return self.website
 
-    def get_session_time(self):
-        return self.session_time
+    def get_daily_usage(self):
+        return self.daily_usage
 
     # JSON
     def as_json(self):
@@ -159,40 +146,28 @@ class PreferencesManager:
         else:
             self.__dict__ = json_object  # deserialize json object
 
-        self.migrate_user_list()
+        self.migrate_versions()
 
     def update_json_from_file(self):
         self.__dict__ = self.load_json_from_file()
 
-        self.migrate_user_list()
+        self.migrate_versions()
 
-    def migrate_user_list(self):
-        # Convert old <0.4.0 preferences to new one:
+    def migrate_versions(self):
         for key in self.user_list:
+            old = self.user_list[key]
+            new = UserPreferences(copy.deepcopy(_DEFAULT_USER_PREFERENCES))
+
             if "application_list" in self.user_list[key].keys():
-                # Uses old format!
-                print(f"{key} user uses old format, migrating to new one...")
-
-                # Copy default empty preferences
-                old = self.user_list[key]
-                new = UserPreferences(copy.deepcopy(_DEFAULT_USER_PREFERENCES))
-
-                # From -> To
-                # "application_list": [] -> application.list
-                # "website_list": [] -> website.list
-
-                # "is_application_list_allowlist": False -> application.allowlist
-                # "is_website_list_allowlist": False, -> website.allowlist
-
-                # "is_application_filter_active": False, -> application.active
-                # "is_website_filter_active": False, -> website.active
-                # "is_session_time_filter_active": False, -> session_time.weekday.active && session_time.weekend.active
-
-                # # Session Time minutes
-                # "session_time_start": 0, -> session_time.weekday.start && session_time.weekend.start
-                # "session_time_end": 0,  -> session_time.weekday.end && session_time.weekend.end
+                # Convert old <0.4.0 preferences to new ones:
+                print(f"{key} user uses <0.4.0 format, migrating to new one...")
 
                 # Application
+                # From -> To
+                # "application_list": [] -> application.list
+                # "is_application_list_allowlist": False -> application.allowlist
+                # "is_application_filter_active": False, -> application.active
+
                 new.get_application().set_list(old["application_list"])
                 new.get_application().set_allowlist(
                     old["is_application_list_allowlist"]
@@ -200,31 +175,29 @@ class PreferencesManager:
                 new.get_application().set_active(old["is_application_filter_active"])
 
                 # Website
+                # "website_list": [] -> website.list
+                # "is_website_list_allowlist": False, -> website.allowlist
+                # "is_website_filter_active": False, -> website.active
+
                 new.get_website().set_list(old["website_list"])
                 new.get_website().set_allowlist(old["is_website_list_allowlist"])
                 new.get_website().set_active(old["is_website_filter_active"])
 
-                # Session Time
-                new.get_session_time().get_weekday().set_active(
-                    old["is_session_time_filter_active"]
-                )
-                new.get_session_time().get_weekend().set_active(
-                    old["is_session_time_filter_active"]
-                )
+                self.user_list[key] = new
+                print(self.user_list[key])
+                print(f"{key} migration finished")
+            if "session_time" in self.user_list[key]:
+                # New session times format, daily_usage_limit <0.5.0
+                print(f"{key} user uses <0.5.0 format, migrating to new one...")
 
-                new.get_session_time().get_weekday().set_start(
-                    old["session_time_start"]
-                )
-                new.get_session_time().get_weekend().set_start(
-                    old["session_time_start"]
-                )
-
-                new.get_session_time().get_weekday().set_end(old["session_time_end"])
-                new.get_session_time().get_weekend().set_end(old["session_time_end"])
+                # Application and website are same format in 0.4.0
+                new.application = old.application
+                new.website = old.website
 
                 self.user_list[key] = new
-                print(f"{key} migration finished")
+
                 print(self.user_list[key])
+                print(f"{key} migration finished")
             else:
                 self.user_list[key] = UserPreferences(self.user_list[key])
 

@@ -6,6 +6,8 @@ gi.require_version("Adw", "1")
 from gi.repository import Gtk, GObject, Adw  # noqa
 
 from ui.widget.PTimeChooserRow import PTimeChooserRow
+from ui.widget.PTimeEntry import PTimeEntry
+from ui.widget.PTimeEntryRow import PTimeEntryRow
 
 
 class PageSessionTime(Adw.PreferencesPage):
@@ -26,18 +28,56 @@ class PageSessionTime(Adw.PreferencesPage):
         self.username = username
 
         # Remove UI
-        self.remove(self.group_weekday)
-        self.remove(self.group_weekend)
+        self.remove(self.group)
 
         # Recreate UI
         self.setup_ui()
 
     def setup_ui(self):
-        self.group_weekday = self.setup_group_times(False)
-        self.group_weekend = self.setup_group_times(True)
+        self.group = Adw.PreferencesGroup(
+            title=_("Limit Session Time"),
+            description=_(
+                "Set start-end hours of a session.\nLimit maximum hours to use PC between start and end hours."
+            ),
+        )
 
-        self.add(self.group_weekday)
-        self.add(self.group_weekend)
+        # Headers
+        row = Adw.PreferencesRow()
+        box = Gtk.Box(css_classes=["m-7"])
+        box_items = Gtk.Box(homogeneous=True, hexpand=True)
+        box_items.append(Gtk.Label(label=""))
+        box_items.append(Gtk.Label(css_classes=["heading"], label=_("Start")))
+        box_items.append(Gtk.Label(css_classes=["heading"], label=_("End")))
+        box_items.append(Gtk.Label(css_classes=["heading"], label=_("Usage Limit")))
+
+        box.append(box_items)
+        box.append(
+            Gtk.Label(
+                css_classes=["heading"], label=_("Active"), width_request=56
+            )  # todo, remove width_request, do better table view
+        )
+        row.set_child(box)
+        self.group.add(row)
+
+        # Days
+        days = [
+            _("Monday"),
+            _("Tuesday"),
+            _("Wednesday"),
+            _("Thursday"),
+            _("Friday"),
+            _("Saturday"),
+            _("Sunday"),
+        ]
+
+        for i in range(len(days)):
+            self.group.add(
+                PTimeEntryRow(
+                    days[i], 0, self.on_time_changed, self.on_day_activated, i, False
+                )
+            )
+
+        self.add(self.group)
 
     def setup_group_times(self, is_weekend):
         is_active = False
@@ -126,6 +166,12 @@ class PageSessionTime(Adw.PreferencesPage):
         week.set_active(value)
         expander_row.set_title(_("Active") if value else _("Activate"))
         self.preferences_manager.save()
+
+    def on_time_changed(self, minutes, user_data):
+        print(minutes, user_data)
+
+    def on_day_activated(self, switch, value, day_index):
+        print(value, day_index)
 
     def on_start_time_changed(self, time_chooser, minutes, is_weekend):
         if not self.preferences:

@@ -19,3 +19,11 @@ button.sidebar-button {
 button.sidebar-button>box {
     padding: 3px;
 }
+
+.m-7 {
+    margin: 7px;
+}
+
+.p-7 {
+    padding: 7px;
+}
