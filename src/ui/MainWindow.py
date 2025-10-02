@@ -20,7 +20,7 @@ from gi.repository import Gtk, GLib, Gdk, Gio, GObject, Adw, AccountsService  # 
 
 
 CWD = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = f"{CWD}/../../data"
+ASSETS_DIR = f"{CWD}/../../assets"
 
 import locale  # noqa
 from locale import gettext as _  # noqa
@@ -88,7 +88,7 @@ class MainWindow(Adw.ApplicationWindow):
 
     def setup_css(self):
         css_provider = Gtk.CssProvider()
-        css_provider.load_from_path(f"{DATA_DIR}/style.css")
+        css_provider.load_from_path(f"{ASSETS_DIR}/style.css")
 
         style = self.get_style_context()
         style.add_provider_for_display(

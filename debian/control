@@ -2,16 +2,15 @@ Source: pardus-parental-control
 Section: utils
 Priority: optional
 Maintainer: Emin Fedar <emin.fedar@pardus.org.tr>
-Build-Depends: debhelper-compat (= 13), dh-python, python3-all, python3-setuptools
+Build-Depends: debhelper-compat (= 13), meson
 Standards-Version: 4.6.1
 Homepage: https://github.com/pardus/pardus-parental-control
 
 Package: pardus-parental-control
 Architecture: all
 Depends: ${misc:Depends},
-         ${python3:Depends},
          python3 (>=3.9),
-         python3-gi,      
+         python3-gi,
          gir1.2-glib-2.0,
          gir1.2-gtk-4.0,
          gir1.2-adw-1,
@@ -22,4 +21,3 @@ Depends: ${misc:Depends},
 Description: Parental Control application for Pardus
  Pardus Parental Control is a parental control and restriction application.
  You can restrict the domains a user can enter or programs a user can open.
-

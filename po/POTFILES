@@ -6,3 +6,5 @@ src/ui/page/PageEmpty.py
 src/ui/page/PageSessionTime.py
 src/ui/page/PageWebsites.py
 src/ui/widget/DialogAppChooser.py
+src/ui/widget/PTimeEntry.py
+src/ui/widget/PTimeEntryRow.py

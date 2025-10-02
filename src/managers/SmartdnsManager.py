@@ -12,7 +12,7 @@ tcp-idle-time 5
 """
 
 SMARTDNS_CONF_DENY_ADULT_PREPEND = """
-domain-set -name adult -type list -file /usr/share/pardus/pardus-parental-control/data/anti-adult.list
+domain-set -name adult -type list -file /usr/share/pardus/pardus-parental-control/assets/anti-adult.list
 address /domain-set:adult/#
 """
 
