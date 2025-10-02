@@ -106,7 +106,7 @@ class SessionTimeConfig(object):
             self.limit[weekday] = value
 
     def set_active(self, weekday, value):
-        if isinstance(value, int):
+        if isinstance(value, bool):
             self.active[weekday] = value
 
 
@@ -186,6 +186,8 @@ class PreferencesManager:
                 self.user_list[key] = new
                 print(self.user_list[key])
                 print(f"{key} migration finished")
+
+
             if "session_time" in self.user_list[key]:
                 # New session times format, daily_usage_limit <0.5.0
                 print(f"{key} user uses <0.5.0 format, migrating to new one...")
@@ -193,6 +195,7 @@ class PreferencesManager:
                 # Application and website are same format in 0.4.0
                 new.application = old.application
                 new.website = old.website
+                # new."daily_usage" is default
 
                 self.user_list[key] = new
 

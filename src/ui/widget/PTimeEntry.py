@@ -7,40 +7,28 @@ from locale import gettext as _  # noqa
 
 
 class PTimeEntry(Gtk.Box):
-    def __init__(self, minutes, on_time_changed_callback, *user_data):
+    def __init__(self, total_minutes, on_changed, *user_data):
         super().__init__(spacing=3, halign="center")
-        self.on_time_changed_callback = on_time_changed_callback
+        self.on_changed = on_changed
         self.user_data = user_data
 
+        hours = int(total_minutes/60)
+        minutes = int(total_minutes%60)
+
         # Hours
-        self.hours_entry = Gtk.Entry(
+        self.entry = Gtk.Entry(
+            text=f"{hours:02d}:{minutes:02d}",
             input_purpose=Gtk.InputPurpose.DIGITS,
-            max_length=2,
-            max_width_chars=2,
+            max_length=5,
+            max_width_chars=5,
             valign="center",
         )
-        self.hours_entry.set_text(str(int(minutes / 60)))
-        self.hours_entry.connect("activate", self.on_entry_activated, "hours")
-        self.hours_entry.connect("notify::has-focus", self.on_entry_move_focus, "hours")
-        self.hours_entry.connect("changed", self.on_entry_changed, "hours")
-        self.append(self.hours_entry)
 
-        self.append(Gtk.Label(label=":"))
+        self.entry.connect("activate", self.on_entry_activated)
+        self.entry.connect("notify::has-focus", self.on_entry_move_focus)
+        self.entry.connect("changed", self.on_entry_changed)
+        self.append(self.entry)
 
-        # Minutes
-        self.minutes_entry = Gtk.Entry(
-            input_purpose=Gtk.InputPurpose.DIGITS,
-            max_length=2,
-            max_width_chars=2,
-            valign="center",
-        )
-        self.minutes_entry.set_text(str(int(minutes % 60)))
-        self.minutes_entry.connect("activate", self.on_entry_activated, "minutes")
-        self.minutes_entry.connect(
-            "notify::has-focus", self.on_entry_move_focus, "minutes"
-        )
-        self.minutes_entry.connect("changed", self.on_entry_changed, "minutes")
-        self.append(self.minutes_entry)
 
     def set_total_minutes(self, value):
         hours = int(value / 60)
@@ -50,40 +38,66 @@ class PTimeEntry(Gtk.Box):
         self.minutes_entry.set_text(str(mins))
 
     def get_total_minutes(self):
-        hours = int(self.hours_entry.get_text()) * 60
-        mins = int(self.minutes_entry.get_text())
+        # Split hours and minutes text
+        splitted = self.entry.get_text().split(":")
+        if len(splitted) != 2 or not(splitted[0] and splitted[1]):
+            return 0
+
+        hours = int(splitted[0]) * 60
+        mins = int(splitted[1])
 
         return hours + mins
 
     # Callbacks
-    def on_entry_activated(self, entry, time_type):
-        txt = "0" if not entry.get_text() else entry.get_text()
-        number = int(txt)
+    def on_entry_activated(self, entry):
+        txt = "00:00" if not entry.get_text() else entry.get_text()
 
-        if time_type == "hours":
-            if number > 23:
-                number = 23
-            elif number < 0:
-                number = 0
-        elif time_type == "minutes":
-            if number > 59:
-                number = 59
-            elif number < 0:
-                number = 0
+        # Split hours and minutes text
+        splitted = txt.split(":")
 
-        new_text = str(number)
-        entry.set_text(new_text)
-        self.on_time_changed_callback(self.get_total_minutes(), self.user_data)
+        if len(splitted) == 1 and splitted[0]:
+            # e.g. User only wrote "12" and we will convert it to "12:00"
+            hours = int(splitted[0])
+            if hours > 23:
+                hours = 23
+            elif hours < 0:
+                hours = 0
 
-    def on_entry_move_focus(self, entry, param, time_type):
-        self.on_entry_activated(entry, time_type)
+            entry.set_text(f"{hours:02d}:00")
+            self.on_changed(hours*60, self.user_data)
+            return
 
-    def on_entry_changed(self, entry, time_type):
-        old_value = entry.get_text()
-        new_value = "".join(i for i in entry.get_text() if i.isdigit())
+        if len(splitted) != 2 or not(splitted[0] and splitted[1]):
+            # User entered an invalid time like '12:456:1234', '12:', ':12', ':'
+            entry.set_text("00:00")
+            self.on_changed(0, self.user_data)
+            return
 
-        if old_value != new_value:
-            if new_value:
-                entry.set_text(new_value)
-            else:
-                entry.set_text("0")
+        # User entered valid time like '12:34', '1:0', '0:5', '00:5', '5:00'
+        hours = int(splitted[0])
+        if hours > 23:
+            hours = 23
+        elif hours < 0:
+            hours = 0
+
+        minutes = int(splitted[1])
+        if minutes > 59:
+            minutes = 59
+        elif minutes < 0:
+            minutes = 0
+
+        total_minutes = (hours*60) + minutes
+
+        entry.set_text(f"{hours:02d}:{minutes:02d}")
+        self.on_changed(total_minutes, self.user_data)
+
+    def on_entry_move_focus(self, entry, param):
+        self.on_entry_activated(entry)
+
+    def on_entry_changed(self, entry):
+        # Filter unwanted chars
+        text = entry.get_text()
+        filtered_text = "".join(ch for ch in text if ch.isdigit() or ch == ':')
+
+        if text != filtered_text:
+            entry.set_text(filtered_text)

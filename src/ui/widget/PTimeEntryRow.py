@@ -2,7 +2,7 @@ import gi
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
-from gi.repository import Gtk, Adw  # noqa
+from gi.repository import Gtk, Adw, GObject  # noqa
 
 from locale import gettext as _  # noqa
 
@@ -13,32 +13,44 @@ class PTimeEntryRow(Adw.PreferencesRow):
     def __init__(
         self,
         title,
-        minutes,
-        on_time_changed_callback,
-        on_activated_callback,
+        start_minutes,
+        end_minutes,
+        limit_minutes,
         day_index,
         is_active,
+        on_start_time_changed,
+        on_end_time_changed,
+        on_limit_changed,
+        on_activated,
     ):
         super().__init__(height_request=50)
 
         box = Gtk.Box(hexpand=True)
         box_items = Gtk.Box(homogeneous=True, hexpand=True)
         box_items.append(Gtk.Label(halign="start", label=title, margin_start=12))
+
+        # Start
         box_items.append(
-            PTimeEntry(minutes, on_time_changed_callback, "hours", day_index)
+            PTimeEntry(start_minutes, on_start_time_changed, day_index)
         )
+        # End
         box_items.append(
-            PTimeEntry(minutes, on_time_changed_callback, "minutes", day_index)
+            PTimeEntry(end_minutes, on_end_time_changed, day_index)
         )
-        box_items.append(PTimeEntry(0, on_time_changed_callback, "limit", day_index))
+        # Usage Limit
+        box_items.append(
+            PTimeEntry(limit_minutes, on_limit_changed, day_index)
+        )
+
+        # Active Switch
         switch = Gtk.Switch(
             halign="center",
             valign="center",
             margin_end=12,
             active=is_active,
         )
-        switch.connect("state-set", on_activated_callback, day_index)
-        switch.bind_property("active", box_items, "sensitive")
+        switch.connect("state-set", on_activated, day_index)
+        switch.bind_property("active", box_items, "sensitive", GObject.BindingFlags.SYNC_CREATE)
 
         box.append(box_items)
         box.append(switch)
