@@ -10,6 +10,7 @@ import managers.LinuxUserManager as LinuxUserManager
 import managers.PreferencesManager as PreferencesManager
 import managers.NetworkFilterManager as NetworkFilterManager
 import managers.ApplicationManager as ApplicationManager
+import managers.SessionTimeManager as SessionTimeManager
 
 from NotificationApp import NotificationApp
 
@@ -92,12 +93,14 @@ class PPCActivator(Gtk.Application):
         self.preferences_manager.update_json_from_file()
         self.preferences = self.preferences_manager.get_user(self.logged_user_name)
 
-        session_time_prefs = self.get_session_time_preferences()
-        if session_time_prefs.get_active():
+        (active, start, end, limit) = self.get_today_session_time_preferences()
+        if active:
             if self.session_time_started is None:
+                now_minutes = SessionTimeManager.now_minutes()
                 self.log(
-                    f"Session Time checking started. Start:{session_time_prefs.get_start()}, End:{session_time_prefs.get_end()}"
+                    f" - Session Time checking started. Now: {now_minutes}, Start:{start}, End:{end}, Limit:{limit}."
                 )
+
                 self.check_session_time()
                 self.session_time_started = GLib.timeout_add_seconds(
                     60, self.check_session_time
@@ -106,7 +109,9 @@ class PPCActivator(Gtk.Application):
             GLib.Source.remove(self.session_time_started)
             self.session_time_started = None
 
-            self.log("Session Time checking stopped.")
+            self.log(
+                " - Session Time checking is not started. Today's session time filter is not active."
+            )
 
         self.log(" - Application filters...")
         if self.preferences.get_application().get_active():
@@ -199,35 +204,57 @@ class PPCActivator(Gtk.Application):
         NetworkFilterManager.clear_domain_filter_list()
 
     # == Session Time Control ==
-    def get_session_time_preferences(self):
-        pref = self.preferences.get_session_time()
+    def get_today_session_time_preferences(self):
+        pref = self.preferences.get_daily_usage()
 
-        is_current_day_weekend = (
-            datetime.datetime.today().weekday() > 4
-        )  # 5: Sat, 6: Sun
+        # Get index of the day:
+        # 0: Monday ... 6:Sunday
+        day_index = datetime.datetime.today().weekday()
 
-        week = pref.get_weekend() if is_current_day_weekend else pref.get_weekday()
+        active = pref.get_active(day_index)
+        start = pref.get_start(day_index)
+        end = pref.get_end(day_index)
+        limit = pref.get_limit(day_index)
 
-        return week
+        return (active, start, end, limit)
+
+    def get_today_session_usage_minutes(self):
+        user_sessions = SessionTimeManager.get_all_user_sessions(self.logged_user_name)
+
+        now = SessionTimeManager.now()
+
+        today_elapsed_mins = 0
+        for s in user_sessions:
+            if (
+                s[0].day == now.day
+                and s[0].month == now.month
+                and s[0].year == now.year
+            ):
+                today_elapsed_mins += s[1]
+
+        return today_elapsed_mins
 
     def is_session_time_ended(self):
-        week = self.get_session_time_preferences()
+        (active, start, end, limit) = self.get_today_session_time_preferences()
 
-        # Session Time Minutes. 1440 minutes in a day.
-        start = week.get_start()
-        end = week.get_end()
+        if not active:
+            return False
 
+        # Session Time Minutes. [0, 1439] minutes in a day.
         if start == end:
             print(
-                "Session Time Configuration Start and End times are equal. Not applying."
+                " - Session Time Configuration Start and End times are equal. Not applying."
             )
             return False
 
-        t = time.localtime()
-        minutes_now = (60 * t.tm_hour) + t.tm_min
-
-        if minutes_now >= start and minutes_now <= end:
-            return False
+        # Check if session is between permitted times
+        now_minutes = SessionTimeManager.now_minutes()
+        if now_minutes >= start and now_minutes <= end:
+            # User in permitted range.
+            # Check if session time limit usage is exceeded
+            today_elapsed_minutes = self.get_today_session_usage_minutes()
+            if today_elapsed_minutes <= limit:
+                return False
 
         self.log("Time is up! Shutting down...")
         return True
