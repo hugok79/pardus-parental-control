@@ -61,3 +61,33 @@ def get_all_user_sessions(username):
             sessions.append(fields)
 
     return sessions
+
+
+def get_today_session_usage_of_user(username):
+    user_sessions = get_all_user_sessions(username)
+
+    _now = now()
+
+    elapsed_mins = 0
+    for s in user_sessions:
+        if s[0].day == _now.day and s[0].month == _now.month and s[0].year == _now.year:
+            elapsed_mins += s[1]
+
+    return elapsed_mins
+
+
+def get_weekly_session_usage_of_user(username):
+    user_sessions = get_all_user_sessions(username)
+
+    _now = now()
+
+    today_weekday = _now.weekday()  # Monday = 0, ...,  Sunday = 6
+
+    elapsed_mins = 0
+    for s in user_sessions:
+        time_diff = _now - s[0]
+        if time_diff.days <= today_weekday and time_diff.days <= 6:
+            print("This session added to elapsed mins:", s[0], s[1])
+            elapsed_mins += s[1]
+
+    return elapsed_mins

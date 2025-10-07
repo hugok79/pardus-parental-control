@@ -218,22 +218,6 @@ class PPCActivator(Gtk.Application):
 
         return (active, start, end, limit)
 
-    def get_today_session_usage_minutes(self):
-        user_sessions = SessionTimeManager.get_all_user_sessions(self.logged_user_name)
-
-        now = SessionTimeManager.now()
-
-        today_elapsed_mins = 0
-        for s in user_sessions:
-            if (
-                s[0].day == now.day
-                and s[0].month == now.month
-                and s[0].year == now.year
-            ):
-                today_elapsed_mins += s[1]
-
-        return today_elapsed_mins
-
     def is_session_time_ended(self):
         (active, start, end, limit) = self.get_today_session_time_preferences()
 
@@ -252,7 +236,9 @@ class PPCActivator(Gtk.Application):
         if now_minutes >= start and now_minutes <= end:
             # User in permitted range.
             # Check if session time limit usage is exceeded
-            today_elapsed_minutes = self.get_today_session_usage_minutes()
+            today_elapsed_minutes = SessionTimeManager.get_today_session_usage_minutes(
+                self.logged_user_name
+            )
             if today_elapsed_minutes <= limit:
                 return False
 
