@@ -290,7 +290,7 @@ class PPCActivator(Gtk.Application):
 
     def save_login_timestamp(self, status):
         now_isoformat = SessionTimeManager.now().isoformat()
-        msg = f"{self.logged_user_name}|{self.session_id}|{now_isoformat}|{status}"
+        msg = f"{self.logged_user_name}|{now_isoformat}|{status}\n"
 
         self.log(msg)
         with open(USER_SESSIONS_LOG, "w+") as f:
