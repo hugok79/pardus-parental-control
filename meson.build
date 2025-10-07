@@ -35,9 +35,14 @@ install_data(
 )
 ## Icon
 install_data(['export/pardus-parental-control.svg'], install_dir: icon_dir)
+
 ## Sources
 install_subdir('src', install_dir: source_dir)
 install_subdir('ui', install_dir: source_dir)
 
 ## Binary
 install_data(['pardus-parental-control'], install_dir: binary_dir)
+
+# Autostart .desktop, PPC Service:
+autostart_dir = join_paths(get_option('sysconfdir'), 'xdg/autostart')
+install_data(['assets/tr.org.pardus.parental-control.apply.desktop'], install_dir: autostart_dir)
