@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import sys
-import time
+import signal
 import datetime
 import logging
 
@@ -11,6 +11,7 @@ import managers.PreferencesManager as PreferencesManager
 import managers.NetworkFilterManager as NetworkFilterManager
 import managers.ApplicationManager as ApplicationManager
 import managers.SessionTimeManager as SessionTimeManager
+
 
 from NotificationApp import NotificationApp
 
@@ -22,6 +23,8 @@ logging.basicConfig(
     level=logging.DEBUG,
     format="(%(asctime)s) [%(levelname)s]: %(message)s",
 )
+
+USER_SESSIONS_LOG = "/var/log/user-sessions.log"
 
 
 class PPCActivator(Gtk.Application):
@@ -37,6 +40,10 @@ class PPCActivator(Gtk.Application):
         )
 
         self.setup_variables()
+
+        signal.signal(signal.SIGTERM, self.signal_handler)
+        signal.signal(signal.SIGQUIT, self.signal_handler)
+        signal.signal(signal.SIGINT, self.signal_handler)
 
         if argv[1] and argv[1] != "--disable" and len(argv) == 3:
             self.logged_user_id = argv[1]
@@ -54,7 +61,9 @@ class PPCActivator(Gtk.Application):
         self.session_time_started = None
 
     def do_activate(self):
-        self.log("PPCActivator Launched.")
+        self.log(f"PPCActivator Launched at {self.logged_user_name}")
+
+        self.save_login_timestamp("login")
 
         _empty_window = Gtk.Window(
             application=self
@@ -245,6 +254,7 @@ class PPCActivator(Gtk.Application):
         self.log("Time is up! Shutting down...")
         return True
 
+    # == Watch User Session Changes ==
     def seat_properties_changed(self, _proxy, properties_changed, _properties_removed):
         props = properties_changed.unpack()
         if "ActiveSession" in props:
@@ -277,6 +287,18 @@ class PPCActivator(Gtk.Application):
         )
 
         self.log("DBus Connected.")
+
+    def save_login_timestamp(self, status):
+        now_isoformat = SessionTimeManager.now().isoformat()
+        msg = f"{self.logged_user_name}|{self.session_id}|{now_isoformat}|{status}"
+
+        self.log(msg)
+        with open(USER_SESSIONS_LOG, "w+") as f:
+            f.write(msg)
+
+    def signal_handler(self, sig, frame):
+        self.save_login_timestamp("logout")
+        sys.exit(0)
 
     def log(self, msg):
         message = f"({self.logged_user_name}@{self.session_id}): {msg}"
