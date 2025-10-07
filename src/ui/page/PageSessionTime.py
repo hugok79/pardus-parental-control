@@ -5,7 +5,10 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Gtk, GObject, Adw  # noqa
 
+import managers.SessionTimeManager as SessionTimeManager
+
 from ui.widget.PTimeEntryRow import PTimeEntryRow
+from ui.widget.PSessionHistory import PSessionHistory
 
 
 class PageSessionTime(Adw.PreferencesPage):
@@ -32,6 +35,21 @@ class PageSessionTime(Adw.PreferencesPage):
         self.setup_ui()
 
     def setup_ui(self):
+        group_session_history = Adw.PreferencesGroup(
+            # title=_("Session History"),
+        )
+        group_session_history.add(
+            PSessionHistory(
+                today_minutes=SessionTimeManager.get_today_session_usage_of_user(
+                    self.username
+                ),
+                weekly_minutes=SessionTimeManager.get_weekly_session_usage_of_user(
+                    self.username
+                ),
+            )
+        )
+        self.add(group_session_history)
+
         self.group = Adw.PreferencesGroup(
             title=_("Limit Session Time"),
             description=_(
@@ -70,7 +88,7 @@ class PageSessionTime(Adw.PreferencesPage):
         prefs = self.preferences.get_daily_usage()
 
         for i in range(len(day_titles)):
-            print(f"Day - {i}:", prefs.get_start(i), prefs.get_end(i), prefs.get_limit(i), prefs.get_active(i))
+            # print(f"Day - {i}:", prefs.get_start(i), prefs.get_end(i), prefs.get_limit(i), prefs.get_active(i))
             self.group.add(
                 PTimeEntryRow(
                     title=day_titles[i],
@@ -91,7 +109,6 @@ class PageSessionTime(Adw.PreferencesPage):
     # == CALLBACKS ==
     def on_start_time_changed(self, minutes, user_data):
         day_index = user_data[0]
-        print("start_time:", minutes, user_data, day_index)
 
         if not self.preferences:
             return
@@ -99,10 +116,8 @@ class PageSessionTime(Adw.PreferencesPage):
         self.preferences.get_daily_usage().set_start(day_index, minutes)
         self.preferences_manager.save()
 
-
     def on_end_time_changed(self, minutes, user_data):
         day_index = user_data[0]
-        print("end_time:", minutes, user_data, day_index)
 
         if not self.preferences:
             return
@@ -110,17 +125,14 @@ class PageSessionTime(Adw.PreferencesPage):
         self.preferences.get_daily_usage().set_end(day_index, minutes)
         self.preferences_manager.save()
 
-
     def on_limit_changed(self, minutes, user_data):
         day_index = user_data[0]
-        print("limit:", minutes, user_data, day_index)
 
         if not self.preferences:
             return
 
         self.preferences.get_daily_usage().set_limit(day_index, minutes)
         self.preferences_manager.save()
-
 
     def on_day_activated(self, switch, value, day_index):
         if not self.preferences:
