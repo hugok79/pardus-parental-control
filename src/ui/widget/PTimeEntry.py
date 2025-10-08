@@ -7,10 +7,10 @@ from locale import gettext as _  # noqa
 
 
 class PTimeEntry(Gtk.Box):
-    def __init__(self, total_minutes, on_changed, *user_data):
+    def __init__(self, total_minutes, on_changed, day_index):
         super().__init__(spacing=3, halign="center")
         self.on_changed = on_changed
-        self.user_data = user_data
+        self.day_index = day_index
 
         hours = int(total_minutes / 60)
         minutes = int(total_minutes % 60)
@@ -63,13 +63,13 @@ class PTimeEntry(Gtk.Box):
                 hours = 0
 
             entry.set_text(f"{hours:02d}:00")
-            self.on_changed(hours * 60, self.user_data)
+            self.on_changed(hours * 60, self.day_index)
             return
 
         if len(splitted) != 2 or not (splitted[0] and splitted[1]):
             # User entered an invalid time like '12:456:1234', '12:', ':12', ':'
             entry.set_text("00:00")
-            self.on_changed(0, self.user_data)
+            self.on_changed(0, self.day_index)
             return
 
         # User entered valid time like '12:34', '1:0', '0:5', '00:5', '5:00'
@@ -88,7 +88,7 @@ class PTimeEntry(Gtk.Box):
         total_minutes = (hours * 60) + minutes
 
         entry.set_text(f"{hours:02d}:{minutes:02d}")
-        self.on_changed(total_minutes, self.user_data)
+        self.on_changed(total_minutes, self.day_index)
 
     def on_entry_move_focus(self, entry, param):
         self.on_entry_activated(entry)
