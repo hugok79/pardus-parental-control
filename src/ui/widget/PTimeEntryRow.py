@@ -30,17 +30,11 @@ class PTimeEntryRow(Adw.PreferencesRow):
         box_items.append(Gtk.Label(halign="start", label=title, margin_start=12))
 
         # Start
-        box_items.append(
-            PTimeEntry(start_minutes, on_start_time_changed, day_index)
-        )
+        box_items.append(PTimeEntry(start_minutes, on_start_time_changed, day_index))
         # End
-        box_items.append(
-            PTimeEntry(end_minutes, on_end_time_changed, day_index)
-        )
+        box_items.append(PTimeEntry(end_minutes, on_end_time_changed, day_index))
         # Usage Limit
-        box_items.append(
-            PTimeEntry(limit_minutes, on_limit_changed, day_index)
-        )
+        box_items.append(PTimeEntry(limit_minutes, on_limit_changed, day_index))
 
         # Active Switch
         switch = Gtk.Switch(
@@ -50,7 +44,9 @@ class PTimeEntryRow(Adw.PreferencesRow):
             active=is_active,
         )
         switch.connect("state-set", on_activated, day_index)
-        switch.bind_property("active", box_items, "sensitive", GObject.BindingFlags.SYNC_CREATE)
+        switch.bind_property(
+            "active", box_items, "sensitive", GObject.BindingFlags.SYNC_CREATE
+        )
 
         box.append(box_items)
         box.append(switch)

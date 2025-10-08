@@ -12,8 +12,8 @@ class PTimeEntry(Gtk.Box):
         self.on_changed = on_changed
         self.user_data = user_data
 
-        hours = int(total_minutes/60)
-        minutes = int(total_minutes%60)
+        hours = int(total_minutes / 60)
+        minutes = int(total_minutes % 60)
 
         # Hours
         self.entry = Gtk.Entry(
@@ -29,7 +29,6 @@ class PTimeEntry(Gtk.Box):
         self.entry.connect("changed", self.on_entry_changed)
         self.append(self.entry)
 
-
     def set_total_minutes(self, value):
         hours = int(value / 60)
         mins = int(value % 60)
@@ -40,7 +39,7 @@ class PTimeEntry(Gtk.Box):
     def get_total_minutes(self):
         # Split hours and minutes text
         splitted = self.entry.get_text().split(":")
-        if len(splitted) != 2 or not(splitted[0] and splitted[1]):
+        if len(splitted) != 2 or not (splitted[0] and splitted[1]):
             return 0
 
         hours = int(splitted[0]) * 60
@@ -64,10 +63,10 @@ class PTimeEntry(Gtk.Box):
                 hours = 0
 
             entry.set_text(f"{hours:02d}:00")
-            self.on_changed(hours*60, self.user_data)
+            self.on_changed(hours * 60, self.user_data)
             return
 
-        if len(splitted) != 2 or not(splitted[0] and splitted[1]):
+        if len(splitted) != 2 or not (splitted[0] and splitted[1]):
             # User entered an invalid time like '12:456:1234', '12:', ':12', ':'
             entry.set_text("00:00")
             self.on_changed(0, self.user_data)
@@ -86,7 +85,7 @@ class PTimeEntry(Gtk.Box):
         elif minutes < 0:
             minutes = 0
 
-        total_minutes = (hours*60) + minutes
+        total_minutes = (hours * 60) + minutes
 
         entry.set_text(f"{hours:02d}:{minutes:02d}")
         self.on_changed(total_minutes, self.user_data)
@@ -97,7 +96,7 @@ class PTimeEntry(Gtk.Box):
     def on_entry_changed(self, entry):
         # Filter unwanted chars
         text = entry.get_text()
-        filtered_text = "".join(ch for ch in text if ch.isdigit() or ch == ':')
+        filtered_text = "".join(ch for ch in text if ch.isdigit() or ch == ":")
 
         if text != filtered_text:
             entry.set_text(filtered_text)

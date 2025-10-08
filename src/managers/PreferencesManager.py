@@ -187,7 +187,6 @@ class PreferencesManager:
                 print(self.user_list[key])
                 print(f"{key} migration finished")
 
-
             if "session_time" in self.user_list[key]:
                 # New session times format, daily_usage_limit <0.5.0
                 print(f"{key} user uses <0.5.0 format, migrating to new one...")
