@@ -240,7 +240,7 @@ class PPCActivator(Gtk.Application):
             today_elapsed_minutes = SessionTimeManager.get_today_session_usage_minutes(
                 self.logged_user_name
             )
-            if limit > 0 and today_elapsed_minutes <= limit:
+            if limit == 0 or today_elapsed_minutes <= limit:
                 return False
 
         self.log("=== Time is up! Shutting down... ===")
