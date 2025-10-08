@@ -54,6 +54,7 @@ class NotificationApp(Adw.Application):
         window.set_default_size(500, 200)
         window.set_icon_name("pardus-parental-control")
         window.set_hide_on_close(True)
+        window.set_title(_("Pardus Parental Control"))
 
         # UI
         ui = self.setup_ui()
