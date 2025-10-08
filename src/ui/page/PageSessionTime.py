@@ -40,10 +40,10 @@ class PageSessionTime(Adw.PreferencesPage):
         )
         group_session_history.add(
             PSessionHistory(
-                today_minutes=SessionTimeManager.get_today_session_usage_of_user(
+                today_minutes=SessionTimeManager.get_today_session_usage_minutes(
                     self.username
                 ),
-                weekly_minutes=SessionTimeManager.get_weekly_session_usage_of_user(
+                weekly_minutes=SessionTimeManager.get_weekly_session_usage_minutes(
                     self.username
                 ),
             )
