@@ -125,7 +125,6 @@ class PPCActivator(Gtk.Application):
             self.apply_website_filter()
         else:
             self.clear_website_filter()
-        self.log("Applied!")
 
     def clear_preferences(self):
         self.clear_application_filter()
@@ -278,7 +277,7 @@ class PPCActivator(Gtk.Application):
             "g-properties-changed", self.seat_properties_changed
         )
 
-        self.log("- Seat Check DBus Connected.")
+        self.log(" - Seat Check DBus Connected.")
 
     def log(self, msg):
         message = f"({self.logged_user_name}@{self.session_id}): {msg}"
