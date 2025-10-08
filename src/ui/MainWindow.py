@@ -61,7 +61,7 @@ class MainWindow(Adw.ApplicationWindow):
         self.about_dialog = Adw.AboutWindow(
             application_name=_("Pardus Parental Control"),
             application_icon="pardus-parental-control",
-            version="0.4.1",
+            version="0.5.0",
             website="https://github.com/pardus/pardus-parental-control",
             copyright="© TÜBİTAK BİLGEM",
             comments=_(

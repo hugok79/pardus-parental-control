@@ -1,3 +1,22 @@
+pardus-parental-control (0.5.0) UNRELEASED; urgency=medium
+
+  * feat!: added filtering by day and limiting hours
+  * feat!: setup.py -> meson
+  * feat: better session time handling (UI)
+  * feat: better session time handling (service)
+  * feat: updated SessionTimeManager functions
+  * feat: session time usages box
+  * feat: add login-logout detect
+  * fix: add PPCActivator.py to autostart folder
+  * fix: add newline to login timestamp, remove session id
+  * fix: better exit detection
+  * fix: formatting
+  * fix: session limit checking
+  * fix: better logs
+  * feat: version 0.5.0
+
+ -- Emin Fedar <emin.fedar@pardus.org.tr>  Wed, 08 Oct 2025 15:44:44 +0300
+
 pardus-parental-control (0.4.1) yirmiuc; urgency=medium
 
   [ Umit Dogan ]
