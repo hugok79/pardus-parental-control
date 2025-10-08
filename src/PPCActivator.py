@@ -55,7 +55,7 @@ class PPCActivator(Gtk.Application):
         self.session_time_started = None
 
     def do_activate(self):
-        self.log(f"PPCActivator Launched at {self.logged_user_name}")
+        self.log(f"=== PPCActivator Service Started ===")
 
         _empty_window = Gtk.Window(
             application=self
@@ -69,7 +69,7 @@ class PPCActivator(Gtk.Application):
 
                 self.apply_preferences()
             else:
-                self.log("No preferences found.")
+                self.log(" - No preferences found.")
 
                 self.clear_preferences()
 
@@ -136,7 +136,7 @@ class PPCActivator(Gtk.Application):
             GLib.Source.remove(self.session_time_started)
             self.session_time_started = None
 
-        self.log("Cleared all filters.")
+        self.log(" - Cleared all filters.")
 
     # == Application Filtering ==
     def apply_application_filter(self):
@@ -243,7 +243,7 @@ class PPCActivator(Gtk.Application):
             if limit > 0 and today_elapsed_minutes <= limit:
                 return False
 
-        self.log("Time is up! Shutting down...")
+        self.log("=== Time is up! Shutting down... ===")
         return True
 
     # == Watch User Session Changes ==
@@ -278,7 +278,7 @@ class PPCActivator(Gtk.Application):
             "g-properties-changed", self.seat_properties_changed
         )
 
-        self.log("DBus Connected.")
+        self.log("- Seat Check DBus Connected.")
 
     def log(self, msg):
         message = f"({self.logged_user_name}@{self.session_id}): {msg}"
