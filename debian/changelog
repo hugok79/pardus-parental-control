@@ -1,4 +1,4 @@
-pardus-parental-control (0.5.0) UNRELEASED; urgency=medium
+pardus-parental-control (0.5.0) yirmiuc; urgency=medium
 
   * feat!: added filtering by day and limiting hours
   * feat!: setup.py -> meson
@@ -14,8 +14,12 @@ pardus-parental-control (0.5.0) UNRELEASED; urgency=medium
   * fix: session limit checking
   * fix: better logs
   * feat: version 0.5.0
+  * fix: session limit checking
+  * fix: logs
+  * fix: notification window title
+  * fix: little refactor
 
- -- Emin Fedar <emin.fedar@pardus.org.tr>  Wed, 08 Oct 2025 15:44:44 +0300
+ -- Emin Fedar <emin.fedar@pardus.org.tr>  Thu, 09 Oct 2025 13:59:38 +0300
 
 pardus-parental-control (0.4.1) yirmiuc; urgency=medium
 
