@@ -254,6 +254,13 @@ class MainWindow(Adw.ApplicationWindow):
         self.set_content(self.leaflet)
 
     # === FUNCTIONS ===
+    def get_os_codename(self):
+        with open("/etc/os-release", "rt") as f:
+            for line in f.readlines():
+                if "VERSION_CODENAME=" in line:
+                    return line.split("=")[1]
+
+        return ""
 
     # === CALLBACKS ===
     def on_sidebar_row_selected(self, listbox, row):
@@ -298,12 +305,20 @@ class MainWindow(Adw.ApplicationWindow):
 
     def on_btn_new_user_clicked(self, _btn):
         current_de = os.environ.get("XDG_CURRENT_DESKTOP")
+        os_codename = self.get_os_codename()
 
         if current_de == "GNOME":
-            GLib.spawn_async(
-                argv=["gnome-control-center", "user-accounts"],
-                flags=GLib.SpawnFlags.SEARCH_PATH,
-            )
+            if os_codename == "yirmiuc":
+                GLib.spawn_async(
+                    argv=["gnome-control-center", "user-accounts"],
+                    flags=GLib.SpawnFlags.SEARCH_PATH,
+                )
+            else:
+                # Since Pardus 25, it has changed
+                GLib.spawn_async(
+                    argv=["gnome-control-center", "system", "users"],
+                    flags=GLib.SpawnFlags.SEARCH_PATH,
+                )
         elif current_de == "XFCE":
             GLib.spawn_async(
                 argv=["users-admin"],
