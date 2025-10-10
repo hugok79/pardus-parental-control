@@ -1,6 +1,7 @@
 #!/usr/bin/python3
-
+import sys
 import gi
+import time
 import subprocess
 import managers.LinuxUserManager as LinuxUserManager
 
@@ -22,13 +23,13 @@ locale.textdomain(APPNAME)
 
 
 class NotificationApp(Adw.Application):
-    def __init__(self, logged_user_name):
+    def __init__(self, argv):
         super().__init__(
             application_id="tr.org.pardus.parental-control.notificationapp",
             flags=Gio.ApplicationFlags.NON_UNIQUE,
         )
 
-        self.logged_user_name = logged_user_name
+        self.logged_user_name = argv[1]
         self.seconds_left = 10
 
     def do_activate(self):
@@ -106,5 +107,9 @@ class NotificationApp(Adw.Application):
 
 
 if __name__ == "__main__":
-    app = NotificationApp()
+    if len(sys.argv) != 2:
+        print("Usage: ./NotificationApp.py logged_user_name_here")
+        sys.exit(0)
+
+    app = NotificationApp(sys.argv)
     app.run()

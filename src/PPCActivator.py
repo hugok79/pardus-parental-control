@@ -3,6 +3,8 @@
 import sys
 import datetime
 import logging
+import subprocess
+import os
 
 import managers.FileRestrictionManager as FileRestrictionManager
 import managers.LinuxUserManager as LinuxUserManager
@@ -12,10 +14,9 @@ import managers.ApplicationManager as ApplicationManager
 import managers.SessionTimeManager as SessionTimeManager
 import managers.OSManager as OSManager
 
+import gi
 
-from NotificationApp import NotificationApp
-
-
+gi.require_version("Gtk", "4.0")
 from gi.repository import Gio, Gtk, GLib  # noqa
 
 
@@ -94,8 +95,19 @@ class PPCActivator(Gtk.Application):
 
     def check_session_time(self):
         if self.is_session_time_ended():
-            notification_app = NotificationApp(self.logged_user_name)
-            notification_app.run()
+            cwd = os.path.dirname(os.path.abspath(__file__))
+
+            # Run non-root GUI app from root script requires these:
+            env = os.environ.copy()
+            env["XDG_RUNTIME_DIR"] = f"/run/user/{self.logged_user_id}"
+            env["DBUS_SESSION_BUS_ADDRESS"] = (
+                f"unix:path=/run/user/{self.logged_user_id}/bus"
+            )
+            subprocess.Popen(
+                [f"{cwd}/NotificationApp.py", self.logged_user_name],
+                user=self.logged_user_name,
+                env=env,
+            )
 
             sys.exit(0)
             return GLib.SOURCE_REMOVE
