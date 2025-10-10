@@ -8,21 +8,22 @@ CHROME_POLICY_PATH = Path("/etc/opt/chrome/policies/managed/policies.json")
 BRAVE_POLICY_PATH = Path("/etc/brave/policies/managed/policies.json")
 CHROMIUM_POLICY_PATH = Path("/etc/chromium/policies/managed/policies.json")
 CHROMIUM2_POLICY_PATH = Path("/etc/chromium-browser/policies/managed/policies.json")
-FIREFOX_POLICY_PATH = Path("/etc/firefox/policies/policies.json")
+FIREFOX_POLICY_PATH = Path("/usr/share/firefox-esr/distribution/policies.json")
 
 CHROME_POLICY_JSON = {
     "URLBlocklist": [],  # e.g. "google.com", "*" to block everything, "youtube.com"
     "URLAllowlist": [],
     "DnsOverHttpsMode": "off",
 }
+
+# These keys will be appended/removed in the json.
 FIREFOX_POLICY_JSON = {
     "policies": {
-        # This is disabled because it doesn't work properly.
-        # "WebsiteFilter": {
-        # https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Match_patterns
-        #    "Block": [],  # eg "<all_urls>"
-        #    "Exceptions": [],  # eg "*://*.youtube.com/*", "*://*.pardus.org.tr/*"
-        # },
+        "WebsiteFilter": {
+            # https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Match_patterns
+            "Block": [],  # eg "<all_urls>"
+            "Exceptions": [],  # eg "*://*.youtube.com/*", "*://*.pardus.org.tr/*"
+        },
         "DNSOverHTTPS": {"Enabled": False, "Locked": True},
     }
 }
@@ -43,27 +44,29 @@ def _generate_chromium_policy(domain_list, is_allowlist):
 
 
 def _generate_firefox_policy(domain_list, is_allowlist):
-    firefox_policy_object = copy.deepcopy(FIREFOX_POLICY_JSON)
+    obj = copy.deepcopy(FIREFOX_POLICY_JSON)
 
-    # Firefox browser policy doesn't work properly, it is commented for now:
-    """
     if is_allowlist:
         # Block everything except allowlist
-        firefox_policy_object["policies"]["WebsiteFilter"]["Block"] = ["<all_urls>"]
-
         # convert e.g. "google.com" -> "*://*.google.com/*"
-        firefox_policy_object["policies"]["WebsiteFilter"]["Exceptions"] = list(
-            map(lambda x: "*://{}/*".format(x), domain_list)
-        )
+        new_domain_list = []
+        for d in domain_list:
+            new_domain_list.append("http://*.{}/*".format(d))
+            new_domain_list.append("https://*.{}/*".format(d))
+
+        obj["policies"]["WebsiteFilter"]["Block"] = ["<all_urls>"]
+        obj["policies"]["WebsiteFilter"]["Exceptions"] = new_domain_list
     else:
         # convert e.g. "google.com" -> "*://*.google.com/*"
-        firefox_policy_object["policies"]["WebsiteFilter"]["Block"] = list(
-            map(lambda x: "*://{}/*".format(x), domain_list)
-        )
-        firefox_policy_object["policies"]["WebsiteFilter"]["Exceptions"] = []
-    """
+        new_domain_list = []
+        for d in domain_list:
+            new_domain_list.append("http://*.{}/*".format(d))
+            new_domain_list.append("https://*.{}/*".format(d))
 
-    return firefox_policy_object
+        obj["policies"]["WebsiteFilter"]["Block"] = new_domain_list
+        del obj["policies"]["WebsiteFilter"]["Exceptions"]
+
+    return obj
 
 
 def _save_browser_policy(browser_config_path: Path, policy_json_object):
