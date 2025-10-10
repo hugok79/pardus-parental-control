@@ -107,27 +107,21 @@ class PageSessionTime(Adw.PreferencesPage):
         self.add(self.group)
 
     # == CALLBACKS ==
-    def on_start_time_changed(self, minutes, user_data):
-        day_index = user_data[0]
-
+    def on_start_time_changed(self, minutes, day_index):
         if not self.preferences:
             return
 
         self.preferences.get_daily_usage().set_start(day_index, minutes)
         self.preferences_manager.save()
 
-    def on_end_time_changed(self, minutes, user_data):
-        day_index = user_data[0]
-
+    def on_end_time_changed(self, minutes, day_index):
         if not self.preferences:
             return
 
         self.preferences.get_daily_usage().set_end(day_index, minutes)
         self.preferences_manager.save()
 
-    def on_limit_changed(self, minutes, user_data):
-        day_index = user_data[0]
-
+    def on_limit_changed(self, minutes, day_index):
         if not self.preferences:
             return
 
