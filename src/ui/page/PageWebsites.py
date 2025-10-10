@@ -206,7 +206,7 @@ class PageWebsites(Adw.PreferencesPage):
         else:
             entry_row.remove_css_class("error")
 
-        if self.preferences.insert_website(domain):
+        if self.preferences.get_website().list_insert(domain):
             self.insert_website_row(self.group_websites, domain)
         else:
             entry_row.add_css_class("error")
@@ -223,7 +223,7 @@ class PageWebsites(Adw.PreferencesPage):
 
         domain = action_row.get_title()
 
-        if self.preferences.remove_website(domain):
+        if self.preferences.get_website().list_remove(domain):
             self.group_websites.remove(action_row)
 
             self.preferences_manager.save()
