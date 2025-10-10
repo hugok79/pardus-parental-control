@@ -10,6 +10,7 @@ import managers.PreferencesManager as PreferencesManager
 import managers.NetworkFilterManager as NetworkFilterManager
 import managers.ApplicationManager as ApplicationManager
 import managers.SessionTimeManager as SessionTimeManager
+import managers.OSManager as OSManager
 
 
 from NotificationApp import NotificationApp
@@ -37,19 +38,16 @@ class PPCActivator(Gtk.Application):
             flags=Gio.ApplicationFlags.NON_UNIQUE,
         )
 
-        self.setup_variables()
+        self.init_variables()
 
-        if argv[1] and argv[1] != "--disable" and len(argv) == 3:
+        # Get logged user id and username
+        if len(argv) == 3 and argv[1] != "--disable":
             self.logged_user_id = argv[1]
             self.logged_user_name = argv[2]
 
-            for session in LinuxUserManager.get_sessions():
-                if session["user"] == self.logged_user_name:
-                    self.session_id = session["session"]
-                    self.last_active_session_id = self.session_id
-                    break
+            self.update_active_session_id()
 
-    def setup_variables(self):
+    def init_variables(self):
         self.preferences = None
         self.preferences_manager = PreferencesManager.get_default()
         self.session_time_started = None
@@ -74,6 +72,25 @@ class PPCActivator(Gtk.Application):
                 self.clear_preferences()
 
             self.connect_user_active_status()
+
+    def update_active_session_id(self):
+        os_codename = OSManager.get_os_codename()
+        if os_codename == "yirmiuc":
+            for session in LinuxUserManager.get_sessions():
+                if session["user"] == self.logged_user_name:
+                    self.session_id = session["session"]
+                    self.last_active_session_id = self.session_id
+                    break
+        else:
+            # This has changed in Pardus 25 (yirmibes)
+            for session in LinuxUserManager.get_sessions():
+                if (
+                    session["user"] == self.logged_user_name
+                    and session["class"] == "user"
+                ):
+                    self.session_id = session["session"]
+                    self.last_active_session_id = self.session_id
+                    break
 
     def check_session_time(self):
         if self.is_session_time_ended():

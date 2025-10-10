@@ -1,5 +1,6 @@
 import managers.PreferencesManager as PreferencesManager
 import managers.LinuxUserManager as LinuxUserManager
+import managers.OSManager as OSManager
 
 # Widgets
 from ui.widget.ListRowAvatar import ListRowAvatar
@@ -254,13 +255,6 @@ class MainWindow(Adw.ApplicationWindow):
         self.set_content(self.leaflet)
 
     # === FUNCTIONS ===
-    def get_os_codename(self):
-        with open("/etc/os-release", "rt") as f:
-            for line in f.readlines():
-                if "VERSION_CODENAME=" in line:
-                    return line.split("=")[1]
-
-        return ""
 
     # === CALLBACKS ===
     def on_sidebar_row_selected(self, listbox, row):
@@ -305,7 +299,7 @@ class MainWindow(Adw.ApplicationWindow):
 
     def on_btn_new_user_clicked(self, _btn):
         current_de = os.environ.get("XDG_CURRENT_DESKTOP")
-        os_codename = self.get_os_codename()
+        os_codename = OSManager.get_os_codename()
 
         if current_de == "GNOME":
             if os_codename == "yirmiuc":
