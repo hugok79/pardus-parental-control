@@ -1,3 +1,20 @@
+pardus-parental-control (0.5.1) UNRELEASED; urgency=medium
+
+  * fix: rename update_translations
+  * fix: updated smartdns with tls support and subdomain errors
+  * fix: adapt gnome users settings for Pardus 25
+  * fix: use day_index instead of user_data
+  * fix: Pardus 25 compat LinuxUserManager
+  * fix: Pardus 25 compat NotificationApp
+  * fix: website list domain add-remove crash
+  * fix: reenable Firefox url blocklist policy
+  * fix: OSManager os_codename newline remove fix
+  * fix: rename update_translations
+  * fix: updated smartdns with tls support and subdomain errors
+  * feat: separate Version.py file
+
+ -- Emin Fedar <emin.fedar@pardus.org.tr>  Fri, 14 Nov 2025 09:58:04 +0300
+
 pardus-parental-control (0.5.0) yirmiuc; urgency=medium
 
   * feat!: added filtering by day and limiting hours
