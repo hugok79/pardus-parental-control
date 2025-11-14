@@ -2,6 +2,8 @@ import managers.PreferencesManager as PreferencesManager
 import managers.LinuxUserManager as LinuxUserManager
 import managers.OSManager as OSManager
 
+import Version
+
 # Widgets
 from ui.widget.ListRowAvatar import ListRowAvatar
 
@@ -62,7 +64,7 @@ class MainWindow(Adw.ApplicationWindow):
         self.about_dialog = Adw.AboutWindow(
             application_name=_("Pardus Parental Control"),
             application_icon="pardus-parental-control",
-            version="0.5.0",
+            version=Version.VERSION,
             website="https://github.com/pardus/pardus-parental-control",
             copyright="© TÜBİTAK BİLGEM",
             comments=_(
