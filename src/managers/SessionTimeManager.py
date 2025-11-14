@@ -33,7 +33,7 @@ def get_all_user_sessions(username):
 
                 sessions.append([date, int(minutes_elapsed)])
     else:
-        print(f"{user_session} doesn't exist!")
+        print(f"{user_session} doesn't exist! Couldn't get user session logs.")
 
     return sessions
 
@@ -68,7 +68,7 @@ def get_weekly_session_usage_minutes(username):
             and time_diff.days <= 6
             and time_diff.days >= 0
         ):
-            print("This session added to elapsed mins:", s[0], s[1])
+            # print("This session added to elapsed mins:", s[0], s[1])
             elapsed_mins += s[1]
 
     return elapsed_mins

@@ -277,9 +277,7 @@ class PreferencesManager:
                     sort_keys=True,
                 )
         except PermissionError:
-            print(
-                "Not enough permissions to create the file:",
-            )
+            print("Not enough permissions to create the file:", filepath)
             return
 
     def load_json_from_file(self, filepath=PREFERENCES_PATH):
