@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Pardus Parental Control\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-21 15:05+0300\n"
+"POT-Creation-Date: 2025-12-08 11:10+0300\n"
 "PO-Revision-Date: 2025-07-12 17:43+0100\n"
 "Last-Translator: Hugo Carvalho <hugokarvalho@hotmail.com>\n"
 "Language-Team: Portuguese\n"
@@ -18,61 +18,60 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 3.6\n"
 
-#: src/ui/MainWindow.py:61 src/ui/MainWindow.py:94
+#: src/ui/MainWindow.py:65 src/ui/MainWindow.py:104 src/NotificationApp.py:58
 msgid "Pardus Parental Control"
 msgstr "Controlo Parental Pardus"
 
-#: src/ui/MainWindow.py:67
+#: src/ui/MainWindow.py:71
 msgid ""
 "Restrict user access to internet and applications. Manage session times."
 msgstr ""
 "Restringir o acesso dos utilizadores à Internet e às aplicações. Gerir os "
 "tempos de sessão."
 
-#: src/ui/MainWindow.py:69
+#: src/ui/MainWindow.py:73
 msgid "Pardus Developers"
 msgstr "Programadores do Pardus"
 
-#: src/ui/MainWindow.py:72
+#: src/ui/MainWindow.py:76
 msgid "translator_credits"
 msgstr "Hugo Carvalho <hugokarvalho@hotmail.com>"
 
-#: src/ui/MainWindow.py:103
+#: src/ui/MainWindow.py:113
 msgid "Users"
 msgstr "Utilizadores"
 
-#: src/ui/MainWindow.py:145
+#: src/ui/MainWindow.py:143
 msgid "New User"
 msgstr "Novo utilizador"
 
-#: src/ui/MainWindow.py:190 src/ui/page/PageApplications.py:125
+#: src/ui/MainWindow.py:215 src/ui/page/PageApplications.py:125
 msgid "Applications"
 msgstr "Aplicações"
 
-#: src/ui/MainWindow.py:197 src/ui/page/PageWebsites.py:125
+#: src/ui/MainWindow.py:222 src/ui/page/PageWebsites.py:125
 msgid "Websites"
 msgstr "Websites"
 
-#: src/ui/MainWindow.py:205
+#: src/ui/MainWindow.py:230
 msgid "Session Time"
 msgstr "Tempo da sessão"
 
-#: src/NotificationApp.py:42 src/NotificationApp.py:92
+#: src/NotificationApp.py:43 src/NotificationApp.py:94
 msgid "Session will be closed in {} seconds."
 msgstr "A sessão será encerrada em {} segundos."
 
-#: src/NotificationApp.py:86
+#: src/NotificationApp.py:88
 msgid "Your session time is over."
 msgstr "O seu tempo de sessão terminou."
 
 #: src/ui/page/PageApplications.py:76 src/ui/page/PageApplications.py:163
-#: src/ui/page/PageSessionTime.py:65 src/ui/page/PageSessionTime.py:131
-#: src/ui/page/PageWebsites.py:75 src/ui/page/PageWebsites.py:173
+#: src/ui/page/PageSessionTime.py:72 src/ui/page/PageWebsites.py:75
+#: src/ui/page/PageWebsites.py:173
 msgid "Active"
 msgstr "Activo"
 
 #: src/ui/page/PageApplications.py:76 src/ui/page/PageApplications.py:163
-#: src/ui/page/PageSessionTime.py:65 src/ui/page/PageSessionTime.py:131
 #: src/ui/page/PageWebsites.py:75 src/ui/page/PageWebsites.py:173
 msgid "Activate"
 msgstr "Ativar"
@@ -113,26 +112,57 @@ msgstr ""
 msgid "Select a user to start"
 msgstr "Selecionar um utilizador para iniciar"
 
-#: src/ui/page/PageSessionTime.py:58
-msgid "Weekends"
-msgstr "Fins de semana"
+#: src/ui/page/PageSessionTime.py:54
+#, fuzzy
+msgid "Limit Session Time"
+msgstr "Tempo da sessão"
 
-#: src/ui/page/PageSessionTime.py:58
-msgid "Weekdays"
-msgstr "Dias da semana"
-
-#: src/ui/page/PageSessionTime.py:59
-msgid "Select the time range of the computer can be used on {}."
+#: src/ui/page/PageSessionTime.py:56
+msgid ""
+"Set start-end hours of a session.\n"
+"Limit maximum hours to use PC between start and end hours."
 msgstr ""
-"Selecionar o intervalo de tempo em que o computador pode ser utilizado em {}."
 
-#: src/ui/page/PageSessionTime.py:97
-msgid "Start Time"
+#: src/ui/page/PageSessionTime.py:65
+#, fuzzy
+msgid "Start"
 msgstr "Hora de início"
 
-#: src/ui/page/PageSessionTime.py:106
-msgid "End Time"
-msgstr "Hora do final"
+#: src/ui/page/PageSessionTime.py:66
+msgid "End"
+msgstr ""
+
+#: src/ui/page/PageSessionTime.py:67
+msgid "Usage Limit"
+msgstr ""
+
+#: src/ui/page/PageSessionTime.py:80
+msgid "Monday"
+msgstr ""
+
+#: src/ui/page/PageSessionTime.py:81
+msgid "Tuesday"
+msgstr ""
+
+#: src/ui/page/PageSessionTime.py:82
+msgid "Wednesday"
+msgstr ""
+
+#: src/ui/page/PageSessionTime.py:83
+msgid "Thursday"
+msgstr ""
+
+#: src/ui/page/PageSessionTime.py:84
+msgid "Friday"
+msgstr ""
+
+#: src/ui/page/PageSessionTime.py:85
+msgid "Saturday"
+msgstr ""
+
+#: src/ui/page/PageSessionTime.py:86
+msgid "Sunday"
+msgstr ""
 
 #: src/ui/page/PageWebsites.py:95
 msgid "Change the type of filtering for websites"
@@ -162,6 +192,36 @@ msgstr "Selecionar aplicação..."
 #: src/ui/widget/DialogAppChooser.py:31
 msgid "Loading..."
 msgstr "A carregar..."
+
+#: src/ui/widget/PSessionHistory.py:22
+msgid "Today"
+msgstr ""
+
+#: src/ui/widget/PSessionHistory.py:25
+msgid "This Week"
+msgstr ""
+
+#: src/ui/widget/PSessionHistory.py:45 src/ui/widget/PSessionHistory.py:53
+msgid "{} Hours {} Minutes"
+msgstr ""
+
+#: src/ui/widget/PSessionHistory.py:47 src/ui/widget/PSessionHistory.py:55
+msgid "{} Minutes"
+msgstr ""
+
+#~ msgid "Weekends"
+#~ msgstr "Fins de semana"
+
+#~ msgid "Weekdays"
+#~ msgstr "Dias da semana"
+
+#~ msgid "Select the time range of the computer can be used on {}."
+#~ msgstr ""
+#~ "Selecionar o intervalo de tempo em que o computador pode ser utilizado em "
+#~ "{}."
+
+#~ msgid "End Time"
+#~ msgstr "Hora do final"
 
 #~ msgid "Select the start time of user can use the computer."
 #~ msgstr ""

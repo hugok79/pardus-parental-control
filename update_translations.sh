@@ -11,7 +11,7 @@ fi
 
 
 echo "updating pot file"
-xgettext -o po/pardus-parental-control.pot --files-from=po/files
+xgettext -o po/pardus-parental-control.pot --files-from=po/POTFILES
 
 for lang in ${langs[@]}; do
 	if [[ -f po/$lang.po ]]; then

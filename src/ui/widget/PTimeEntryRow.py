@@ -4,8 +4,6 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Gtk, Adw, GObject  # noqa
 
-from locale import gettext as _  # noqa
-
 from ui.widget.PTimeEntry import PTimeEntry  # noqa
 
 

@@ -4,9 +4,6 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Gtk, Adw  # noqa
 
-import locale  # noqa
-from locale import gettext as _  # noqa
-
 
 class PTimeChooserRow(Adw.PreferencesRow):
     def __init__(self, on_time_changed_callback, minutes, user_data):

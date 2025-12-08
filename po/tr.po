@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pardus-parental-control\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-21 15:05+0300\n"
+"POT-Creation-Date: 2025-12-08 11:10+0300\n"
 "PO-Revision-Date: 2025-01-16 10:41+0300\n"
 "Last-Translator: Emin Fedar <emin.fedar@pardus.org.tr>\n"
 "Language-Team: Turkish <dev@pardus.org.tr>\n"
@@ -16,61 +16,60 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0\n"
 "X-Generator: Gtranslator 42.0\n"
 
-#: src/ui/MainWindow.py:61 src/ui/MainWindow.py:94
+#: src/ui/MainWindow.py:65 src/ui/MainWindow.py:104 src/NotificationApp.py:58
 msgid "Pardus Parental Control"
 msgstr "Pardus Ebeveyn Denetimi"
 
-#: src/ui/MainWindow.py:67
+#: src/ui/MainWindow.py:71
 msgid ""
 "Restrict user access to internet and applications. Manage session times."
 msgstr ""
 "Kullanıcıların internet ve uygulamalara erişimini sınırlayın. Oturum "
 "sürelerini yönetin."
 
-#: src/ui/MainWindow.py:69
+#: src/ui/MainWindow.py:73
 msgid "Pardus Developers"
 msgstr "Pardus Geliştiricileri"
 
-#: src/ui/MainWindow.py:72
+#: src/ui/MainWindow.py:76
 msgid "translator_credits"
 msgstr "Emin Fedar"
 
-#: src/ui/MainWindow.py:103
+#: src/ui/MainWindow.py:113
 msgid "Users"
 msgstr "Kullanıcılar"
 
-#: src/ui/MainWindow.py:145
+#: src/ui/MainWindow.py:143
 msgid "New User"
 msgstr "Yeni Kullanıcı"
 
-#: src/ui/MainWindow.py:190 src/ui/page/PageApplications.py:125
+#: src/ui/MainWindow.py:215 src/ui/page/PageApplications.py:125
 msgid "Applications"
 msgstr "Uygulamalar"
 
-#: src/ui/MainWindow.py:197 src/ui/page/PageWebsites.py:125
+#: src/ui/MainWindow.py:222 src/ui/page/PageWebsites.py:125
 msgid "Websites"
 msgstr "İnternet Siteleri"
 
-#: src/ui/MainWindow.py:205
+#: src/ui/MainWindow.py:230
 msgid "Session Time"
 msgstr "Oturum Süresi"
 
-#: src/NotificationApp.py:42 src/NotificationApp.py:92
+#: src/NotificationApp.py:43 src/NotificationApp.py:94
 msgid "Session will be closed in {} seconds."
 msgstr "Oturum {} saniye içerisinde kapatılacaktır."
 
-#: src/NotificationApp.py:86
+#: src/NotificationApp.py:88
 msgid "Your session time is over."
 msgstr "Oturum süreniz doldu."
 
 #: src/ui/page/PageApplications.py:76 src/ui/page/PageApplications.py:163
-#: src/ui/page/PageSessionTime.py:65 src/ui/page/PageSessionTime.py:131
-#: src/ui/page/PageWebsites.py:75 src/ui/page/PageWebsites.py:173
+#: src/ui/page/PageSessionTime.py:72 src/ui/page/PageWebsites.py:75
+#: src/ui/page/PageWebsites.py:173
 msgid "Active"
 msgstr "Aktif"
 
 #: src/ui/page/PageApplications.py:76 src/ui/page/PageApplications.py:163
-#: src/ui/page/PageSessionTime.py:65 src/ui/page/PageSessionTime.py:131
 #: src/ui/page/PageWebsites.py:75 src/ui/page/PageWebsites.py:173
 msgid "Activate"
 msgstr "Aktifleştir"
@@ -107,25 +106,57 @@ msgstr "Kullanıcıların açabileceği veya açamayacağı uygulamaları seçin
 msgid "Select a user to start"
 msgstr "Başlamak için bir kullanıcı seçin"
 
-#: src/ui/page/PageSessionTime.py:58
-msgid "Weekends"
-msgstr "Hafta Sonları"
+#: src/ui/page/PageSessionTime.py:54
+msgid "Limit Session Time"
+msgstr "Oturum Süresi Sınırlama"
 
-#: src/ui/page/PageSessionTime.py:58
-msgid "Weekdays"
-msgstr "Hafta İçleri"
+#: src/ui/page/PageSessionTime.py:56
+msgid ""
+"Set start-end hours of a session.\n"
+"Limit maximum hours to use PC between start and end hours."
+msgstr ""
+"Oturumun başlangıç-bitiş saatlerini ayarlayın.\n"
+"Başlangıç ve bitiş saatleri arasında kullanım süresini limitleyebilirsiniz."
 
-#: src/ui/page/PageSessionTime.py:59
-msgid "Select the time range of the computer can be used on {}."
-msgstr "{} bilgisayarın kullanılabileceği zaman aralığını seçin."
+#: src/ui/page/PageSessionTime.py:65
+msgid "Start"
+msgstr "Başlangıç"
 
-#: src/ui/page/PageSessionTime.py:97
-msgid "Start Time"
-msgstr "Başlangıç Zamanı"
+#: src/ui/page/PageSessionTime.py:66
+msgid "End"
+msgstr "Bitiş"
 
-#: src/ui/page/PageSessionTime.py:106
-msgid "End Time"
-msgstr "Bitiş Zamanı"
+#: src/ui/page/PageSessionTime.py:67
+msgid "Usage Limit"
+msgstr "Kullanım Limiti"
+
+#: src/ui/page/PageSessionTime.py:80
+msgid "Monday"
+msgstr "Pazartesi"
+
+#: src/ui/page/PageSessionTime.py:81
+msgid "Tuesday"
+msgstr "Salı"
+
+#: src/ui/page/PageSessionTime.py:82
+msgid "Wednesday"
+msgstr "Çarşamba"
+
+#: src/ui/page/PageSessionTime.py:83
+msgid "Thursday"
+msgstr "Perşembe"
+
+#: src/ui/page/PageSessionTime.py:84
+msgid "Friday"
+msgstr "Cuma"
+
+#: src/ui/page/PageSessionTime.py:85
+msgid "Saturday"
+msgstr "Cumartesi"
+
+#: src/ui/page/PageSessionTime.py:86
+msgid "Sunday"
+msgstr "Pazar"
 
 #: src/ui/page/PageWebsites.py:95
 msgid "Change the type of filtering for websites"
@@ -154,3 +185,19 @@ msgstr "Uygulama Seçiniz..."
 #: src/ui/widget/DialogAppChooser.py:31
 msgid "Loading..."
 msgstr "Yükleniyor..."
+
+#: src/ui/widget/PSessionHistory.py:22
+msgid "Today"
+msgstr "Bugün"
+
+#: src/ui/widget/PSessionHistory.py:25
+msgid "This Week"
+msgstr "Bu Hafta"
+
+#: src/ui/widget/PSessionHistory.py:45 src/ui/widget/PSessionHistory.py:53
+msgid "{} Hours {} Minutes"
+msgstr "{} Saat {} Dakika"
+
+#: src/ui/widget/PSessionHistory.py:47 src/ui/widget/PSessionHistory.py:55
+msgid "{} Minutes"
+msgstr "{} Dakika"
