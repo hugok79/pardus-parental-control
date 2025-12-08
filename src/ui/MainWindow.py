@@ -320,3 +320,8 @@ class MainWindow(Adw.ApplicationWindow):
                 argv=["users-admin"],
                 flags=GLib.SpawnFlags.SEARCH_PATH,
             )
+        elif current_de == "KDE":
+            GLib.spawn_async(
+                argv=["systemsettings", "kcm_users"],
+                flags=GLib.SpawnFlags.SEARCH_PATH,
+            )
