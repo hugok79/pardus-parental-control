@@ -1,4 +1,13 @@
-pardus-parental-control (0.5.1) UNRELEASED; urgency=medium
+pardus-parental-control (0.5.2) yirmiuc; urgency=medium
+
+  * fix: app icon
+  * fix: updated translations
+  * feat: KDE users settings support
+  * fix: translations
+
+ -- Emin Fedar <emin.fedar@pardus.org.tr>  Mon, 08 Dec 2025 11:35:21 +0300
+
+pardus-parental-control (0.5.1) yirmiuc; urgency=medium
 
   * fix: rename update_translations
   * fix: updated smartdns with tls support and subdomain errors
