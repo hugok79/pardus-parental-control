@@ -115,8 +115,8 @@ msgid ""
 "Set start-end hours of a session.\n"
 "Limit maximum hours to use PC between start and end hours."
 msgstr ""
-"Oturumun başlangıç-bitiş saatlerini ayarlayın.\n"
-"Başlangıç ve bitiş saatleri arasında kullanım süresini limitleyebilirsiniz."
+"Bilgisayarın kullanılabileceği saat aralığını Başlangıç-Bitiş değerleriyle ayarlayabilirsiniz.\n"
+"Başlangıç-Bitiş aralığında bilgisayarın azami açık kalabileceği süreyi Kullanım Limiti ile sınırlayabilirsiniz."
 
 #: src/ui/page/PageSessionTime.py:65
 msgid "Start"
