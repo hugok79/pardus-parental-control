@@ -1,3 +1,9 @@
+pardus-parental-control (0.6.0) yirmiuc; urgency=medium
+
+  * feat!: separated dns server from user preferences
+
+ -- Emin Fedar <emin.fedar@pardus.org.tr>  Tue, 02 Jun 2026 14:31:57 +0300
+
 pardus-parental-control (0.5.2) yirmiuc; urgency=medium
 
   * fix: app icon
@@ -172,7 +178,7 @@ pardus-parental-control (0.2.0) yirmiuc; urgency=medium
 pardus-parental-control (0.1.0) yirmiuc; urgency=medium
 
   [ Emin Fedar ]
-  * 
+  *
   * Initial commit
   * init: initialize the project
   * feat: added NetworkManager.py to manage smartdns
