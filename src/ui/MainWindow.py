@@ -1,20 +1,21 @@
-import managers.PreferencesManager as PreferencesManager
+import os
+
+import gi
+
 import managers.LinuxUserManager as LinuxUserManager
 import managers.OSManager as OSManager
-
+import managers.PreferencesManager as PreferencesManager
 import Version
-
-# Widgets
-from ui.widget.ListRowAvatar import ListRowAvatar
 
 # Pages
 from ui.page.PageApplications import PageApplications
-from ui.page.PageWebsites import PageWebsites
-from ui.page.PageSessionTime import PageSessionTime
 from ui.page.PageEmpty import PageEmpty
+from ui.page.PageSessionTime import PageSessionTime
+from ui.page.PageWebsites import PageWebsites
+from ui.widget.ListRowAvatar import ListRowAvatar
 
-import os
-import gi
+# Widgets
+from ui.widget.SystemPreferencesDialog import SystemPreferencesDialog
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
@@ -117,6 +118,15 @@ class MainWindow(Adw.ApplicationWindow):
         btn_about_dialog = Gtk.Button.new_from_icon_name("help-about-symbolic")
         btn_about_dialog.connect("clicked", self.on_btn_about_dialog_clicked)
         side_headerbar.pack_start(btn_about_dialog)
+
+        btn_system_preferences_dialog = Gtk.Button.new_from_icon_name(
+            "open-menu-symbolic"
+        )
+        btn_system_preferences_dialog.connect(
+            "clicked", self.on_btn_system_preferences_dialog_clicked
+        )
+        side_headerbar.pack_end(btn_system_preferences_dialog)
+
         box.append(side_headerbar)
 
         # Scrolled Sidebar Window
@@ -237,8 +247,14 @@ class MainWindow(Adw.ApplicationWindow):
     def setup_ui(self):
         self.leaflet = Adw.Leaflet.new()
 
+        # System Preferences Dialog
+        self.system_preferences_dialog = SystemPreferencesDialog()
+        self.system_preferences_dialog.set_transient_for(self)
+
         # Open Sidebar Button
-        self.btn_open_sidebar = Gtk.Button.new_from_icon_name("open-menu-symbolic")
+        self.btn_open_sidebar = Gtk.Button.new_from_icon_name(
+            "view-sidebar-start-symbolic"
+        )
         self.btn_open_sidebar.connect("clicked", self.on_btn_open_sidebar_clicked)
         self.leaflet.bind_property(
             "folded", self.btn_open_sidebar, "visible", GObject.BindingFlags.SYNC_CREATE
@@ -325,3 +341,6 @@ class MainWindow(Adw.ApplicationWindow):
                 argv=["systemsettings", "kcm_users"],
                 flags=GLib.SpawnFlags.SEARCH_PATH,
             )
+
+    def on_btn_system_preferences_dialog_clicked(self, _btn):
+        self.system_preferences_dialog.present()

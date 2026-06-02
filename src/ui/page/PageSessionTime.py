@@ -19,6 +19,7 @@ class PageSessionTime(Adw.PreferencesPage):
         self.username = None
         self.preferences = None
         self.group = None
+        self.group_history = None
 
     def set_username(self, username):
         if username is None:
@@ -28,6 +29,8 @@ class PageSessionTime(Adw.PreferencesPage):
         self.username = username
 
         # Remove UI
+        if self.group_history:
+            self.remove(self.group_history)
         if self.group:
             self.remove(self.group)
 
@@ -35,10 +38,10 @@ class PageSessionTime(Adw.PreferencesPage):
         self.setup_ui()
 
     def setup_ui(self):
-        group_session_history = Adw.PreferencesGroup(
+        self.group_history = Adw.PreferencesGroup(
             # title=_("Session History"),
         )
-        group_session_history.add(
+        self.group_history.add(
             PSessionHistory(
                 today_minutes=SessionTimeManager.get_today_session_usage_minutes(
                     self.username
@@ -48,7 +51,7 @@ class PageSessionTime(Adw.PreferencesPage):
                 ),
             )
         )
-        self.add(group_session_history)
+        self.add(self.group_history)
 
         self.group = Adw.PreferencesGroup(
             title=_("Limit Session Time"),
