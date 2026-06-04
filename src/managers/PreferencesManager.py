@@ -1,7 +1,7 @@
-import os
-import json
-from pathlib import Path
 import copy
+import json
+import os
+from pathlib import Path
 
 CONFIG_DIR = Path("/var/lib/pardus/pardus-parental-control/")
 PREFERENCES_PATH = os.path.join(CONFIG_DIR, "preferences.json")
@@ -28,7 +28,6 @@ _DEFAULT_USER_PREFERENCES = {
 
 _DEFAULT_PREFERENCES = {
     "user_list": {},
-    "base_dns_servers": ["1.1.1.3", "1.0.0.3"],
 }
 
 
@@ -213,19 +212,12 @@ class PreferencesManager:
     def has_user(self, name):
         return name in self.user_list
 
-    def get_base_dns_servers(self):
-        return self.base_dns_servers
-
     # Setters
     def set_user_list(self, value):
         if isinstance(value, dict):
             self.user_list = value
 
         self.save()
-
-    def set_base_dns_servers(self, value):
-        if isinstance(value, list):
-            self.set_base_dns_servers = value
 
     # Insert
     def insert_new_user(self, name):

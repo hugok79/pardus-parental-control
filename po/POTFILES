@@ -8,3 +8,4 @@ src/ui/page/PageWebsites.py
 src/ui/widget/DialogAppChooser.py
 src/ui/widget/PTimeEntry.py
 src/ui/widget/PTimeEntryRow.py
+src/ui/widget/PSessionHistory.py

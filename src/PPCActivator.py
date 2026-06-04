@@ -1,20 +1,21 @@
 #!/usr/bin/python3
 
-import sys
 import datetime
 import logging
-import subprocess
 import os
-
-import managers.FileRestrictionManager as FileRestrictionManager
-import managers.LinuxUserManager as LinuxUserManager
-import managers.PreferencesManager as PreferencesManager
-import managers.NetworkFilterManager as NetworkFilterManager
-import managers.ApplicationManager as ApplicationManager
-import managers.SessionTimeManager as SessionTimeManager
-import managers.OSManager as OSManager
+import subprocess
+import sys
 
 import gi
+
+import managers.ApplicationManager as ApplicationManager
+import managers.FileRestrictionManager as FileRestrictionManager
+import managers.LinuxUserManager as LinuxUserManager
+import managers.NetworkFilterManager as NetworkFilterManager
+import managers.OSManager as OSManager
+import managers.PreferencesManager as PreferencesManager
+import managers.SessionTimeManager as SessionTimeManager
+import managers.SystemPreferencesManager as SystemPreferencesManager
 
 gi.require_version("Gtk", "4.0")
 from gi.repository import Gio, Gtk, GLib  # noqa
@@ -51,6 +52,7 @@ class PPCActivator(Gtk.Application):
     def init_variables(self):
         self.preferences = None
         self.preferences_manager = PreferencesManager.get_default()
+        self.system_preferences_manager = SystemPreferencesManager.get_default()
         self.session_time_started = None
 
     def do_activate(self):
@@ -225,7 +227,7 @@ class PPCActivator(Gtk.Application):
         NetworkFilterManager.apply_domain_filter_list(
             pref.get_website().get_list(),
             is_allowlist,
-            self.preferences_manager.get_base_dns_servers(),
+            self.system_preferences_manager.get_base_dns_servers(),
         )
 
     def clear_website_filter(self):
