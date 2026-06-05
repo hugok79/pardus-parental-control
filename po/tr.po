@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pardus-parental-control\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-08 11:10+0300\n"
+"POT-Creation-Date: 2026-06-05 11:38+0300\n"
 "PO-Revision-Date: 2025-01-16 10:41+0300\n"
 "Last-Translator: Emin Fedar <emin.fedar@pardus.org.tr>\n"
 "Language-Team: Turkish <dev@pardus.org.tr>\n"
@@ -16,42 +16,42 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0\n"
 "X-Generator: Gtranslator 42.0\n"
 
-#: src/ui/MainWindow.py:65 src/ui/MainWindow.py:104 src/NotificationApp.py:58
+#: src/ui/MainWindow.py:66 src/ui/MainWindow.py:105 src/NotificationApp.py:58
 msgid "Pardus Parental Control"
 msgstr "Pardus Ebeveyn Denetimi"
 
-#: src/ui/MainWindow.py:71
+#: src/ui/MainWindow.py:72
 msgid ""
 "Restrict user access to internet and applications. Manage session times."
 msgstr ""
 "Kullanıcıların internet ve uygulamalara erişimini sınırlayın. Oturum "
 "sürelerini yönetin."
 
-#: src/ui/MainWindow.py:73
+#: src/ui/MainWindow.py:74
 msgid "Pardus Developers"
 msgstr "Pardus Geliştiricileri"
 
-#: src/ui/MainWindow.py:76
+#: src/ui/MainWindow.py:77
 msgid "translator_credits"
 msgstr "Emin Fedar"
 
-#: src/ui/MainWindow.py:113
+#: src/ui/MainWindow.py:114
 msgid "Users"
 msgstr "Kullanıcılar"
 
-#: src/ui/MainWindow.py:143
+#: src/ui/MainWindow.py:153
 msgid "New User"
 msgstr "Yeni Kullanıcı"
 
-#: src/ui/MainWindow.py:215 src/ui/page/PageApplications.py:125
+#: src/ui/MainWindow.py:225 src/ui/page/PageApplications.py:125
 msgid "Applications"
 msgstr "Uygulamalar"
 
-#: src/ui/MainWindow.py:222 src/ui/page/PageWebsites.py:125
+#: src/ui/MainWindow.py:232 src/ui/page/PageWebsites.py:125
 msgid "Websites"
 msgstr "İnternet Siteleri"
 
-#: src/ui/MainWindow.py:230
+#: src/ui/MainWindow.py:240
 msgid "Session Time"
 msgstr "Oturum Süresi"
 
@@ -64,7 +64,7 @@ msgid "Your session time is over."
 msgstr "Oturum süreniz doldu."
 
 #: src/ui/page/PageApplications.py:76 src/ui/page/PageApplications.py:163
-#: src/ui/page/PageSessionTime.py:72 src/ui/page/PageWebsites.py:75
+#: src/ui/page/PageSessionTime.py:75 src/ui/page/PageWebsites.py:75
 #: src/ui/page/PageWebsites.py:173
 msgid "Active"
 msgstr "Aktif"
@@ -106,55 +106,57 @@ msgstr "Kullanıcıların açabileceği veya açamayacağı uygulamaları seçin
 msgid "Select a user to start"
 msgstr "Başlamak için bir kullanıcı seçin"
 
-#: src/ui/page/PageSessionTime.py:54
+#: src/ui/page/PageSessionTime.py:57
 msgid "Limit Session Time"
 msgstr "Oturum Süresi Sınırlama"
 
-#: src/ui/page/PageSessionTime.py:56
+#: src/ui/page/PageSessionTime.py:59
 msgid ""
 "Set start-end hours of a session.\n"
 "Limit maximum hours to use PC between start and end hours."
 msgstr ""
-"Bilgisayarın kullanılabileceği saat aralığını Başlangıç-Bitiş değerleriyle ayarlayabilirsiniz.\n"
-"Başlangıç-Bitiş aralığında bilgisayarın azami açık kalabileceği süreyi Kullanım Limiti ile sınırlayabilirsiniz."
+"Bilgisayarın kullanılabileceği saat aralığını Başlangıç-Bitiş değerleriyle "
+"ayarlayabilirsiniz.\n"
+"Başlangıç-Bitiş aralığında bilgisayarın azami açık kalabileceği süreyi "
+"Kullanım Limiti ile sınırlayabilirsiniz."
 
-#: src/ui/page/PageSessionTime.py:65
+#: src/ui/page/PageSessionTime.py:68
 msgid "Start"
 msgstr "Başlangıç"
 
-#: src/ui/page/PageSessionTime.py:66
+#: src/ui/page/PageSessionTime.py:69
 msgid "End"
 msgstr "Bitiş"
 
-#: src/ui/page/PageSessionTime.py:67
+#: src/ui/page/PageSessionTime.py:70
 msgid "Usage Limit"
 msgstr "Kullanım Limiti"
 
-#: src/ui/page/PageSessionTime.py:80
+#: src/ui/page/PageSessionTime.py:83
 msgid "Monday"
 msgstr "Pazartesi"
 
-#: src/ui/page/PageSessionTime.py:81
+#: src/ui/page/PageSessionTime.py:84
 msgid "Tuesday"
 msgstr "Salı"
 
-#: src/ui/page/PageSessionTime.py:82
+#: src/ui/page/PageSessionTime.py:85
 msgid "Wednesday"
 msgstr "Çarşamba"
 
-#: src/ui/page/PageSessionTime.py:83
+#: src/ui/page/PageSessionTime.py:86
 msgid "Thursday"
 msgstr "Perşembe"
 
-#: src/ui/page/PageSessionTime.py:84
+#: src/ui/page/PageSessionTime.py:87
 msgid "Friday"
 msgstr "Cuma"
 
-#: src/ui/page/PageSessionTime.py:85
+#: src/ui/page/PageSessionTime.py:88
 msgid "Saturday"
 msgstr "Cumartesi"
 
-#: src/ui/page/PageSessionTime.py:86
+#: src/ui/page/PageSessionTime.py:89
 msgid "Sunday"
 msgstr "Pazar"
 
@@ -201,3 +203,15 @@ msgstr "{} Saat {} Dakika"
 #: src/ui/widget/PSessionHistory.py:47 src/ui/widget/PSessionHistory.py:55
 msgid "{} Minutes"
 msgstr "{} Dakika"
+
+#: src/ui/widget/SystemPreferencesDialog.py:28
+msgid "System Preferences"
+msgstr "Sistem Tercihleri"
+
+#: src/ui/widget/SystemPreferencesDialog.py:33
+msgid "DNS Servers (default: \"1.1.1.1, 1.0.0.1\")"
+msgstr "DNS Sunucuları (varsayılan: \"1.1.1.1, 1.0.0.1\")"
+
+#: src/ui/widget/SystemPreferencesDialog.py:38
+msgid "DNS Servers:"
+msgstr "DNS Sunucuları:"

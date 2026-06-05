@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Pardus Parental Control\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-08 11:10+0300\n"
+"POT-Creation-Date: 2026-06-05 11:38+0300\n"
 "PO-Revision-Date: 2025-07-12 17:43+0100\n"
 "Last-Translator: Hugo Carvalho <hugokarvalho@hotmail.com>\n"
 "Language-Team: Portuguese\n"
@@ -18,42 +18,42 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 3.6\n"
 
-#: src/ui/MainWindow.py:65 src/ui/MainWindow.py:104 src/NotificationApp.py:58
+#: src/ui/MainWindow.py:66 src/ui/MainWindow.py:105 src/NotificationApp.py:58
 msgid "Pardus Parental Control"
 msgstr "Controlo Parental Pardus"
 
-#: src/ui/MainWindow.py:71
+#: src/ui/MainWindow.py:72
 msgid ""
 "Restrict user access to internet and applications. Manage session times."
 msgstr ""
 "Restringir o acesso dos utilizadores à Internet e às aplicações. Gerir os "
 "tempos de sessão."
 
-#: src/ui/MainWindow.py:73
+#: src/ui/MainWindow.py:74
 msgid "Pardus Developers"
 msgstr "Programadores do Pardus"
 
-#: src/ui/MainWindow.py:76
+#: src/ui/MainWindow.py:77
 msgid "translator_credits"
 msgstr "Hugo Carvalho <hugokarvalho@hotmail.com>"
 
-#: src/ui/MainWindow.py:113
+#: src/ui/MainWindow.py:114
 msgid "Users"
 msgstr "Utilizadores"
 
-#: src/ui/MainWindow.py:143
+#: src/ui/MainWindow.py:153
 msgid "New User"
 msgstr "Novo utilizador"
 
-#: src/ui/MainWindow.py:215 src/ui/page/PageApplications.py:125
+#: src/ui/MainWindow.py:225 src/ui/page/PageApplications.py:125
 msgid "Applications"
 msgstr "Aplicações"
 
-#: src/ui/MainWindow.py:222 src/ui/page/PageWebsites.py:125
+#: src/ui/MainWindow.py:232 src/ui/page/PageWebsites.py:125
 msgid "Websites"
 msgstr "Websites"
 
-#: src/ui/MainWindow.py:230
+#: src/ui/MainWindow.py:240
 msgid "Session Time"
 msgstr "Tempo da sessão"
 
@@ -66,7 +66,7 @@ msgid "Your session time is over."
 msgstr "O seu tempo de sessão terminou."
 
 #: src/ui/page/PageApplications.py:76 src/ui/page/PageApplications.py:163
-#: src/ui/page/PageSessionTime.py:72 src/ui/page/PageWebsites.py:75
+#: src/ui/page/PageSessionTime.py:75 src/ui/page/PageWebsites.py:75
 #: src/ui/page/PageWebsites.py:173
 msgid "Active"
 msgstr "Activo"
@@ -112,55 +112,55 @@ msgstr ""
 msgid "Select a user to start"
 msgstr "Selecionar um utilizador para iniciar"
 
-#: src/ui/page/PageSessionTime.py:54
+#: src/ui/page/PageSessionTime.py:57
 #, fuzzy
 msgid "Limit Session Time"
 msgstr "Tempo da sessão"
 
-#: src/ui/page/PageSessionTime.py:56
+#: src/ui/page/PageSessionTime.py:59
 msgid ""
 "Set start-end hours of a session.\n"
 "Limit maximum hours to use PC between start and end hours."
 msgstr ""
 
-#: src/ui/page/PageSessionTime.py:65
+#: src/ui/page/PageSessionTime.py:68
 #, fuzzy
 msgid "Start"
 msgstr "Hora de início"
 
-#: src/ui/page/PageSessionTime.py:66
+#: src/ui/page/PageSessionTime.py:69
 msgid "End"
 msgstr ""
 
-#: src/ui/page/PageSessionTime.py:67
+#: src/ui/page/PageSessionTime.py:70
 msgid "Usage Limit"
 msgstr ""
 
-#: src/ui/page/PageSessionTime.py:80
+#: src/ui/page/PageSessionTime.py:83
 msgid "Monday"
 msgstr ""
 
-#: src/ui/page/PageSessionTime.py:81
+#: src/ui/page/PageSessionTime.py:84
 msgid "Tuesday"
 msgstr ""
 
-#: src/ui/page/PageSessionTime.py:82
+#: src/ui/page/PageSessionTime.py:85
 msgid "Wednesday"
 msgstr ""
 
-#: src/ui/page/PageSessionTime.py:83
+#: src/ui/page/PageSessionTime.py:86
 msgid "Thursday"
 msgstr ""
 
-#: src/ui/page/PageSessionTime.py:84
+#: src/ui/page/PageSessionTime.py:87
 msgid "Friday"
 msgstr ""
 
-#: src/ui/page/PageSessionTime.py:85
+#: src/ui/page/PageSessionTime.py:88
 msgid "Saturday"
 msgstr ""
 
-#: src/ui/page/PageSessionTime.py:86
+#: src/ui/page/PageSessionTime.py:89
 msgid "Sunday"
 msgstr ""
 
@@ -207,6 +207,18 @@ msgstr ""
 
 #: src/ui/widget/PSessionHistory.py:47 src/ui/widget/PSessionHistory.py:55
 msgid "{} Minutes"
+msgstr ""
+
+#: src/ui/widget/SystemPreferencesDialog.py:28
+msgid "System Preferences"
+msgstr ""
+
+#: src/ui/widget/SystemPreferencesDialog.py:33
+msgid "DNS Servers (default: \"1.1.1.1, 1.0.0.1\")"
+msgstr ""
+
+#: src/ui/widget/SystemPreferencesDialog.py:38
+msgid "DNS Servers:"
 msgstr ""
 
 #~ msgid "Weekends"
