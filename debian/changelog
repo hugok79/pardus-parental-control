@@ -1,3 +1,9 @@
+pardus-parental-control (0.6.1) yirmiuc; urgency=medium
+
+  * fix: translations
+
+ -- Emin Fedar <emin.fedar@pardus.org.tr>  Fri, 05 Jun 2026 11:40:47 +0300
+
 pardus-parental-control (0.6.0) yirmiuc; urgency=medium
 
   * feat!: separated dns server from user preferences
