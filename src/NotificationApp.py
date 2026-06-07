@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 import sys
+
 import gi
-import time
-import subprocess
+
 import managers.LinuxUserManager as LinuxUserManager
 
 gi.require_version("Gtk", "4.0")
@@ -25,7 +25,7 @@ locale.textdomain(APPNAME)
 class NotificationApp(Adw.Application):
     def __init__(self, argv):
         super().__init__(
-            application_id="tr.org.pardus.parental-control.notificationapp",
+            application_id=None,
             flags=Gio.ApplicationFlags.NON_UNIQUE,
         )
 
@@ -44,8 +44,6 @@ class NotificationApp(Adw.Application):
         )
 
         if self.seconds_left == 0:
-            subprocess.Popen(["loginctl", "kill-user", self.logged_user_name])
-
             self.quit()
 
         return True

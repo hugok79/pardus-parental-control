@@ -6,7 +6,7 @@ import os
 import subprocess
 import sys
 
-import gi
+from gi.repository import Gio, GLib  # noqa
 
 import managers.ApplicationManager as ApplicationManager
 import managers.FileRestrictionManager as FileRestrictionManager
@@ -17,19 +17,22 @@ import managers.PreferencesManager as PreferencesManager
 import managers.SessionTimeManager as SessionTimeManager
 import managers.SystemPreferencesManager as SystemPreferencesManager
 
-gi.require_version("Gtk", "4.0")
-from gi.repository import Gio, Gtk, GLib  # noqa
-
-
 logging.basicConfig(
     filename="/var/log/pardus-parental-control.log",
     level=logging.DEBUG,
     format="(%(asctime)s) [%(levelname)s]: %(message)s",
 )
 
+CWD = os.path.dirname(os.path.abspath(__file__))
 
-class PPCActivator:
+
+class PPCActivator(Gio.Application):
     def __init__(self, argv):
+        super().__init__(
+            application_id=None,
+            flags=Gio.ApplicationFlags.NON_UNIQUE,
+        )
+
         # Privileged run check
         if not FileRestrictionManager.check_user_privileged():
             sys.stderr.write("You are not privileged to run this script.\n")
@@ -38,12 +41,11 @@ class PPCActivator:
         self.init_variables()
 
         # Get logged user id and username
-        if len(argv) == 3 and argv[1] != "--disable":
-            if argv[2] != "Debian-gdm":
-                self.logged_user_id = argv[1]
-                self.logged_user_name = argv[2]
+        if argv[1] != "--disable" and argv[2] != "Debian-gdm":
+            self.logged_user_id = argv[1]
+            self.logged_user_name = argv[2]
 
-                self.update_active_session_id()
+            self.update_active_session_id()
 
     def init_variables(self):
         self.preferences = None
@@ -51,7 +53,7 @@ class PPCActivator:
         self.system_preferences_manager = SystemPreferencesManager.get_default()
         self.session_time_started = None
 
-    def run(self):
+    def do_activate(self):
         self.log(f"=== PPCActivator Service Started ===")
 
         if self.logged_user_name:
@@ -91,23 +93,13 @@ class PPCActivator:
 
     def check_session_time(self):
         if self.is_session_time_ended():
-            cwd = os.path.dirname(os.path.abspath(__file__))
-
-            # Run non-root GUI app from root script requires these:
-            env = os.environ.copy()
-            # env["XDG_RUNTIME_DIR"] = f"/run/user/{self.logged_user_id}"
-            # env["DBUS_SESSION_BUS_ADDRESS"] = (
-            #     f"unix:path=/run/user/{self.logged_user_id}/bus"
-            # )
-            self.log(f"env:{env}")
             subprocess.Popen(
-                [f"{cwd}/NotificationApp.py", self.logged_user_name],
-                user=self.logged_user_name,
-                env=env,
+                [f"{CWD}/logout-user.sh", self.logged_user_name],
+                cwd="/",
+                stdout=None,
+                stderr=None,
             )
-
-            sys.exit(0)
-            return GLib.SOURCE_REMOVE
+            sys.exit(188)
 
         return GLib.SOURCE_CONTINUE
 
@@ -132,6 +124,7 @@ class PPCActivator:
                 self.session_time_started = GLib.timeout_add_seconds(
                     60, self.check_session_time
                 )
+
         elif self.session_time_started is not None:
             GLib.Source.remove(self.session_time_started)
             self.session_time_started = None
@@ -266,6 +259,7 @@ class PPCActivator:
                 self.logged_user_name
             )
             if limit == 0 or today_elapsed_minutes <= limit:
+                print("Session time not ended yet")
                 return False
 
         self.log("=== Time is up! Shutting down... ===")
@@ -312,6 +306,6 @@ class PPCActivator:
 
 
 if __name__ == "__main__":
-    activator = PPCActivator(sys.argv)
     if len(sys.argv) == 3:
+        activator = PPCActivator(sys.argv)
         activator.run()

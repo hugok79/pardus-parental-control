@@ -1,5 +1,6 @@
 [Unit]
 Description=Pardus Parental Control - Activator Service
+Requisite=graphical-session.target
 PartOf=graphical-session.target
 After=graphical-session.target
 
@@ -7,7 +8,8 @@ After=graphical-session.target
 Type=exec
 Restart=no
 Slice=app.slice
-ExecStart=/usr/bin/pkexec /usr/share/pardus/pardus-parental-control/src/PPCActivator.py %U %u
+ExitType=cgroup
+ExecStart=/usr/share/pardus/pardus-parental-control/src/launch-ppcservice.sh
 
 [Install]
 WantedBy=graphical-session.target
