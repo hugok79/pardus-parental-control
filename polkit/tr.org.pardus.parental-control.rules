@@ -1,0 +1,7 @@
+polkit.addRule(function(action, subject) {
+    if (subject.isInGroup("sudo")) {    
+        if (action.id == "tr.org.pardus.pkexec.parental-control-disable") {
+            return polkit.Result.YES;
+        }
+    }
+});

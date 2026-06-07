@@ -2,3 +2,7 @@
 
 %:
 	dh $@ --buildsystem=meson
+
+override_dh_installsystemduser:
+	dh_installsystemduser --name=ppc-session-logger
+	dh_installsystemduser --name=ppc-activator

@@ -1,14 +1,13 @@
 #!/bin/bash
 
-sleep 1
-
 USER_ID=$(id -u)
 
-/usr/bin/pkexec /usr/share/pardus/pardus-parental-control/src/session_logger.py $USER &
-/usr/bin/pkexec /usr/share/pardus/pardus-parental-control/src/PPCActivator.py $USER_ID $USER &
+if [[ "$USER" != "Debian-gdm" ]]; then
 
-sleep 2
+    /usr/bin/pkexec /usr/share/pardus/pardus-parental-control/src/session_logger.py "$USER" &
+
+    /usr/bin/pkexec /usr/share/pardus/pardus-parental-control/src/PPCActivator.py "$USER_ID" "$USER"
+
+fi
 
 exit 0
-
-

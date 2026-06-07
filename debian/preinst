@@ -22,10 +22,14 @@ case "$1" in
 
         chown -R :$PRIVILEGED_GROUP $PREFERENCES_DIR
         chmod -R 775 $PREFERENCES_DIR
+
+        # Remove old autostart residue (after v0.6.2)
+        rm /etc/xdg/autostart/tr.org.pardus.parental-control.apply.desktop || true
         ;;
 
     upgrade|abort-upgrade)
-        # do nothing on upgrade
+        # Remove old autostart residue (after v0.6.2)
+        rm /etc/xdg/autostart/tr.org.pardus.parental-control.apply.desktop || true
         ;;
 
     *)

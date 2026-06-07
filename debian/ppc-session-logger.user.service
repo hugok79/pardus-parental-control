@@ -1,0 +1,13 @@
+[Unit]
+Description=Pardus Parental Control - Session Logger Service
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+Type=exec
+Restart=no
+Slice=app.slice
+ExecStart=/usr/bin/pkexec /usr/share/pardus/pardus-parental-control/src/session_logger.py %u
+
+[Install]
+WantedBy=graphical-session.target

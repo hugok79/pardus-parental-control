@@ -6,7 +6,7 @@ APP_DIR="/usr/share/pardus/pardus-parental-control"
 case "$1" in
     remove)
         # disable restrictions before uninstall:
-        /usr/share/pardus/pardus-parental-control/src/PPCActivator.py --disable || true
+        /usr/share/pardus/pardus-parental-control/src/ppc_disabler.py --disable || true
 
         ;;
     upgrade|abort-upgrade)

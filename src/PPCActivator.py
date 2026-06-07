@@ -28,26 +28,22 @@ logging.basicConfig(
 )
 
 
-class PPCActivator(Gtk.Application):
+class PPCActivator:
     def __init__(self, argv):
         # Privileged run check
         if not FileRestrictionManager.check_user_privileged():
             sys.stderr.write("You are not privileged to run this script.\n")
             sys.exit(1)
 
-        super().__init__(
-            application_id="tr.org.pardus.parental-control.apply",
-            flags=Gio.ApplicationFlags.NON_UNIQUE,
-        )
-
         self.init_variables()
 
         # Get logged user id and username
         if len(argv) == 3 and argv[1] != "--disable":
-            self.logged_user_id = argv[1]
-            self.logged_user_name = argv[2]
+            if argv[2] != "Debian-gdm":
+                self.logged_user_id = argv[1]
+                self.logged_user_name = argv[2]
 
-            self.update_active_session_id()
+                self.update_active_session_id()
 
     def init_variables(self):
         self.preferences = None
@@ -55,12 +51,8 @@ class PPCActivator(Gtk.Application):
         self.system_preferences_manager = SystemPreferencesManager.get_default()
         self.session_time_started = None
 
-    def do_activate(self):
+    def run(self):
         self.log(f"=== PPCActivator Service Started ===")
-
-        _empty_window = Gtk.Window(
-            application=self
-        )  # this is needed to make application status "activated", otherwise 120 seconds of preventing user logout happens
 
         if self.logged_user_name:
             if self.preferences_manager.has_user(self.logged_user_name):
@@ -68,13 +60,15 @@ class PPCActivator(Gtk.Application):
                     self.logged_user_name
                 )
 
+                self.log(f" - Applying preferences...")
                 self.apply_preferences()
             else:
                 self.log(" - No preferences found.")
-
                 self.clear_preferences()
 
             self.connect_user_active_status()
+        else:
+            self.log(" - No logged_user_name.")
 
     def update_active_session_id(self):
         os_codename = OSManager.get_os_codename()
@@ -101,10 +95,11 @@ class PPCActivator(Gtk.Application):
 
             # Run non-root GUI app from root script requires these:
             env = os.environ.copy()
-            env["XDG_RUNTIME_DIR"] = f"/run/user/{self.logged_user_id}"
-            env["DBUS_SESSION_BUS_ADDRESS"] = (
-                f"unix:path=/run/user/{self.logged_user_id}/bus"
-            )
+            # env["XDG_RUNTIME_DIR"] = f"/run/user/{self.logged_user_id}"
+            # env["DBUS_SESSION_BUS_ADDRESS"] = (
+            #     f"unix:path=/run/user/{self.logged_user_id}/bus"
+            # )
+            self.log(f"env:{env}")
             subprocess.Popen(
                 [f"{cwd}/NotificationApp.py", self.logged_user_name],
                 user=self.logged_user_name,
@@ -318,10 +313,5 @@ class PPCActivator(Gtk.Application):
 
 if __name__ == "__main__":
     activator = PPCActivator(sys.argv)
-    if len(sys.argv) == 2:
-        if sys.argv[1] == "--disable":
-            activator.clear_application_filter()
-            activator.clear_website_filter()
-            sys.exit(0)
-    elif len(sys.argv) == 3:
+    if len(sys.argv) == 3:
         activator.run()
