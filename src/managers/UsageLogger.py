@@ -1,7 +1,13 @@
-#!/usr/bin/python3
+"""Session usage log file operations.
+
+Log format (one line per login, newest first):
+    "2025-10-07T13:37:06|0012"  ->  login_date|minutes_elapsed
+
+Files are stored in SessionTimeManager.USER_SESSIONS_LOGS_PATH and read back
+by SessionTimeManager to calculate daily/weekly usage.
+"""
+
 import os
-import sys
-import time
 
 import managers.SessionTimeManager as SessionTimeManager
 
@@ -53,19 +59,3 @@ def set_minutes_of_last_session(user, new_minute):
         # Update the first line
         f.seek(0)
         f.write(first_line)
-
-
-# Get args
-user = sys.argv[1]
-
-# add login to log at startup
-save_login_timestamp(user)
-
-# Add 1 on every minute user logged in.
-elapsed_minutes = 0
-while True:
-    time.sleep(60)
-
-    elapsed_minutes += 1
-
-    set_minutes_of_last_session(user, elapsed_minutes)

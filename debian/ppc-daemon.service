@@ -1,0 +1,14 @@
+[Unit]
+Description=Pardus Parental Control - System Daemon
+Wants=systemd-logind.service
+After=systemd-logind.service dbus.service
+
+[Service]
+Type=dbus
+BusName=tr.org.pardus.ParentalControl
+ExecStart=/usr/share/pardus/pardus-parental-control/src/PPCDaemon.py
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

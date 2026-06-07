@@ -30,7 +30,7 @@ class NotificationApp(Adw.Application):
         )
 
         self.logged_user_name = argv[1]
-        self.seconds_left = 10
+        self.seconds_left = int(argv[2]) if len(argv) > 2 else 10
 
     def do_activate(self):
         self.setup_window()
@@ -43,7 +43,7 @@ class NotificationApp(Adw.Application):
             _("Session will be closed in {} seconds.").format(self.seconds_left)
         )
 
-        if self.seconds_left == 0:
+        if self.seconds_left <= 0:
             self.quit()
 
         return True
@@ -105,8 +105,8 @@ class NotificationApp(Adw.Application):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: ./NotificationApp.py logged_user_name_here")
+    if len(sys.argv) not in (2, 3):
+        print("Usage: ./NotificationApp.py logged_user_name_here [seconds_left]")
         sys.exit(0)
 
     app = NotificationApp(sys.argv)

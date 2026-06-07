@@ -24,6 +24,9 @@ subdir('po')
 # Polkit
 subdir('polkit')
 
+# DBus
+subdir('dbus')
+
 # Assets
 install_subdir('assets', install_dir: source_dir)
 
