@@ -5,6 +5,3 @@
 
 override_dh_installsystemd:
 	dh_installsystemd --name=ppc-daemon
-
-override_dh_installsystemduser:
-	dh_installsystemduser --name=ppc-agent

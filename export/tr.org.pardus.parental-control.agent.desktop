@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Pardus Parental Control Agent
+Name[tr]=Pardus Ebeveyn Denetimi Ajanı
+Comment=Shows the session time-over notification and logs out cleanly.
+Comment[tr]=Oturum süresi bitti bildirimini gösterir ve oturumu düzgünce kapatır.
+Exec=/usr/share/pardus/pardus-parental-control/src/PPCAgent.py
+NoDisplay=true
+Terminal=false
+StartupNotify=false
+X-GNOME-Autostart-enabled=true

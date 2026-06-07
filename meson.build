@@ -36,6 +36,11 @@ install_data(
     ['export/tr.org.pardus.parental-control.desktop'],
     install_dir: desktop_file_dir,
 )
+## Autostart File (PPCAgent - started on graphical login in every desktop env)
+install_data(
+    ['export/tr.org.pardus.parental-control.agent.desktop'],
+    install_dir: '/etc/xdg/autostart',
+)
 ## Icon
 install_data(['export/pardus-parental-control.svg'], install_dir: icon_dir)
 
