@@ -60,10 +60,16 @@ LOGIND_SESSION_IFACE = "org.freedesktop.login1.Session"
 LOGIND_SEAT0_PATH = "/org/freedesktop/login1/seat/seat0"
 LOGIND_SEAT_IFACE = "org.freedesktop.login1.Seat"
 
-# Popup countdown seconds sent to PPCAgent (NotificationApp counts 10 seconds)
+# Seconds the PPCAgent shows the countdown popup before triggering a clean
+# desktop-environment logout. Sent to the agent via the signal / GetExpiryInfo.
 NOTIFY_SECONDS = 10
-# Terminate 1 second after the popup countdown ends
-TERMINATE_DELAY_SECONDS = NOTIFY_SECONDS + 1
+
+# Fallback: if the agent's clean logout does not happen (unknown desktop, or
+# the agent was killed), the daemon force-terminates the session this many
+# seconds after the expiry started. It must be long enough to cover the agent's
+# startup delay + the popup + the desktop teardown, so it does not pre-empt a
+# clean logout that is on its way.
+FORCE_TERMINATE_SECONDS = 25
 
 
 def _filter_manager():
@@ -97,9 +103,7 @@ class PPCDaemon:
 
         self.sessions = {}  # object_path -> SessionInfo (Class == "user" only)
         self.usage = {}  # username -> UsageInfo
-        # username -> termination deadline (monotonic seconds);
-        # users notified, waiting for termination
-        self.expiring = {}
+        self.expiring = set()  # usernames whose time is up (popup -> logout)
         self.filters_cleared = False
         self.prefs_changed_timeout = None
 
@@ -143,10 +147,10 @@ class PPCDaemon:
                 invocation.return_dbus_error(f"{INTERFACE_NAME}.Error", e.message)
                 return
 
-            seconds_left = self.get_expiry_seconds_left(uid)
+            expired = self.is_uid_expiring(uid)
 
             invocation.return_value(
-                GLib.Variant("(bu)", (seconds_left is not None, seconds_left or 0))
+                GLib.Variant("(bu)", (expired, NOTIFY_SECONDS if expired else 0))
             )
 
     def get_sender_uid(self, sender):
@@ -163,16 +167,14 @@ class PPCDaemon:
         )
         return result.unpack()[0]
 
-    def get_expiry_seconds_left(self, uid):
-        """Returns the seconds left until the user is terminated, or None if
-        the user is not in the expiry countdown."""
-        for username, deadline in self.expiring.items():
+    def is_uid_expiring(self, uid):
+        """Whether the user with this uid is currently in the expiry process."""
+        for username in self.expiring:
             usage = self.usage.get(username)
             if usage is not None and usage.uid == uid:
-                seconds_left = int(deadline - GLib.get_monotonic_time() / 1_000_000)
-                return max(seconds_left, 0)
+                return True
 
-        return None
+        return False
 
     def connect_logind_signals(self):
         self.bus.signal_subscribe(
@@ -305,7 +307,7 @@ class PPCDaemon:
         # Stop usage tracking if it was the user's last session
         if not any(s.username == info.username for s in self.sessions.values()):
             self.usage.pop(info.username, None)
-            self.expiring.pop(info.username, None)
+            self.expiring.discard(info.username)
             self.log(f" - Usage tracking stopped for '{info.username}'.")
 
         return True
@@ -324,7 +326,7 @@ class PPCDaemon:
         for username in list(self.usage):
             if username not in tracked_usernames:
                 del self.usage[username]
-                self.expiring.pop(username, None)
+                self.expiring.discard(username)
                 self.log(f" - Usage tracking stopped for '{username}' (no session).")
 
     def get_session_state(self, object_path):
@@ -484,13 +486,13 @@ class PPCDaemon:
         return False
 
     def start_expiry(self, username, uid):
-        self.expiring[username] = (
-            GLib.get_monotonic_time() / 1_000_000 + TERMINATE_DELAY_SECONDS
-        )
+        self.expiring.add(username)
 
         self.log(f" - Notifying '{username}': session ends in {NOTIFY_SECONDS} seconds.")
 
-        # PPCAgent shows the countdown popup (NotificationApp) on this signal
+        # The agent shows the popup and triggers a clean logout. If it already
+        # runs it gets this signal; if the expiry started at login (before the
+        # agent), the agent learns it on startup via GetExpiryInfo instead.
         self.bus.emit_signal(
             None,  # broadcast
             OBJECT_PATH,
@@ -499,46 +501,60 @@ class PPCDaemon:
             GLib.Variant("(usu)", (uid, username, NOTIFY_SECONDS)),
         )
 
+        # Fallback in case the clean logout does not happen.
         GLib.timeout_add_seconds(
-            TERMINATE_DELAY_SECONDS, self.terminate_user, username, uid
+            FORCE_TERMINATE_SECONDS, self.force_terminate, username
         )
 
-    def terminate_user(self, username, uid):
-        # The user may have logged out during the countdown
+    def force_terminate(self, username):
+        # The agent's clean desktop logout should have closed the session by
+        # now. If the user logged out (cleanly or otherwise), it is no longer
+        # in self.expiring and there is nothing to do.
         if username not in self.expiring:
+            self.log(f" - '{username}' already logged out, no termination needed.")
             return GLib.SOURCE_REMOVE
 
-        self.log(f" - Terminating sessions of '{username}' (uid: {uid}).")
+        # The clean logout did not happen (unknown desktop, or the agent was
+        # killed). Force the still-tracked sessions of the user to close.
+        # TerminateSession (per session) matches what display managers do and
+        # is gentler than TerminateUser, which also kills the user manager and
+        # is more likely to leave a black screen on GDM + Wayland.
+        sessions = [
+            (object_path, info)
+            for object_path, info in self.sessions.items()
+            if info.username == username
+        ]
 
-        try:
-            self.bus.call_sync(
-                LOGIND_BUS,
-                LOGIND_PATH,
-                LOGIND_MANAGER_IFACE,
-                "TerminateUser",
-                GLib.Variant("(u)", (uid,)),
-                None,
-                Gio.DBusCallFlags.NONE,
-                -1,
-                None,
-            )
+        self.log(
+            f" - Clean logout did not complete. Forcing termination of "
+            f"'{username}' sessions: {[i.session_id for _, i in sessions]}"
+        )
 
-            # Untrack the user's sessions right away. logind keeps the
-            # terminated session in "closing" state for a while, so waiting
-            # for SessionRemoved (or the next minute tick) would leave a
-            # stale entry and confuse an immediate re-login.
-            for object_path, info in list(self.sessions.items()):
-                if info.username == username:
-                    self.untrack_session(object_path)
+        for object_path, info in sessions:
+            try:
+                self.bus.call_sync(
+                    LOGIND_BUS,
+                    LOGIND_PATH,
+                    LOGIND_MANAGER_IFACE,
+                    "TerminateSession",
+                    GLib.Variant("(s)", (info.session_id,)),
+                    None,
+                    Gio.DBusCallFlags.NONE,
+                    -1,
+                    None,
+                )
+            except GLib.Error as e:
+                self.log(f"TerminateSession({info.session_id}) failed: {e.message}")
 
-            self.apply_for_active_seat_session()
-        except GLib.Error as e:
-            self.log(f"TerminateUser failed: {e.message}")
+            # Untrack right away. logind keeps the terminated session in
+            # "closing" state for a while, so waiting for SessionRemoved (or the
+            # next minute tick) would leave a stale entry and confuse an
+            # immediate re-login.
+            self.untrack_session(object_path)
 
-            # The user is not logged in anymore; drop the stale entries
-            self.validate_tracked_sessions()
+        self.apply_for_active_seat_session()
 
-        self.expiring.pop(username, None)
+        self.expiring.discard(username)
 
         return GLib.SOURCE_REMOVE
 
