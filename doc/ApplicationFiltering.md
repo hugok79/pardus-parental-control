@@ -1,6 +1,17 @@
 # How does Application Filtering work?
 
-1. The .desktop file list in the `/var/lib/pardus/pardus-parental-control/preferences.json` file is read.
-2. Restore all permissions to original states.
-3. The **group** of executable and .desktop files of the applications in the restricted list are transferred to the `sudo` user group.
-4. Writing and execution permissions are disabled for those outside the group, containing authorized users.
+The list works either as a **denylist** (block listed apps) or an
+**allowlist** (block everything except listed apps).
+
+When a restricted user's session becomes the active session, `PPCDaemon`:
+
+1. Reads the user's application list from `preferences.json`.
+2. For each blocked application, changes the group of its `.desktop` file
+   and executable to `root:sudo` and removes the permissions of others
+   (`.desktop`: 640, executable: 750). So only `sudo` group members can
+   run them.
+3. Blocks flatpak applications via **malcontent** (per-uid blocklist).
+
+When the active session changes to a non-restricted user (or the greeter),
+all permissions are restored to their defaults (644/755, `root:root`) and
+the malcontent blocklist is cleared.
