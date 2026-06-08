@@ -1,14 +1,14 @@
 # Portuguese translation for Pardus Parental Control.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the pardus-parental-control package.
-# Hugo Carvalho <hugokarvalho@hotmail.com>, 2025.
+# Hugo Carvalho <hugokarvalho@hotmail.com>, 2025, 2026.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Pardus Parental Control\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-05 11:38+0300\n"
-"PO-Revision-Date: 2025-07-12 17:43+0100\n"
+"PO-Revision-Date: 2026-06-08 10:36+0100\n"
 "Last-Translator: Hugo Carvalho <hugokarvalho@hotmail.com>\n"
 "Language-Team: Portuguese\n"
 "Language: pt\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.6\n"
+"X-Generator: Poedit 3.9\n"
 
 #: src/ui/MainWindow.py:66 src/ui/MainWindow.py:105 src/NotificationApp.py:58
 msgid "Pardus Parental Control"
@@ -59,7 +59,7 @@ msgstr "Tempo da sessão"
 
 #: src/NotificationApp.py:43 src/NotificationApp.py:94
 msgid "Session will be closed in {} seconds."
-msgstr "A sessão será encerrada em {} segundos."
+msgstr "A sessão será encerrada dentro de {} segundos."
 
 #: src/NotificationApp.py:88
 msgid "Your session time is over."
@@ -69,7 +69,7 @@ msgstr "O seu tempo de sessão terminou."
 #: src/ui/page/PageSessionTime.py:75 src/ui/page/PageWebsites.py:75
 #: src/ui/page/PageWebsites.py:173
 msgid "Active"
-msgstr "Activo"
+msgstr "Ativo"
 
 #: src/ui/page/PageApplications.py:76 src/ui/page/PageApplications.py:163
 #: src/ui/page/PageWebsites.py:75 src/ui/page/PageWebsites.py:173
@@ -113,56 +113,57 @@ msgid "Select a user to start"
 msgstr "Selecionar um utilizador para iniciar"
 
 #: src/ui/page/PageSessionTime.py:57
-#, fuzzy
 msgid "Limit Session Time"
-msgstr "Tempo da sessão"
+msgstr "Limitar o tempo da sessão"
 
 #: src/ui/page/PageSessionTime.py:59
 msgid ""
 "Set start-end hours of a session.\n"
 "Limit maximum hours to use PC between start and end hours."
 msgstr ""
+"Definir o horário de início e fim de uma sessão.\n"
+"Limitar o número máximo de horas de utilização do computador entre o horário "
+"de início e o horário de fim."
 
 #: src/ui/page/PageSessionTime.py:68
-#, fuzzy
 msgid "Start"
-msgstr "Hora de início"
+msgstr "Início"
 
 #: src/ui/page/PageSessionTime.py:69
 msgid "End"
-msgstr ""
+msgstr "Fim"
 
 #: src/ui/page/PageSessionTime.py:70
 msgid "Usage Limit"
-msgstr ""
+msgstr "Limite de utilização"
 
 #: src/ui/page/PageSessionTime.py:83
 msgid "Monday"
-msgstr ""
+msgstr "Segunda"
 
 #: src/ui/page/PageSessionTime.py:84
 msgid "Tuesday"
-msgstr ""
+msgstr "Terça"
 
 #: src/ui/page/PageSessionTime.py:85
 msgid "Wednesday"
-msgstr ""
+msgstr "Quarta"
 
 #: src/ui/page/PageSessionTime.py:86
 msgid "Thursday"
-msgstr ""
+msgstr "Quinta"
 
 #: src/ui/page/PageSessionTime.py:87
 msgid "Friday"
-msgstr ""
+msgstr "Sexta"
 
 #: src/ui/page/PageSessionTime.py:88
 msgid "Saturday"
-msgstr ""
+msgstr "Sábado"
 
 #: src/ui/page/PageSessionTime.py:89
 msgid "Sunday"
-msgstr ""
+msgstr "Domingo"
 
 #: src/ui/page/PageWebsites.py:95
 msgid "Change the type of filtering for websites"
@@ -195,31 +196,31 @@ msgstr "A carregar..."
 
 #: src/ui/widget/PSessionHistory.py:22
 msgid "Today"
-msgstr ""
+msgstr "Hoje"
 
 #: src/ui/widget/PSessionHistory.py:25
 msgid "This Week"
-msgstr ""
+msgstr "Esta semana"
 
 #: src/ui/widget/PSessionHistory.py:45 src/ui/widget/PSessionHistory.py:53
 msgid "{} Hours {} Minutes"
-msgstr ""
+msgstr "{} Horas {} Minutos"
 
 #: src/ui/widget/PSessionHistory.py:47 src/ui/widget/PSessionHistory.py:55
 msgid "{} Minutes"
-msgstr ""
+msgstr "{} Minutos"
 
 #: src/ui/widget/SystemPreferencesDialog.py:28
 msgid "System Preferences"
-msgstr ""
+msgstr "Preferências do Sistema"
 
 #: src/ui/widget/SystemPreferencesDialog.py:33
 msgid "DNS Servers (default: \"1.1.1.1, 1.0.0.1\")"
-msgstr ""
+msgstr "Servidores DNS (padrão: \"1.1.1.1, 1.0.0.1\")"
 
 #: src/ui/widget/SystemPreferencesDialog.py:38
 msgid "DNS Servers:"
-msgstr ""
+msgstr "Servidores DNS:"
 
 #~ msgid "Weekends"
 #~ msgstr "Fins de semana"
