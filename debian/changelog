@@ -1,3 +1,18 @@
+pardus-parental-control (0.7.0) yirmiuc; urgency=medium
+
+  [ Emin Fedar ]
+  * fix: separate disable action to prevent child user disables filters
+  * fix: pass gui environment variables to service
+  * feat!: new agent-daemon architecture!
+  * fix: update docs
+  * fix: use DE's logout mechanisms to prevent blank screen on terminate
+  * fix: XFCE doesn't run systemd service, use /etc/xdg/autostart for agent
+
+  [ Hugo Carvalho ]
+  * Update Portuguese translations
+
+ -- Emin Fedar <emin.fedar@pardus.org.tr>  Wed, 10 Jun 2026 11:10:44 +0300
+
 pardus-parental-control (0.6.1) yirmiuc; urgency=medium
 
   * fix: translations
